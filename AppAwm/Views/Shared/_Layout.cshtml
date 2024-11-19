@@ -1,0 +1,157 @@
+﻿@using Newtonsoft.Json
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AWM</title>
+    @* <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> *@
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/css/materialize.min.css" rel="stylesheet" />
+    <link href="~/css/datatables.css" rel="stylesheet" />
+    <link href="~/css/jquery-confirm.min.css" rel="stylesheet" />
+    
+</head>
+<body style="overflow:hidden;" id="bodyMain">
+    <header style="height:30px;">
+        <nav class="z-depth-2" id="navHeader">
+            <div class="row">
+                <div class="col s2">
+                @if (Context.User.Identity.IsAuthenticated)
+                    {
+                        <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">
+                            menu
+                        </i>
+                    }
+
+                </div>
+
+                <div class="center col s8">
+                    ASSESORIA EM SEGURANÇA E MEDICINA DO TRABALHO <small>HDdoc</small>
+                </div>
+                <div class="col s2 right-align">
+                    <img src="~/images/Droassessoria.png" style="width:23%;">
+                </div>
+            </div>
+        </nav>
+
+        <ul id="slide-out" class="sidenav">
+            @if (Context.User.Identity.IsAuthenticated)
+            {
+                <li style="line-height:20px;">
+                    <div class="user-view">
+                        <div class="background">
+                            <img src="~/images/loginBackgroud.jpg" style="width:auto; height:100%;">
+                        </div>
+                        <img class="circle" src="~/images/user.png">
+                        <label><span class="white-text name">@Context.User.Identity.Name </span></label>
+                        <label href="#email"><span class="white-text">@Context.User.Claims.FirstOrDefault(d => d.Value.Contains("@"))?.Value </span></label>
+                    </div>
+                </li>
+            }
+            @*<li style="height:6%;" class='dropdown-trigger' data-target='dropdownAdvogado'>
+            <a class="waves-effect waves-red "><i class="material-icons red-text">work</i>Advogados</a>
+            <div>
+            <ul id='dropdownAdvogado' class='dropdown-content'>
+            <li><a asp-controller="Empresa" asp-action="Create" class="waves-effect sidenav-close"><i class="material-icons red-text">person</i>Interno</a></li>
+            <li><a class="waves-effect sidenav-close"><i class="material-icons red-text">person_outline</i>Reclamantes</a></li>
+            <li class="divider" tabindex="-1"></li>
+            <li><a class="waves-effect"><i class="material-icons red-text">keyboard_return</i>Voltar</a></li>
+            </ul>
+            </div>
+
+            </li>*@
+
+            @if (Context.User.Identity.IsAuthenticated)
+            {
+                var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+
+                if(userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+                {
+                    <li class='dropdown-trigger' href='#' data-target='dropdownSubMenu'>
+                        <a class="waves-effect waves-red"><i class="material-icons red-text">subdirectory_arrow_right</i>Mais...</a>
+                        <div>
+                            <!-- Dropdown Structure -->
+                            <ul id='dropdownSubMenu' class='dropdown-content'>
+                                <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Operacao" asp-action="Index"><i class="material-icons red-text">attach_money</i>Operação de Analise</a></li>
+                                <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Calendario" asp-action="Index"><i class="material-icons red-text">view_comfy</i>Calendário ajustavel</a></li>
+                        
+                                <li class="divider" tabindex="-1"></li>
+                                <li style="height:6%;"><a class="waves-effect"><i class="material-icons red-text">keyboard_return</i>Voltar</a></li>
+                            </ul>
+                        </div>
+                     </li>
+                }
+            }
+
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Usuario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Usuários</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Funcionario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
+@*             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Contrato" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">assignment</i>Contratos</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Documento" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">insert_drive_file</i>Documentos</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Familia" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">grain</i>Família</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Link" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">link</i>Links</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="MotivoAvaliacao" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">message</i>Motivo da Avaliação</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Pedido" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">subject</i>Pedidos</a></li> *@
+
+            @*<li style="height:6%;" class='dropdown-trigger' data-target='dropdownPedido'>
+            <a class="waves-effect waves-red"><i class="material-icons red-text">assignment_turned_in</i>Ítens de Pedidos</a>
+            <div>
+            <ul id='dropdownPedido' class='dropdown-content'>
+            <li><a class="waves-effect waves-red sidenav-close" asp-controller="Justificativa" asp-action="Index"><i class="material-icons red-text">comment</i>Justificativa</a></li>
+            <li class="divider" tabindex="-1"></li>
+            <li><a class="waves-effect"><i class="material-icons red-text">keyboard_return</i>Voltar</a></li>
+            </ul>
+            </div>
+            </li>*@
+
+            @* <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Questionamento" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">help_outline</i>Questionário</a></li> *@
+            
+
+        </ul>
+    </header>
+
+    <!--<footer class="page-footer" style="bottom:0; position:fixed; width:100%;">
+        <div class="container" style="padding-bottom:5px;">
+                © @DateTime.Now.Year Copyright Text-->
+    @*<a class="grey-text text-lighten-4 right" href="#!">More Links</a>*@
+    @*<a asp-action="Index" class="right tooltipped" data-position="top" data-tooltip="Pagina inicial - Home"><i class="small material-icons white-text">home</i></a>*@
+    <!--</div>
+    </footer>-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/materialize.min.js"></script>
+    <script src="~/js/jquery.mask.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/loadingoverlay.min.js"></script>
+    <script src="~/js/jquery-confirm.min.js"></script>
+    
+    @*<environment include="Development">
+    </environment>
+    <environment exclude="Development">
+    <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>*@
+
+    <script src="~/js/jquery.mask.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
+
+    <div style="width:90%; margin:auto;">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+    @if (Context.User.Identity.IsAuthenticated)
+    {
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large tooltipped blue darken-2" data-position="left" data-tooltip="Home Page" asp-controller="Home" asp-action="Index">
+                <i class="large material-icons">home</i>
+            </a>
+            <ul>
+                <li><a class="btn-floating orange darken-3 tooltipped" data-position="left" data-tooltip="Sair - Logout" asp-controller="Start" asp-action="Logout"><i class="material-icons">power_settings_new</i></a></li>
+            </ul>
+        </div>
+    }
+
+</body>
+</html>

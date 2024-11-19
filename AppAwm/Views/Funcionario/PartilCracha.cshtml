@@ -1,0 +1,49 @@
+﻿@using System.Text.RegularExpressions
+@model AppAwm.Models.Cracha
+
+<div class="printMe">
+    <div class="row" >
+        <div class="col s4">
+        @if (Model.Foto == null)
+        {
+            <img class="circle responsive-img" src="~/images/user.png" style="height:100px; width:100px; cursor:pointer;" />
+        }
+        else
+        {
+            var base64Foto = Convert.ToBase64String(Model.Foto);
+            var imgSrcFoto = String.Format("data:image/*;base64,{0}", base64Foto);
+            <img class="circle responsive-img" src="@imgSrcFoto" style="height:100px; width:120px; cursor:pointer;" />
+        }
+        </div>
+        <div class="col s6">
+        @{
+            var base64Cracha = Convert.ToBase64String(Model.QrCode);
+            var imgSrcCracha = String.Format("data:image/*;base64,{0}", base64Cracha);
+            <img src="@imgSrcCracha" style="height:120px; width:120px; cursor:pointer;" />
+        }
+        </div>
+    </div>
+        <div class="col s12 input-field">
+            <input type="text" value="@Model.Nome" id="crachaNome" readonly />
+            <label>Nome</label>
+        </div>
+        <div class="col s12 input-field">
+            <input type="text" value="@Regex.Replace(Model.Documento!, @"(\d{3})(\d{3})(\d{3})", @"$1.$2.$3-")" id="crachaDocumento" readonly />
+            <label>Documento</label>
+        </div>
+        <div class="col s12 input-field">
+            <input type="text" value="@Model.Empresa" id="crachaEmpresa" readonly />
+            <label>Empresa</label>
+        </div>
+        <div class="col s12 input-field">
+            <input type="text" value="@Model.Cargo" id="crachaFuncao" readonly />
+            <label>Função/Cargo</label>
+        </div>
+</div>
+
+<script>
+    $('#crachaNome').trigger('focus');
+    $('#crachaDocumento').trigger('focus');
+    $('#crachaEmpresa').trigger('focus');
+    $('#crachaFuncao').trigger('focus');
+</script>

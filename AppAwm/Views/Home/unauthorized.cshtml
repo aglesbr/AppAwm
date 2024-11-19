@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Não Autorizado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col s6">
+        <div style="margin-top:20%">
+            <p>Usuário não tem autorização para essa funcionalidade!<br /></p>
+            @if (Context.User.Identity.IsAuthenticated)
+            {
+                <button class="btn waves-effect waves-light" type="button" onclick="location.href='../Start/Index';">
+                    Voltar para tela inicial
+                <i class="material-icons left">keyboard_return</i>
+                </button>
+            }else
+            {
+                <button class="btn waves-effect waves-light" type="button" onclick="location.href='../Start/Index';">
+                    Voltar para tela de login
+                    <i class="material-icons left">keyboard_return</i>
+                </button>
+            }
+        </div>
+    </div>
+    <div class="col s6">
+        <img src="~/images/pngwing.png" width="400" , height="400" style="float:right;" />
+    </div>
+</div>

@@ -1,0 +1,106 @@
+﻿@model AppAwm.Models.Usuario
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Tela principal apos o login</h1>
+</div>
+
+<!-- Modal Structure -->
+<div id="modalMudarSenha"  class="modal">
+    <div class="modal-content">
+        <h5>Alterar senha temporária de @Model.Nome</h5>
+        <hr />
+        <br>
+        <div class="row">
+            <form id="frmMudarSenha" asp-controller="Start" asp-action="changePassword" class="col s12">
+                <input asp-for="Cd_Usuario" type="hidden" value="@Model.Cd_Usuario" />
+                <div class="row">
+                    <div class="input-field col s6">
+                        <i class="material-icons prefix">https</i>
+                        <input asp-for="Senha" id="password" type="password">
+                        <label asp-for="Senha">Nova senha</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <i class="material-icons prefix">https</i>
+                        <input asp-for="ConfirmPassword" id="confirmPassword" type="password">
+                        <label asp-for="ConfirmPassword">Confirmar senha</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a asp-controller="Start" asp-action="Logout" class="waves-effect waves-green btn purple">
+            <i class="material-icons left">reply</i>sair
+        </a>
+        <button id="btnLimpar"  class="waves-effect waves-green btn">
+            <i class="material-icons left">clear</i>Limpar
+        </button>
+        <button id="btnMudarSenha" class="waves-effect waves-green btn">
+            <i class="material-icons left">edit</i>Alterar senha
+         </button>
+
+        
+        
+    </div>
+</div>
+
+
+<script>
+    var isMudarSenha = Boolean(@(Convert.ToInt16(Model.MudarSenha)));
+
+    if (isMudarSenha)
+        setTimeout(() => { $('#modalMudarSenha').modal({ dismissible: false }).modal('open'); }, 500);
+    
+    $('#btnMudarSenha').on('click', () => {
+
+        if ($('#password').val() == '' ||  $('#confirmPassword').val() == '') {
+            M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;Informe as senhas nos campos!', classes: 'red darken-3 rounded' });
+            return;
+        }
+
+        if ($('#password').val() != $('#confirmPassword').val()) {
+            M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;Existem digergências nas senhas informada!', classes: 'red darken-3 rounded' });
+            return;
+        }
+
+        loading(true)
+
+        var frm = $('#frmMudarSenha').serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Start/changePassword',
+            dataType: "json",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: frm 
+        })
+            .done(function (data) {
+
+                loading(false);
+
+                $('#modalMudarSenha').modal({ dismissible: false }).modal('close');
+
+                let clss = data.success == true ? 'blue' : 'red';
+
+                M.toast({ html: `<i class="material-icons white-text">check_circle</i>&nbsp - ${ data.message}`, classes: `${clss} darken-2 rounded`});
+
+                setTimeout(() => { window.location.href = '/Start/Logout'; }, 3000);
+            })
+            .fail(function (data) {
+
+                loading(false);
+
+                $('#modalMudarSenha').modal({ dismissible: false }).modal('close');
+
+                M.toast({html: '<i class="material-icons white-text">cancel</i>&nbsp - ' + data.message, classes: 'red darken-2 rounded'});
+            });
+
+    });
+
+    $('#btnLimpar').on('click', () => { $('#frmMudarSenha').trigger("reset");});
+
+
+</script>

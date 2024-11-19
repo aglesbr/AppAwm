@@ -1,0 +1,93 @@
+﻿@* @model List<Obra> *@
+@model X.PagedList.IPagedList<Obra>
+@using X.PagedList
+@using X.Web.PagedList
+
+@if (Model?.Count() > 0)
+{
+<table id="tableObraRecord" class="display compact">
+    <thead>
+        <tr>
+            <th style="width:50%;">Obra</th>
+            <th style="width:50%;" >Descrição</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Nome</td>
+                <td>@item.Descricao</td>
+                <td class=@(item.Status ? "green-text": "red-text" )>
+                    @(item.Status ? "Ativo" : "Inativo")
+                </td>
+                    <td class="right-align">
+                        <a class="waves-effect waves-light btn-small " title="Editar Obra" onclick="javascript:editarObra(@Json.Serialize(item).ToString())"><i class="material-icons center">edit</i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="4">
+                   <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                 @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                {
+                   DisplayLinkToIndividualPages = true,
+                   DisplayPageCountAndCurrentLocation = false,
+                   MaximumPageNumbersToDisplay = 25,
+                   LiElementClasses = new string[] { "waves-effect" },
+                   PageClasses = new string[] { "btnSearch" },
+                   DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                   DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                   DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                })
+            </td>
+        </tr>
+    </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#tableObraRecord .pagination').attr('id', 'pageItem');
+
+        var paren = $('#tableObraRecord .pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('#tableObraRecord .btnSearch').click((event) => {
+            debugger
+            var obj = { pagina: event.target.innerHTML, cd_empresa_id: $('#cd_empresa_id').val() };
+            bindObras(obj);
+        });
+
+
+        $('#tableObraRecord').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+            // pageLength: 6,
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null
+            }
+        });
+    });
+</script>

@@ -1,0 +1,207 @@
+﻿@model X.PagedList.IPagedList<Anexo>
+@using System.Text.RegularExpressions
+@using X.PagedList
+@using X.Web.PagedList
+
+@{
+    string statusIcon = string.Empty;
+}
+
+@if (Model?.Count() > 0)
+{
+    <table id="tableList" class="display compact">
+        <thead>
+            <tr>
+                <th>
+                    Arquivo
+                </th>
+                <th class="dt-head-left">
+                    @Html.DisplayNameFor(model => model[0].Descricao)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].TipoAnexo)
+                </th>
+
+                <th class="dt-head-left">
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+                <th>
+                    Data de envio
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    <td class="dt-body-left">
+                        @Html.DisplayFor(modelItem => item.Descricao)
+                    </td>
+                    <td class="dt-body-left">
+                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.ListaTipoAnexo.FirstOrDefault(f => f.Key == item.TipoAnexo).Value)
+                    </td>
+
+                    <td>
+                        @{
+                            var itemStatus = AppAwm.Util.Utility.TipoStatus.FirstOrDefault(f => f.Key == (int?)item.Status);
+
+                            statusIcon = "error_outline";
+
+                            if ((int?)item.Status == 3)
+                                statusIcon = "done";
+
+                            if ((int?)item.Status == 5)
+                                statusIcon = "check_circle";
+
+                            if ((int?)item.Status == 6)
+                                statusIcon = "report_problem";
+
+                            <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped"> @statusIcon</i>
+                        }
+                    </td>
+                    <td class="dt-body-left">
+                        @item.Dt_Criacao.ToShortDateString()
+                    </td>
+                    <td class="right-align">
+                        <a data-position="left" data-tooltip="Abrir documento" class="waves-effect waves-light btn-small deep-purple darken-1 modal-trigger tooltipped" onclick="javascript:openDocumentPdf({codigo:@item.Cd_Anexo, status: 2})"><i class="material-icons center">description</i></a>
+                        <a data-position="top" data-tooltip="Aprovar" class="waves-effect waves-light btn-small tooltipped aprovarDocs @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='3' data-><i class="material-icons center">check</i></a>
+                        <a data-position="right" data-tooltip="Reprovar" class="waves-effect waves-light btn-small red darken-4 rejeitarDocs tooltipped @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='4' ><i class="material-icons center">close</i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5">
+                    <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                    @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                   {
+                       DisplayLinkToIndividualPages = true,
+                       DisplayPageCountAndCurrentLocation = false,
+                       MaximumPageNumbersToDisplay = 25,
+                       LiElementClasses = new string[] { "waves-effect" },
+                       PageClasses = new string[] { "btnSearch" },
+                       DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                       DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                   })
+                </td>
+                <td>
+                    <span class="badge text-accent-3 blue-text right"> Total de Registros: @Model.TotalItemCount</span>
+                </td>
+            </tr>
+
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+
+}
+
+<script>
+
+    $(document).ready(function () {
+
+
+        $('.tooltipped').tooltip();
+
+        $('.pagination').attr('id', 'pageItem');
+
+        var paren = $('.pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('.btnSearch').click((event) => {
+            $("#btnSearch").trigger("click", event.target.innerHTML);
+        });
+
+        $('#tableList').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null,
+            }
+        });
+
+
+        $('.aprovarDocs').on('click', (event) => {
+
+            $.confirm({
+                title: 'Você confirma a Aprovação deste documento?',
+                content: 'ATENÇÃO: essa ação não poderá ser desfeita!',
+                boxWidth: '30%',
+                type: 'dark',
+                useBootstrap: false,
+                buttons: {
+                    cancelar: function () { },
+                    confirmar: function () {
+                        updateStatus({ id: parseInt(event.currentTarget.dataset.itemid), status: parseInt(event.currentTarget.dataset.status)})
+                    },
+                    // somethingElse: {
+                    //     text: 'Something else',
+                    //     btnClass: 'btn-blue',
+                    //     keys: ['enter', 'shift'],
+                    //     action: function () {
+                    //         $.alert('Something else?');
+                    //     }
+                    // }
+                }
+            });
+        });
+
+        $('.rejeitarDocs').on('click', (event) => {
+
+            $.confirm({
+                title: 'Informe o motivo da reprovação deste documento!',
+                boxWidth: '40%',
+                type: 'dark',
+                useBootstrap: false,
+                content: '' +
+                    '<div class="row">' +
+                    '<div class="input-field col s12">'+
+                    '<label for="txtMotivo">ATENÇÃO: O responsavel será notificado por email informando o motivo da rejeição do documento</label>' +
+                    '<input type="text" id="txtMotivo" class="motivo" required/>' +
+                    '</div></div>',
+                buttons: {
+                    formSubmit: {
+                        text: 'REPROVAR',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            debugger
+                            var msgMotivo = this.$content.find('.motivo').val();
+                            if (!msgMotivo) {
+                                $.alert({
+                                    title: 'Motivo não informado!',
+                                    boxWidth: '20%',
+                                    useBootstrap: false,
+                                    content: 'Descreva texto simples de forma resumida',
+                                });
+                                return false;
+                            }
+                            updateStatus({ id: parseInt(event.currentTarget.dataset.itemid), status: parseInt(event.currentTarget.dataset.status), message: msgMotivo });
+                        }
+                    },
+                    cancelar: function () {},
+                }
+            });
+        });
+
+    });
+</script>

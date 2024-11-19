@@ -1,0 +1,100 @@
+﻿@model AppAwm.Respostas.UsuarioAnswer
+
+<p class="flow-text"> @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Cadastrar" : "Atualizar") Usuário</p>
+
+<form asp-action="Create" id="frmForm">
+    <input asp-for="Usuario.Cd_Usuario" id="Cd_Usuario" type="hidden" />
+    <input asp-for="Usuario.Cd_Usuario_Criacao" id="Cd_Usuario_Criacao" type="hidden" />
+    <div class="row">
+
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Nome"></label>
+            <input asp-for="Usuario.Nome" id="Nome" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <label asp-for="Usuario.Documento"></label>
+            <input asp-for="Usuario.Documento" id="cpf" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <select id="Perfil" asp-for="Usuario.Perfil">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Terceiro</option>
+                <option value="2">Funcionário</option>
+                <option value="3">Administrador</option>
+            </select>
+            <label asp-for="Usuario.Perfil"></label>
+        </div>
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Email"></label>
+            <input asp-for="Usuario.Email" id="Email" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <label asp-for="Usuario.Login"></label>
+            <input asp-for="Usuario.Login" id="Login" autocomplete="off" readonly placeholder="login gerado automático" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Telefone"></label>
+            <input asp-for="Usuario.Telefone" id="telefone" autocomplete="off" />
+        </div>
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Senha"></label>
+            <input asp-for="Usuario.Senha" id="Senha" autocomplete="off" placeholder=" " value="@(Model?.Acao == AppAwm.Models.Enum.EnumAcao.Nenhum ? null : "$123Master")" />
+        </div>
+        <div class="input-field col s3">
+            <label asp-for="Usuario.ConfirmPassword"></label>
+            <input asp-for="Usuario.ConfirmPassword" id="ConfirmPassword" autocomplete="off" value="@(Model?.Acao == AppAwm.Models.Enum.EnumAcao.Nenhum ? null : "$123Master")" />
+        </div>
+        <div class="col s3" style="padding-top:25px;">
+            @if ((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null))
+            {
+            <div class="chip">
+                <i class="material-icons left">lock</i>
+                Senha padrão para novos usuários: $123Master
+            </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <br />
+        <div class="switch">
+            Status: &nbsp;
+            <label>
+                Inativo
+                <input type="checkbox" asp-for="Usuario.Status" id="Status">
+                <span class="lever"></span>
+                Ativo
+            </label>
+        </div>
+        <br />
+        <div class="input-field">
+            <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                <i class="material-icons left">save</i>
+                @((Model?.Acao ==  AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Salvar" : "Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style='display:@((Model?.Acao ==  AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "" : "none")'>
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                <i class="material-icons left">arrow_back</i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</form> 
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+}
+
+<script src="~/js/usuario/usuario.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#Senha').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null ) ? "true" : "false"));
+        $('#ConfirmPassword').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "true" : "false"));
+        $('input[id="telefone"]').mask('(00) 00000-0000');
+    })
+</script>

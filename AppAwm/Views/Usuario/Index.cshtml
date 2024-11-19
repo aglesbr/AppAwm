@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Usuários";
+}
+
+<h4>Pesquisar Usuários</h4>
+
+<form>
+    <div class="row">
+        <div class="input-field col s6">
+            <input id="nome" type="text">
+            <label>Nome</label>
+        </div>
+        <div class="input-field col s3">
+            <input id="login" type="text">
+            <label>Login</label>
+        </div>
+        <div class="input-field col s3">
+            <select id="StatusFilter">
+                <option value="" selected>Todos</option>
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <label>Status</label>
+        </div>
+    </div>
+    <div>
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Usuario" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Novo Usuário</a>
+        </div>
+    </div>
+</form>
+<hr>
+<footer id="DivRenderData"  style="display:none;">
+    <partial name="ListRecord"/>
+</footer>
+

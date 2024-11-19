@@ -1,0 +1,119 @@
+﻿@model X.PagedList.IPagedList<Funcionario>
+@using System.Text.RegularExpressions
+@using X.PagedList
+@using X.Web.PagedList
+
+@if (Model?.Count() > 0)
+{
+    <table id="tableList" class="display compact">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Nome)
+                </th>
+                <th class="dt-head-left">
+                    @Html.DisplayNameFor(model => model[0].Documento)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Telefone)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    <td class="dt-body-left">
+                         @Regex.Replace(item.Documento!, @"(\d{3})(\d{3})(\d{3})", @"$1.$2.$3-")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Telefone)
+                    </td>
+                    <td class="@(item.Status ? "green-text": "red-text" )">
+                        @(item.Status ? "Ativo" : "Inativo")
+                    </td>
+                    <td class="right-align">
+                        <a data-position="bottom" data-tooltip="Crachá do colaborador" class="waves-effect waves-light btn-small modal-trigger tooltipped" onclick="javascript:abreCracha(@item.Cd_Funcionario);"><i class="material-icons center">perm_contact_calendar</i></a>
+                        <a data-position="top" data-tooltip="@item.Anexos.Count(c => c.Status != null) documentos enviados" class="waves-effect waves-light btn-small @(item.Anexos?.Count > 0 ? "deep-purple darken-1" : "grey darken-1") modal-trigger  tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, codigoEmpresa: @item.Empresa?.Cd_Empresa, documento:@item.Documento ,titulo:'@item.Nome', scope:'colaborador'})"><i class="material-icons center">description</i></a>
+                        <a data-position="bottom" data-tooltip="Anexo do colaborador" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, documento:@item.Documento ,titulo:'@item.Nome', scope:'funcionario'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="right" data-tooltip="Editar" asp-controller="Funcionario" asp-action="Create" asp-route-id="@item.Cd_Funcionario" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                    @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                   {
+                       DisplayLinkToIndividualPages = true,
+                       DisplayPageCountAndCurrentLocation = false,
+                       MaximumPageNumbersToDisplay = 25,
+                       LiElementClasses = new string[] { "waves-effect" },
+                       PageClasses = new string[] { "btnSearchColaborador" },
+                       DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                       DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                   })
+                </td>
+                <td>
+                    <span class="badge text-accent-3 blue-text right"> Total de Registros: @Model.TotalItemCount</span>
+                </td>
+            </tr>
+
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.tooltipped').tooltip();
+
+        $('.pagination').attr('id', 'pageItem');
+
+        var paren = $('.pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearchColaborador'>" + li.innerText + "</a>";
+        });
+
+        $('#tableList .btnSearchColaborador').click((event) => { 
+             $("#btnSearch").trigger("click", event.target.innerHTML);
+        });
+
+
+        $('#tableList').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+            "iDisplayLength": 12,
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null,
+            }
+        });
+
+    });
+</script>

@@ -1,0 +1,204 @@
+﻿@model AppAwm.Respostas.FuncionarioAnswer
+
+
+<p class="flow-text"> @(Model.Funcionario.Cd_Funcionario == 0 ? "Cadastrar" : "Atualizar") Colaborador</p>
+
+<form asp-action='@(Model?.Funcionario.Cd_Funcionario == 0 ? "Create" : "Edit")'>
+    <input asp-for="Funcionario.Cd_Funcionario" id="cd_funcionario" type="hidden" />
+    <input asp-for="Funcionario.Endereco.Cd_Funcionario_id" type="hidden" />
+    <input asp-for="Funcionario.Endereco.Cd_Endereco" type="hidden" />
+    <input asp-for="Funcionario.Cd_Cargo" id="Cd_Cargo" type="hidden" />
+    <div class="row">
+        <div class="input-field col s2 center-align">
+            <div class="image-upload">
+                <label for="file-input">
+                    @if (Model.Funcionario.Foto == null)
+                    {
+                        <img src="~/images/user.png" style="height:100px; width:100px; cursor:pointer;" />
+                    }
+                    else
+                    {
+                        var base64 = Convert.ToBase64String(Model.Funcionario.Foto);
+                        var imgSrc = String.Format("data:image/*;base64,{0}", base64);
+                        <img src="@imgSrc" style="height:100px; width:120px; cursor:pointer;" />
+                    }
+                </label>
+                <input id="file-input" name="file" type="file" accept="image/*" />
+            </div>
+        </div>
+        <div class="input-field col s4" style="top:30px;">
+            <select id="id_Empresa" asp-for="Funcionario.Id_Empresa" asp-items="Model?.Empresas">
+                <option value="0" disabled selected>...</option>
+            </select>
+            <label>Empresa *</label>
+        </div>
+        <div class="input-field col s4" style="top:30px;">
+            <label asp-for="Funcionario.Nome"></label>
+            <input asp-for="Funcionario.Nome" id="funcionario" autocomplete="off" />
+        </div>
+        <div class="input-field col s2" style="top:30px;">
+            <label asp-for="Funcionario.Documento"></label>
+            <input asp-for="Funcionario.Documento" id="Cpf" autocomplete="off" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s2">
+            <label asp-for="Funcionario.Telefone"></label>
+            <input asp-for="Funcionario.Telefone" id="telefone" type="tel" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <select id="sexo" asp-for="Funcionario.Sexo">
+                <option value="" disabled selected>...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+                <option value="O">Outros</option>
+            </select>
+            <label>Sexo</label>
+        </div>
+        <div class="input-field col s2">
+            <select id="escolaridade" asp-for="Funcionario.Escolaridade">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Ensino Fundamental</option>
+                <option value="2">Ensino Médio</option>
+                <option value="3">Ensino Superior</option>
+                <option value="5">Pós-graduação</option>
+                <option value="6">Mestrado</option>
+                <option value="7">Doutorado</option>
+            </select>
+            <label>Escolaridade</label>
+        </div>
+        <div class="input-field col s2">
+            <select id="estadoCivil" asp-for="Funcionario.EstadoCivil">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Solteiro (a)</option>
+                <option value="2">Casado (a)</option>
+                <option value="3">Divorciado (a)</option>
+                <option value="3">Divorciado (a)</option>
+                <option value="3">Viúvo (a)</option>
+                <option value="3">União Estável</option>
+            </select>
+            <label>Estado Civil</label>
+        </div>
+
+        <div class="input-field col s4">
+            <input asp-for="Funcionario.Cargo.Nome" type="text" id="cargo" class="autocomplete" autocomplete="off">
+            <label for="cargo">Função/Cargo *</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s2">
+            <label asp-for="Funcionario.Nascimento"></label>
+            <input type="date" asp-for="Funcionario.Nascimento" id="dtNacimento" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <label asp-for="Funcionario.Dt_Admissao"></label>
+            <input asp-for="Funcionario.Dt_Admissao" id="dtAdmissao" type="date" autocomplete="off"/>
+        </div>
+        <div class="input-field col s2">
+            <select id="tipoContrato" asp-for="Funcionario.TipoContrato">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Autônomo</option>
+                <option value="1">PJ</option>
+                <option value="1">PJ (MEI)</option>
+                <option value="3">CLT Horista</option>
+                <option value="4">CLT Temporário</option>
+                <option value="5">CLT Indeterminado</option>
+                <option value="6">Cooperado</option>
+                <option value="7">Estrangeiro Imigrante</option>
+                <option value="8">Estágiario</option>
+            </select>
+            <label>Tipo de Contrato *</label>
+        </div>
+        @*   <div class="input-field col s2">
+        <label asp-for="Funcionario.Remuneracao"></label>
+        <input asp-for="Funcionario.Remuneracao" id="remuneracao" type="text" value="@(Model?.Funcionario.Cd_Funcionario == 0 ? "0,00" : Model.Funcionario.Remuneracao)" autocomplete="off">
+        </div>
+        <div class="input-field col s2">
+        <label asp-for="Funcionario.PisPasep"></label>
+        <input asp-for="Funcionario.PisPasep" id="pisPasep" autocomplete="off" />
+        </div> *@
+        <div class="col s1 input-field">
+            <label>
+                <input asp-for=Funcionario.Pcd type="checkbox" />
+                <span>PCD</span>
+            </label>
+        </div>
+        <div class="col s1 input-field">
+            <label>
+                <input asp-for=Funcionario.Pcd type="checkbox" />
+                <span>Estrangeiro</span>
+            </label>
+        </div>
+        <div class="input-field col s4">
+            <label asp-for="Funcionario.Observacao"></label>
+            <input asp-for="Funcionario.Observacao" id="observacao" autocomplete="off" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s2 input-field">
+            <input asp-for="Funcionario.Endereco.Cep" id="cep" />
+            <label asp-for="Funcionario.Endereco.Cep"></label>
+        </div>
+        <div class="col s3 input-field">
+            <input asp-for="Funcionario.Endereco.Logradouro" id="logradouro" maxlength="100" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Logradouro"></label>
+        </div>
+        <div class="col s1 input-field">
+            <input asp-for="Funcionario.Endereco.Numero" id="numero" maxlength="7" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Numero"></label>
+        </div>
+        <div class="col s3 input-field">
+            <input asp-for="Funcionario.Endereco.Bairro" id="bairro" maxlength="50" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Bairro"></label>
+        </div>
+        <div class="col s2 input-field">
+            <input asp-for="Funcionario.Endereco.Cidade" id="cidade" maxlength="50" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Cidade"></label>
+        </div>
+        <div class="col s1 input-field">
+            <input asp-for="Funcionario.Endereco.Estado" id="estado" maxlength="2" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Estado"></label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s5 input-field">
+            <input asp-for="Funcionario.Endereco.Detalhes" id="detalhes" maxlength="100" autocomplete="off" />
+            <label asp-for="Funcionario.Endereco.Detalhes"></label>
+        </div>
+        <div class="col s input-field">
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" checked asp-for="Funcionario.Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
+        <div class="input-field">
+            <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                <i class="material-icons left">save</i>
+                @(Model?.Funcionario.Cd_Funcionario == 0 ? "Salvar" : "Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model?.Funcionario.Cd_Funcionario == 0 ? "" : "none");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                <i class="material-icons left">arrow_back</i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</form>
+<script src="~/js/funcionario/funcionario.js"></script>
+<style>
+    .image-upload > input {
+        display: none;
+    }
+</style>

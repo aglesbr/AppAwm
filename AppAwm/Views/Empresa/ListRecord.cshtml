@@ -1,0 +1,127 @@
+﻿@model X.PagedList.IPagedList<Empresa>
+@using System.Text.RegularExpressions
+@using X.PagedList
+@using X.Web.PagedList
+
+@if (Model?.Count() > 0)
+{
+    <table id="tableList" class="display compact">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Cnpj)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Nome)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].NomeFantasia)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeFantasia)
+                    </td>
+                    <td class="@(item.Status ? "green-text": "red-text" )">
+                        @(item.Status ? "Ativo" : "Inativo")
+                    </td>
+                    <td class="right-align">
+                        <a data-position="left" data-tooltip="Vincular Colaboradores ao contrato"  enable
+                            class="waves-effect waves-light btn-small teal modal-trigger blue-grey darken-2 tooltipped"
+                           onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa,nome:'@item.Nome', cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")' ,scope:'vincularColaborador'})"
+                        @(item.Obras.Count == 0 ? "disabled" : "")>
+                            <i class="material-icons center">swap_horiz</i></a>
+                        <a data-position="top" data-tooltip="Contrato/Obras" class="waves-effect waves-light btn-small black modal-trigger tooltipped" onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa, cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")' , titulo:'@item.Nome', scope:'obra'})">
+                            <i class="material-icons center">
+                                transfer_within_a_station
+                            </i>
+                        </a>
+                        <a data-position="bottom" data-tooltip="Anexar Arquivo" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Empresa, documento:@item.Cnpj, titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="right" data-tooltip="Editar" asp-controller="Empresa" asp-action="Create" asp-route-id="@item.Cd_Empresa" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                    @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                   {
+                       DisplayLinkToIndividualPages = true,
+                       DisplayPageCountAndCurrentLocation = false,
+                       MaximumPageNumbersToDisplay = 25,
+                       LiElementClasses = new string[] { "waves-effect" },
+                       PageClasses = new string[] { "btnSearch" },
+                       DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                       DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                   })
+                </td>
+                <td>
+                    <span class="badge text-accent-3 blue-text right"> Total de Registros: @Model.TotalItemCount</span>
+                </td>
+            </tr>
+
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#tableList .tooltipped').tooltip();
+
+        $('#tableList .pagination').attr('id', 'pageItem');
+
+        var paren = $('#tableList .pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('#tableList .btnSearch').click((event) => {
+            $("#btnSearch").trigger("click", event.target.innerHTML);
+        });
+
+
+        $('#tableList').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+            "iDisplayLength": 12,
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null,
+            }
+        });
+    });
+    
+</script>

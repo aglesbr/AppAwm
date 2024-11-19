@@ -1,0 +1,159 @@
+﻿@model X.PagedList.IPagedList<Anexo>
+@using X.PagedList
+@using X.Web.PagedList
+
+@{
+    string statusIcon =  string.Empty, tipoAnexo = string.Empty;
+}
+
+
+@if (Model?.Count() > 0)
+{
+    <table id="tableAnexoColaboradorRecord" class="display compact">
+        <thead>
+            <tr>
+                <th>Arquivo</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <th>Validade</th>
+                <th>Tipo</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Descricao</td>
+                    <td>
+                        @{
+                            statusIcon = "error_outline";
+
+                            var itemStatus = AppAwm.Util.Utility.TipoStatus.FirstOrDefault(f => f.Key == (int?)item.Status);
+
+                            if ((int?)item.Status == 3)
+                                statusIcon = "done";
+
+                            if ((int?)item.Status == 5)
+                                statusIcon = "check_circle";
+
+                            if ((int?)item.Status == 6)
+                                statusIcon = "report_problem";
+
+                        }
+                        <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
+                    </td>
+                    <td>
+                        @string.Format("{0:d}", item.Dt_Validade_Documento)
+                    </td>
+                    <td>
+                        @{
+                            var itemTipo = AppAwm.Util.Utility.ListaTipoAnexo.FirstOrDefault(f => f.Key == item.TipoAnexo);
+                            tipoAnexo += item.TipoAnexo + ",";
+                        }
+
+                        <i data-position="right" data-tooltip="@itemTipo.Value" class="material-icons prefix tooltipped">description</i>
+                    </td>
+                    <td class="dt-body-right">
+                        <a data-position="left" data-tooltip="Baixar arquivo" class="waves-effect waves-light tooltipped btn-small downloadFile" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
+                        <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="6">
+                <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                {
+                   DisplayLinkToIndividualPages = true,
+                   DisplayPageCountAndCurrentLocation = false,
+                   MaximumPageNumbersToDisplay = 25,
+                   LiElementClasses = new string[] { "waves-effect" },
+                   PageClasses = new string[] { "btnSearch" },
+                   DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                   DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                   DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                })
+            </td>
+        </tr>
+    </tfoot>
+    </table>
+    <input type="hidden" id="listAnexo" value="@tipoAnexo" />
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#tableAnexoColaboradorRecord .tooltipped').tooltip();
+
+        $('#tableAnexoColaboradorRecord .pagination').attr('id', 'pageItem');
+
+        var paren = $('#tableAnexoColaboradorRecord .pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('#tableAnexoColaboradorRecord .btnSearch').click((event) => {
+            
+            var obj = { pagina: event.target.innerHTML, codigo: $('#codigo').val(), scope: $('#scope').val() };
+            bindAnexos(obj);
+        });
+
+
+        $('#tableAnexoColaboradorRecord').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null,
+            }
+        });
+
+        $('.downloadFile').on('click', (event) => {
+            downloadFile({ id: event.currentTarget.dataset.itemid})
+        });
+
+        $('.removeFile').on('click', (event) => {
+            
+            $.confirm({
+                title: 'Você confirma a exclusão deste anexo?',
+                content: 'ATENÇÃO: essa ação não poderá ser desfeita!',
+                boxWidth: '30%',
+                type: 'dark',
+                useBootstrap: false,
+                buttons: {
+                    cancelar: function () {},
+                    confirmar: function () {
+                        removeFile({ id: event.currentTarget.dataset.itemid, codigo: event.currentTarget.dataset.codigo, scope: event.currentTarget.dataset.scope })
+                    },
+                    // somethingElse: {
+                    //     text: 'Something else',
+                    //     btnClass: 'btn-blue',
+                    //     keys: ['enter', 'shift'],
+                    //     action: function () {
+                    //         $.alert('Something else?');
+                    //     }
+                    // }
+                }
+            });
+        });
+
+    });
+</script>

@@ -1,0 +1,124 @@
+﻿@model AppAwm.Models.Empresa
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp;Empresa @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrada" : "atualizada") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+<h4>@(Model == null ? "Cadastro" : "Edição") de Empresa</h4>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action='@(Model == null ? "Create" : "Edit")' id="frmForm">
+            <div asp-validation-summary="ModelOnly" class="red-text"></div>
+            <input asp-for="Cd_Empresa" type="hidden" />
+            <input asp-for="Endereco.Cd_Endereco" type="hidden" />
+            <input asp-for="Endereco.Cd_Empresa" type="hidden" />
+            <input asp-for="Endereco.Cd_UsuarioCriacao" type="hidden" />
+            <input asp-for="Cd_UsuarioCriacao" type="hidden" />
+            <input asp-for="Complemento" type="hidden" id="complemento" />
+            <div class="row">
+                <div class="col s3 input-field">
+                    <i class="material-icons prefix">code</i>
+                    <input asp-for="Cnpj" id="Cnpj" />
+                    <label asp-for="Cnpj"></label>
+                </div>
+                <div class="col s4 input-field">
+                    <i class="material-icons prefix">location_city</i>
+                    <input asp-for="Nome" id="empresa" maxlength="100"/>
+                    <label asp-for="Nome"></label>
+                </div>
+                <div class="col s2 input-field">
+                    <i class="material-icons prefix">short_text</i>
+                    <input asp-for="Equity" id="equity" maxlength="5" />
+                    <label asp-for="Equity"></label>
+                </div>
+                <div class="col s3 input-field">
+                    <i class="material-icons prefix">local_library</i>
+                    <input asp-for="NomeFantasia" id="nomeFantasia" maxlength="100"/>
+                    <label asp-for="NomeFantasia"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3 input-field">
+                    <i class="material-icons prefix">location_on</i>
+                    <input asp-for="Endereco.Logradouro" id="logradouro" maxlength="100" />
+                    <label asp-for="Endereco.Logradouro"></label>
+                </div>
+                <div class="col s2 input-field">
+                    <i class="material-icons prefix">filter_2</i>
+                    <input asp-for="Endereco.Numero" id="numero" maxlength="15"/>
+                    <label asp-for="Endereco.Numero"></label>
+                </div>
+                <div class="col s2 input-field">
+                    <i class="material-icons prefix">filter_1</i>
+                    <input asp-for="Endereco.Cep" id="cep" />
+                    <label asp-for="Endereco.Cep"></label>
+                </div>
+                <div class="col s5 input-field">
+                    <i class="material-icons prefix">chat_bubble_outline</i>
+                    <input asp-for="Endereco.Detalhes" id="detalhes" maxlength="100" />
+                    <label asp-for="Endereco.Detalhes"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3 input-field">
+                    <i class="material-icons prefix">edit_location</i>
+                    <input asp-for="Endereco.Bairro" id="bairro" maxlength="50"/>
+                    <label asp-for="Endereco.Bairro"></label>
+                </div>
+                <div class="col s2 input-field">
+                    <i class="material-icons prefix">chevron_right</i>
+                    <input asp-for="Endereco.Cidade" id="cidade" maxlength="50"/>
+                    <label asp-for="Endereco.Cidade"></label>
+                </div>
+                <div class="col s1 input-field">
+                    <i class="material-icons prefix">chevron_right</i>
+                    <input asp-for="Endereco.Estado" id="estado" maxlength="2" />
+                    <label asp-for="Endereco.Estado"></label>
+                </div>
+                <div class="col s2 input-field">
+                    <i class="material-icons prefix">local_phone</i>
+                    <input asp-for="Telefone" id="telefone"/>
+                    <label asp-for="Telefone"></label>
+                </div>
+                <div class="col s4 input-field">
+                    <i class="material-icons prefix">email</i>
+                    <input asp-for="Email" id="email" maxlength="100" />
+                    <label asp-for="Email"></label>
+                </div>
+            </div>
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Status" name="Status" id="status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+            <br />
+            <div class="input-field">
+                <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                    <i class="material-icons left">save</i>
+                    @(Model == null ? "Salvar" : "Atualizar")
+                </button>
+                <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                    <i class="material-icons left">clear</i>
+                    Limpar
+                </button>
+                <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                    <i class="material-icons left">arrow_back</i>
+                    voltar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="~/js/empresa/empresa.js"></script>

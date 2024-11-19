@@ -1,0 +1,34 @@
+﻿@using RabbitMQ.Client
+@using RabbitMQ.Client.Events
+@{
+    ViewData["Title"] = "Operação";
+    List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
+}
+
+<h4>Analise de Documentação</h4>
+
+<form>
+    <div class="row">
+        <div class="input-field col s10">
+            <select id="cd_empresa" asp-items="selectLists">
+                <option value="0" selected>Todos</option>
+            </select>
+        </div>
+        <div class="input-field col s2" style="margin-top:25px;">
+            <a class="waves-effect waves-light btn" id="btnSearch"><i class="material-icons left">search</i>pesquisar empresa</a>
+        </div>
+
+    </div>
+</form>
+
+<footer id="DivRenderData"></footer>
+
+<!-- Modal Abrir PDF -->
+<div id="modalOpenDocument" class="modal">
+        <object id="objFile" type="application/pdf" style="width:100%; height:590px; display:none;"></object>
+        <div id="DivError" style="display:none;"></div>
+        <div class="right-align" style="margin:3px 3px 3px;">
+            <a id="btnCloseModa" class="modal-close waves-effect waves-teal btn">fechar</a>
+        </div>
+</div>
+<script src="~/js/operacao/operacao.js"></script>
