@@ -19,7 +19,7 @@ namespace AppAwm.DAL
             {
                 var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Staging";
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile($"appsettings.json", true, true)
+                    //.AddJsonFile($"appsettings.json", true, true)
                     .AddJsonFile($"appsettings.{appSeting}.json", true);
 
                 var config = builder.Build();
