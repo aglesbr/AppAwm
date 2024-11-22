@@ -29,9 +29,9 @@ namespace AppAwm.Services
 
                 return ret > 0 ? AnexoAnswer.DeSucesso() : AnexoAnswer.DeErro();
             }
-            catch
+            catch(Exception ex)
             {
-                return AnexoAnswer.DeErro();
+                return AnexoAnswer.DeErro(ex.Message);
             }
         }
 
@@ -113,37 +113,46 @@ namespace AppAwm.Services
 
         public void Notify()
         {
-            static IConnection cnn()
+            try
             {
-                ConnectionFactory factory = new ConnectionFactory();
-                factory.UserName = "guest";
-                factory.Password = "guest";
-                factory.HostName = "localhost";
-                factory.RequestedChannelMax = 10;
+                static IConnection cnn()
+                {
+                    ConnectionFactory factory = new ConnectionFactory();
+                    factory.UserName = "hddoc";
+                    factory.Password = "hddoc";
+                    factory.HostName = "40.88.41.23";
+                    factory.Port = 5672;
+                    factory.RequestedChannelMax = 10;
 
-                IConnection conn = factory.CreateConnection();
+                    IConnection conn = factory.CreateConnection();
 
-                return conn;
+                    return conn;
+                }
+
+                using IConnection conexao = cnn();
+                using var canal = conexao.CreateModel();
+                canal.ConfirmSelect();
+
+                IBasicProperties props = canal.CreateBasicProperties();
+                props.ContentType = "text/plain";
+                props.DeliveryMode = 2;
+
+                canal.ExchangeDeclare("changeMq", ExchangeType.Fanout);
+
+                var corpo = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(1));
+
+                var queueName = canal.QueueDeclare(queue: "operacao", false, false, false, null).QueueName;
+                canal.QueueBind(queue: queueName, exchange: "changeMq", routingKey: string.Empty);
+
+                canal.BasicPublish(exchange: "changeMq", routingKey: "", basicProperties: props, body: corpo);
+
+                canal.WaitForConfirmsOrDie(TimeSpan.FromSeconds(2));
             }
+            catch (Exception ex)
+            {
 
-            using IConnection conexao = cnn();
-            using var canal = conexao.CreateModel();
-            canal.ConfirmSelect();
-
-            IBasicProperties props = canal.CreateBasicProperties();
-            props.ContentType = "text/plain";
-            props.DeliveryMode = 2;
-
-            canal.ExchangeDeclare("changeMq", ExchangeType.Fanout);
-
-            var corpo = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(1));
-
-            var queueName = canal.QueueDeclare(queue: "operacao", false, false, false, null).QueueName;
-            canal.QueueBind(queue: queueName, exchange: "changeMq", routingKey: string.Empty);
-
-            canal.BasicPublish(exchange: "changeMq", routingKey: "", basicProperties: props, body: corpo);
-
-            canal.WaitForConfirmsOrDie(TimeSpan.FromSeconds(2));
+                throw ex;
+            }
         }
 
         public HistoricoExecucao? GetLastHistoricoExecucao()

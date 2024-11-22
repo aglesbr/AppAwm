@@ -718,9 +718,7 @@ namespace AppAwm.Migrations
                 {
                     b.HasOne("AppAwm.Models.Cargo", "Cargo")
                         .WithOne("Funcionario")
-                        .HasForeignKey("AppAwm.Models.Funcionario", "Cd_Cargo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppAwm.Models.Funcionario", "Cd_Cargo");
 
                     b.HasOne("AppAwm.Models.Empresa", "Empresa")
                         .WithMany("Funcionarios")

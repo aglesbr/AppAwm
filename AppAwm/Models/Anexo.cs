@@ -25,7 +25,7 @@ namespace AppAwm.Models
         public string? Descricao { get; set; }
 
         [Display(Name = "Anexo")]
-        [Column("ANEXO", TypeName = "BINARY")]
+        [Column("ANEXO", TypeName = "VARBINARY(MAX)")]
         public byte[]? Arquivo { get; set; }
 
         [Column("DT_CRIACAO", TypeName = "DATE")]

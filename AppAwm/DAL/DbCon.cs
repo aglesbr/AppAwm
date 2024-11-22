@@ -17,11 +17,14 @@ namespace AppAwm.DAL
 
             if (!optionsBuilder.IsConfigured)
             {
-                var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile($"appsettings.json");
+                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile($"appsettings.json", true, true)
+                    .AddJsonFile($"appsettings.{appSeting}.json", true);
+
                 var config = builder.Build();
 
                 string _urlBase = config.GetSection("ConnectionStrings:WAConnection").Value!;
-                //_urlBase = Environment.GetEnvironmentVariable(_urlBase);
                 optionsBuilder.UseSqlServer(_urlBase, x => x.MigrationsHistoryTable("__EFMigrationsHistory"));
                 base.OnConfiguring(optionsBuilder);
             }
@@ -57,7 +60,8 @@ namespace AppAwm.DAL
             modelBuilder.Entity<Funcionario>()
            .HasOne(e => e.Cargo)
            .WithOne(e => e.Funcionario)
-           .HasForeignKey<Funcionario>(e => e.Cd_Cargo);
+           .HasForeignKey<Funcionario>(e => e.Cd_Cargo)
+           .IsRequired(false); ;
 
             modelBuilder.Entity<Empresa>()
                 .HasMany(e => e.Funcionarios)

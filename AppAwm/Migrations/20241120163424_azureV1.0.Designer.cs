@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20241107140725_addFieldDataValidade")]
-    partial class addFieldDataValidade
+    [Migration("20241120163424_azureV1.0")]
+    partial class azureV10
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,10 @@ namespace AppAwm.Migrations
                     b.Property<DateTime>("Dt_Validade_Documento")
                         .HasColumnType("DATE")
                         .HasColumnName("DT_VALIDADE_DOCUMENTO");
+
+                    b.Property<int>("Id_UsuarioCriacao")
+                        .HasColumnType("INT")
+                        .HasColumnName("ID_USUARIO_CRIACAO");
 
                     b.Property<string>("MotivoRejeicao")
                         .HasColumnType("VARCHAR(100)")
@@ -294,7 +298,7 @@ namespace AppAwm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Funcionario"));
 
-                    b.Property<int?>("Cd_Cargo")
+                    b.Property<int>("Cd_Cargo")
                         .HasColumnType("INT")
                         .HasColumnName("CARGO")
                         .HasColumnOrder(40);
@@ -342,6 +346,11 @@ namespace AppAwm.Migrations
                         .HasColumnName("ESTADOCIVIL")
                         .HasColumnOrder(20);
 
+                    b.Property<bool>("Estrangeiro")
+                        .HasColumnType("BIT")
+                        .HasColumnName("ESTRANGEIRO")
+                        .HasColumnOrder(16);
+
                     b.Property<byte[]>("Foto")
                         .HasColumnType("BINARY")
                         .HasColumnName("FOTO")
@@ -373,16 +382,6 @@ namespace AppAwm.Migrations
                         .HasColumnName("PCD")
                         .HasColumnOrder(46);
 
-                    b.Property<string>("PisPasep")
-                        .HasColumnType("VARCHAR(15)")
-                        .HasColumnName("PISPASEP")
-                        .HasColumnOrder(10);
-
-                    b.Property<decimal>("Remuneracao")
-                        .HasColumnType("DECIMAL(8,2)")
-                        .HasColumnName("REMUNERACAO")
-                        .HasColumnOrder(45);
-
                     b.Property<string>("Sexo")
                         .IsRequired()
                         .HasColumnType("VARCHAR(1)")
@@ -400,7 +399,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("TELEFONE")
                         .HasColumnOrder(25);
 
-                    b.Property<int?>("TipoContrato")
+                    b.Property<int>("TipoContrato")
                         .HasColumnType("INT")
                         .HasColumnName("TIPOCONTRATO")
                         .HasColumnOrder(35);
@@ -408,8 +407,7 @@ namespace AppAwm.Migrations
                     b.HasKey("Cd_Funcionario");
 
                     b.HasIndex("Cd_Cargo")
-                        .IsUnique()
-                        .HasFilter("[CARGO] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("Id_Empresa");
 
@@ -475,6 +473,26 @@ namespace AppAwm.Migrations
                     b.ToTable("AWM_FUNCIONARIO_VINCULO_OBRA", "dbo");
                 });
 
+            modelBuilder.Entity("AppAwm.Models.HistoricoExecucao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Dt_Execucao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DT_EXECUCAO")
+                        .HasColumnOrder(10);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AWM_HISTORICO_EXECUCAO", "dbo");
+                });
+
             modelBuilder.Entity("AppAwm.Models.Obra", b =>
                 {
                     b.Property<int>("Cd_Obra")
@@ -533,6 +551,65 @@ namespace AppAwm.Migrations
                     b.HasIndex("Cd_Empresa_Id");
 
                     b.ToTable("AWM_OBRA", "dbo");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Treinamento", b =>
+                {
+                    b.Property<int>("Cd_Treinamento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CD_TREINAMENTO")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Treinamento"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnName("NOME")
+                        .HasColumnOrder(10);
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("BIT")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(30);
+
+                    b.HasKey("Cd_Treinamento");
+
+                    b.ToTable("AWM_TREINAMENTO", "dbo");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.TreinamentoHabilidade", b =>
+                {
+                    b.Property<int>("Cd_Habilidade")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CD_HABILIDADE")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Habilidade"));
+
+                    b.Property<int>("Cd_Treinamento_Id")
+                        .HasColumnType("int")
+                        .HasColumnName("CD_TREINAMENTO_ID")
+                        .HasColumnOrder(10);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnName("NOME")
+                        .HasColumnOrder(20);
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("BIT")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(30);
+
+                    b.HasKey("Cd_Habilidade");
+
+                    b.HasIndex("Cd_Treinamento_Id");
+
+                    b.ToTable("AWM_TREINAMENTO_HABILIDADE", "dbo");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Usuario", b =>
@@ -673,6 +750,15 @@ namespace AppAwm.Migrations
                     b.Navigation("Empresa");
                 });
 
+            modelBuilder.Entity("AppAwm.Models.TreinamentoHabilidade", b =>
+                {
+                    b.HasOne("AppAwm.Models.Treinamento", "Treinamento")
+                        .WithMany("Habilidades")
+                        .HasForeignKey("Cd_Treinamento_Id");
+
+                    b.Navigation("Treinamento");
+                });
+
             modelBuilder.Entity("AppAwm.Models.Cargo", b =>
                 {
                     b.Navigation("Funcionario");
@@ -698,6 +784,11 @@ namespace AppAwm.Migrations
                         .IsRequired();
 
                     b.Navigation("VinculoObras");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Treinamento", b =>
+                {
+                    b.Navigation("Habilidades");
                 });
 #pragma warning restore 612, 618
         }
