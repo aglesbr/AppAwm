@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAwm", "AppAwm\AppAwm.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppDocManager", "AppDocManager\AppDocManager.csproj", "{6925D993-43FD-4DB9-869A-F103E3830C4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAwm.Hasit.DataBase", "AppAwm.Hasit.DataBase\AppAwm.Hasit.DataBase.csproj", "{A4544FC2-9FE1-49A3-B755-0EBA5062DFAB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{6925D993-43FD-4DB9-869A-F103E3830C4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6925D993-43FD-4DB9-869A-F103E3830C4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6925D993-43FD-4DB9-869A-F103E3830C4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4544FC2-9FE1-49A3-B755-0EBA5062DFAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4544FC2-9FE1-49A3-B755-0EBA5062DFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4544FC2-9FE1-49A3-B755-0EBA5062DFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4544FC2-9FE1-49A3-B755-0EBA5062DFAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
