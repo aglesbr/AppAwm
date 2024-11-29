@@ -3,7 +3,10 @@
 @using X.Web.PagedList
 
 @{
-    string statusIcon =  string.Empty, tipoAnexo = string.Empty;
+    string statusIcon =  string.Empty, tipoAnexoDocumento = string.Empty;
+
+    if (Model?.Count() > 0)
+        tipoAnexoDocumento = Model.First().CodigosDocumentos!;
 }
 
 
@@ -49,18 +52,17 @@
                     </td>
                     <td>
                         @{
-                            var itemTipo = AppAwm.Util.Utility.ListaTipoAnexo.FirstOrDefault(f => f.Key == item.TipoAnexo);
-                            tipoAnexo += item.TipoAnexo + ",";
+                            var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar.ToString() == item.TipoAnexo);
                         }
 
-                        <i data-position="right" data-tooltip="@itemTipo.Value" class="material-icons prefix tooltipped">description</i>
+                        <i data-position="right" data-tooltip="@itemTipo?.Nome" class="material-icons prefix tooltipped">description</i>
                     </td>
                     <td class="dt-body-right">
                         <a data-position="left" data-tooltip="Baixar arquivo" class="waves-effect waves-light tooltipped btn-small downloadFile" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
                         <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
                     </td>
                 </tr>
-        }
+            }        
     </tbody>
     <tfoot>
         <tr>
@@ -81,7 +83,7 @@
         </tr>
     </tfoot>
     </table>
-    <input type="hidden" id="listAnexo" value="@tipoAnexo" />
+    <input type="hidden" id="listAnexo" value="@tipoAnexoDocumento" />
 }
 else
 {
@@ -131,7 +133,7 @@ else
         });
 
         $('.removeFile').on('click', (event) => {
-            
+
             $.confirm({
                 title: 'Você confirma a exclusão deste anexo?',
                 content: 'ATENÇÃO: essa ação não poderá ser desfeita!',
@@ -154,6 +156,5 @@ else
                 }
             });
         });
-
     });
 </script>

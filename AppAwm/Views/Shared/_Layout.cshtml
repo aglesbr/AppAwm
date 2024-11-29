@@ -4,33 +4,42 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AWM</title>
+    <title>@ViewData["Title"] - HDdoc</title>
     @* <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> *@
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/css/materialize.min.css" rel="stylesheet" />
     <link href="~/css/datatables.css" rel="stylesheet" />
     <link href="~/css/jquery-confirm.min.css" rel="stylesheet" />
-    
+
 </head>
 <body style="overflow:hidden;" id="bodyMain">
     <header style="height:30px;">
         <nav class="z-depth-2" id="navHeader">
             <div class="row">
-                <div class="col s2">
                 @if (Context.User.Identity.IsAuthenticated)
-                    {
-                        <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">
-                            menu
-                        </i>
-                    }
+                {
+                    <div class="col s2">
+                        <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">menu</i>
+                    </div>
+                }
 
+                <div class="center col @(!Context.User.Identity.IsAuthenticated ? "s11" : "s7")">
+                    TÉNOLOGINA EM CONFERÊNCIA DOCUMENTAL <small>HDdoc - v1.0</small>
                 </div>
 
-                <div class="center col s8">
-                    ASSESORIA EM SEGURANÇA E MEDICINA DO TRABALHO <small>HDdoc - v1.0</small>
-                </div>
-                <div class="col s2 right-align">
-                    <img src="~/images/Droassessoria.png" style="width:23%;">
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    var clientSession = JsonConvert.DeserializeObject<Cliente>(Context.Session.GetString("ClientAuth")!);
+
+                    var isRedLimiteVida = clientSession.PlanoVidasAtivadas == clientSession.PlanoVidas;
+
+                    var strVidas = clientSession.PlanoVidasAtivadas + " vidas utilizadas de " + clientSession.PlanoVidas +" contratadas";
+
+                    <div class="col s2"><span class="new badge @(isRedLimiteVida ? "red" : "green")" style="margin-top:20px;" data-badge-caption="">@strVidas</span></div>
+                }
+
+                <div class="col s1 right-align">
+                    <img src="~/images/Preview.png" style="width:48%;">
                 </div>
             </div>
         </nav>

@@ -134,7 +134,6 @@ $('.datepicker').datepicker({
 });
 
 
-
 $('#file-input').on('input', () => {
 
     var files = $('#file-input')[0].files;

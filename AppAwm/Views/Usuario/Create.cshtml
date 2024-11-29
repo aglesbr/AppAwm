@@ -1,42 +1,54 @@
 ﻿@model AppAwm.Respostas.UsuarioAnswer
+@{
+    var isChecked = (Model ==  null || Model?.Usuario?.Cd_Usuario == 0) ? "true" : Model?.Usuario?.Status.ToString().ToLower();
 
-<p class="flow-text"> @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Cadastrar" : "Atualizar") Usuário</p>
+    List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectCliente"]!;
+}
+
+<h4> @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Cadastrar" : "Atualizar") Usuário</h4>
 
 <form asp-action="Create" id="frmForm">
     <input asp-for="Usuario.Cd_Usuario" id="Cd_Usuario" type="hidden" />
     <input asp-for="Usuario.Cd_Usuario_Criacao" id="Cd_Usuario_Criacao" type="hidden" />
     <div class="row">
-
-        <div class="input-field col s3">
+        <div class="input-field col s4">
+            <select id="Perfil" asp-for="Usuario.Cd_Cliente_Id" asp-items="selectLists">
+                <option value="0" disabled selected>Selecione um cliente para o usuário</option>
+            </select>
+            <label>Cliente do Usuário</label>
+        </div>
+        <div class="input-field col s4">
             <label asp-for="Usuario.Nome"></label>
             <input asp-for="Usuario.Nome" id="Nome" autocomplete="off" />
         </div>
-        <div class="input-field col s2">
-            <label asp-for="Usuario.Documento"></label>
-            <input asp-for="Usuario.Documento" id="cpf" autocomplete="off" />
-        </div>
-        <div class="input-field col s2">
+        <div class="input-field col s4">
             <select id="Perfil" asp-for="Usuario.Perfil">
-                <option value="0" disabled selected>...</option>
+                <option value="0" disabled selected>Selecione um pefil para o usuário</option>
                 <option value="1">Terceiro</option>
                 <option value="2">Funcionário</option>
                 <option value="3">Administrador</option>
             </select>
             <label asp-for="Usuario.Perfil"></label>
         </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Documento"></label>
+            <input asp-for="Usuario.Documento" id="cpf" autocomplete="off" />
+        </div>
+        <div class="input-field col s3">
+            <label asp-for="Usuario.Telefone"></label>
+            <input asp-for="Usuario.Telefone" id="telefone" autocomplete="off" />
+        </div>
         <div class="input-field col s3">
             <label asp-for="Usuario.Email"></label>
             <input asp-for="Usuario.Email" id="Email" autocomplete="off" />
         </div>
-        <div class="input-field col s2">
-            <label asp-for="Usuario.Login"></label>
-            <input asp-for="Usuario.Login" id="Login" autocomplete="off" readonly placeholder="login gerado automático" />
-        </div>
     </div>
     <div class="row">
         <div class="input-field col s3">
-            <label asp-for="Usuario.Telefone"></label>
-            <input asp-for="Usuario.Telefone" id="telefone" autocomplete="off" />
+            <label asp-for="Usuario.Login"></label>
+            <input asp-for="Usuario.Login" id="Login" autocomplete="off" readonly placeholder="login gerado automático" />
         </div>
         <div class="input-field col s3">
             <label asp-for="Usuario.Senha"></label>
@@ -92,7 +104,7 @@
 <script src="~/js/usuario/usuario.js"></script>
 <script>
     $(document).ready(function () {
-
+        $('#Status').prop('checked', @isChecked);
         $('#Senha').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null ) ? "true" : "false"));
         $('#ConfirmPassword').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "true" : "false"));
         $('input[id="telefone"]').mask('(00) 00000-0000');

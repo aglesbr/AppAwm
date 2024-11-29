@@ -2,10 +2,13 @@
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
+using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Windows.Networking.NetworkOperators;
 using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
@@ -39,6 +42,8 @@ namespace AppAwm.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
                     usuario.Documento = Regex.Replace(usuario.Documento!, @"[^\d]", string.Empty);
 
                     if (usuario.Cd_Usuario == 0)
@@ -53,13 +58,14 @@ namespace AppAwm.Controllers
 
                         usuario.Senha = Util.Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
+                        usuario.Cd_Cliente_Id = userSession!.Cd_Cliente_Id;
                         usuario.MudarSenha = true;
 
                         var retorno = servico.Save(usuario, EnumAcao.Criar);
 
                         if (retorno.Success)
                         {
-                            Util.Utility.EnviarEmail(true, usuario);
+                            Utility.EnviarEmail(true, usuario);
                             retorno.Usuario.Senha = usuario.Senha;
                             return Ok(retorno);
                         }
@@ -103,6 +109,9 @@ namespace AppAwm.Controllers
         {
             try
             {
+                List<SelectListItem> selectListItems = [..servico.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+                ViewData["selectCliente"] = selectListItems;
+
                 if (id > 0)
                 {
                     var _usuario = servico.Get(n => n.Cd_Usuario == id, EnumAcao.Nenhum);

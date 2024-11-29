@@ -1,6 +1,5 @@
 ﻿using AppAwm.DAL;
 using AppAwm.Models;
-using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,13 +8,13 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 
-
 namespace AppAwm.Controllers
 {
-    public class StartController : Controller
+    public class StartController(IConfiguration section) : Controller
     {
 
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
+        private IConfiguration configurationSection = section;
 
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("Windows")]
@@ -28,12 +27,14 @@ namespace AppAwm.Controllers
             {
                 if (ModelState.IsValid)
                 {
+
                     using DbCon db = new();
                     using var contexto = new RepositoryGeneric<Usuario>(db, out status);
 
                     if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                     {
-                        var _Usuario = contexto.GetItem(n => n.Login == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status);
+                        var _Usuario = contexto.GetAll(n => n.Login == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status)
+                            .Include(c => c.Cliente).FirstOrDefault();
 
                         if (_Usuario is null)
                         {
@@ -46,13 +47,19 @@ namespace AppAwm.Controllers
 
                         if (_Usuario.Status)
                         {
+                            Usuario user = _Usuario;
+                            Util.Utility.Cliente = _Usuario.Cliente;
+                            Util.Utility.DocumentacaoComplementares = [..db.DocumentacoesComplementares];
+                            user.Cliente!.Usuarios!.Clear();
+
                             var token = Util.Utility.GenerateToken(new Usuario { Login = login.UserName, Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone});
                             HttpContext.Session.SetString("Token", token);
-                            HttpContext.Session.SetString("UserAuth",JsonSerializer.Serialize(_Usuario));
+                            HttpContext.Session.SetString("UserAuth",JsonSerializer.Serialize(user));
+                            HttpContext.Session.SetString("ClientAuth",JsonSerializer.Serialize(user.Cliente));
 
                             if (login.Operacao)
                                 return new JsonResult(_Usuario);
-
+                            
                             return RedirectToAction(nameof(HomeController.Index), "Home");
                         }
                         else

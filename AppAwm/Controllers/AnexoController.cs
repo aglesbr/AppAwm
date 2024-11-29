@@ -3,11 +3,11 @@ using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
+using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IO.Compression;
-using System.Text.RegularExpressions;
 using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
@@ -48,7 +48,8 @@ namespace AppAwm.Controllers
                             Arquivo = arq, 
                             Nome = formFile.FileName, 
                             Descricao = obj.Descricao,
-                            Id_UsuarioCriacao = userSession!.Cd_Usuario
+                            Id_UsuarioCriacao = userSession!.Cd_Usuario,
+                            Cd_Cliente = userSession.Cd_Cliente_Id
                         };
 
                         if (obj.Scope == "funcionario")
@@ -68,7 +69,8 @@ namespace AppAwm.Controllers
                     }
 
                     AnexoAnswer anexoAnswer = servico.Save(anexo);
-                    servico.Notify();
+                    if (!string.IsNullOrWhiteSpace(anexo.TipoAnexo))
+                        servico.Notify();
 
                     return anexoAnswer.Success ? Ok(anexoAnswer) : BadRequest(AnexoAnswer.DeErro("Nenhum arquivo Selecionado"));
                 }
@@ -120,22 +122,31 @@ namespace AppAwm.Controllers
             ComandoAnexoInformacao obj = JsonConvert.DeserializeObject<ComandoAnexoInformacao>(comandoAnexoInformacao) ?? new();
             try
             {
-                AnexoAnswer anexoAnswer = servico.List(x =>
-                    (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Codigo)
-                    && (obj.Scope == "colaborador" ? x.Status != null : x.Status == null)
-                    &&  x.TipoAnexo == (string.IsNullOrWhiteSpace(obj.TipoAnexo) ?  x.TipoAnexo : obj.TipoAnexo)
-                    && (string.IsNullOrWhiteSpace(obj.Descricao) ? x.Descricao == x.Descricao : x.Descricao!.StartsWith(obj.Descricao)));
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                var query = obj.Scope == "empresa"
-                    ? anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Empresa_Id = s.Cd_Empresa_Id }).ToList().ToPagedList(skip, 7)
-                    : obj.Scope == "funcionario"
-                    ? anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Funcionario_Id = s.Cd_Funcionario_Id }).ToList().ToPagedList(skip, 7)
-                    : anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Funcionario_Id = s.Cd_Funcionario_Id, Status = s.Status, TipoAnexo = s.TipoAnexo, Dt_Validade_Documento = s.Dt_Validade_Documento }).ToList().ToPagedList(skip, 7);
+                    AnexoAnswer anexoAnswer = servico.List(x => x.Cd_Cliente == userSession!.Cd_Cliente_Id
+                        && (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Codigo)
+                        && (obj.Scope == "colaborador" ? x.Status != null : x.Status == null)
+                        && x.TipoAnexo == (string.IsNullOrWhiteSpace(obj.TipoAnexo) ? x.TipoAnexo : obj.TipoAnexo)
+                        && (string.IsNullOrWhiteSpace(obj.Descricao) ? x.Descricao == x.Descricao : x.Descricao!.StartsWith(obj.Descricao)));
+                    
+                    var itemDocumento = string.Join(',',[.. anexoAnswer.Anexos.Select(s => s.TipoAnexo)]);
+                    
+                        var query = obj.Scope == "empresa"
+                        ? anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Empresa_Id = s.Cd_Empresa_Id }).ToList().ToPagedList(skip, 10)
+                        : obj.Scope == "funcionario"
+                        ? anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Funcionario_Id = s.Cd_Funcionario_Id }).ToList().ToPagedList(skip, 10)
+                        : anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Funcionario_Id = s.Cd_Funcionario_Id, Status = s.Status, 
+                            TipoAnexo = s.TipoAnexo, Dt_Validade_Documento = s.Dt_Validade_Documento, CodigosDocumentos = itemDocumento}).ToList().ToPagedList(skip, 10);
 
-                if (obj.Scope == "colaborador")
-                    return PartialView("ListAnexoColaboradorRecord", query);
+                    if (obj.Scope == "colaborador")
+                        return PartialView("ListAnexoColaboradorRecord", query);
 
-                return PartialView("ListAnexoRecord", query);
+                    return PartialView("ListAnexoRecord", query);
+                }
+                return PartialView(obj.Scope != "colaborador" ? "ListAnexoRecord" : "ListAnexoColaboradorRecord", BadRequest(AnexoAnswer.DeErro("Usuario não esta autenticado")));
             }
             catch (Exception ex)
             {
@@ -232,6 +243,8 @@ namespace AppAwm.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult ChangeStatusDocument(string obj)
         {
+            if (User.Identity.IsAuthenticated)
+                return BadRequest("Usuario não está autenticadp");
 
             var newStatus = JsonConvert.DeserializeAnonymousType(obj, new { id = 0, status = 0, message = string.Empty });
 
@@ -254,11 +267,17 @@ namespace AppAwm.Controllers
 
         [HttpPut]
         [Route("/Anexo/updateFoto")]
+        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
         public IActionResult ChangeFotoAsync(IFormFile file, int cd_funcionario)
         {
             try
             {
-                Funcionario? obj = servicoFuncionario.List(g => g.Cd_Funcionario == cd_funcionario).Funcionarios.FirstOrDefault();
+                if (!User.Identity.IsAuthenticated)
+                    return BadRequest("Usuario não autenticado");
+
+                var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
+                Funcionario? obj = servicoFuncionario.List(g => g.Cd_Funcionario == cd_funcionario && g.Cd_Cliente == userSession!.Cd_Cliente_Id).Funcionarios.FirstOrDefault();
 
                 if (obj != null)
                 {
@@ -278,6 +297,24 @@ namespace AppAwm.Controllers
                 return BadRequest(FuncionarioAnswer.DeErro("Ocorreu um erro ao tentar atualizar a foto - Erro " + ex.Message));
             }
 
+        }
+
+        [HttpGet]
+        [Route("/Anexo/listDocuments/{Id:int}")]
+        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        public JsonResult GetDocumentoComplementar(int id)
+        {
+            try
+            {
+                var documentos = servico.DocumentacaoComplementar(id);
+
+                return documentos.Count > 0 ?  Json(new { documentos, success = true }) : Json(new { erro = "nenhum item encontrado", success = false });
+            }
+            catch (Exception ex)
+            {
+
+                return Json(new {erro = ex.Message, success = false });
+            }
         }
     }
 }

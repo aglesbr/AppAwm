@@ -4,11 +4,11 @@ window.onload = () => {
 
     //************************************************* INICIALIZAÇÃO DE COMPONENTES *************************************************
     $('.sidenav').sidenav();
+    $('.slider').slider();
     $('.dropdown-trigger').dropdown();
     $('.fixed-action-btn').floatingActionButton();
     $('select').formSelect();
     $('.modal').modal();
-    
     //************************************************* VARIAVEIS DE AMBIENTE  *******************************************************
 
     var errorMsg = '<div class="col row z-depth-3 teal white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">';
@@ -101,7 +101,7 @@ window.onload = () => {
                 $('input.autocomplete').autocomplete({
                     data: dataCountry,
                     onAutocomplete: (event) => {
-                        debugger
+
                         let keyValue = dataComplete.find(s => s.value == event);
                         $('#Cd_Cargo').val(keyValue.key);
                     }

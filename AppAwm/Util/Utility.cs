@@ -17,6 +17,7 @@ namespace AppAwm.Util
         /// </summary>
         // public static readonly string ServerDomain = Environment.MachineName;
 
+        public static Cliente? Cliente { get; set; }
 
         public static readonly string Secret = "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZX0=";
         public static readonly string KeyApi = "a99341da-d1df-41b2-9d82-3d0825572151-b95e1887-caad-4f3a-bc27-e390c4b7b7a3";
@@ -153,21 +154,7 @@ namespace AppAwm.Util
         }
 
 
-        public static List<KeyValuePair<string,string>> ListaTipoAnexo
-        {
-            get => [
-                new("0004", "CONTRATO INDIVIDUAL DE TRABALHO"),
-                new("0005", "CTPS DIGITAL COMPLETA/E-SOCIAL ATUALIZADO"),
-                new("0007", "FICHA DE EPI"),
-                new("0036", "FICHA DE REGISTRO COM FOTO(FRENTE/VERSO)"),
-                new("0035", "FOTO 3X4 DIGITAL COLORIDA"),
-                new("0006", "OSS (NR01)"),
-                new("0016", "NR 10 BASICO BT"),
-                new("0026", "NR 35 TRABALHADOR"),
-                new("0034", "NR 18 CONSTRUÇÃO"),
-                ];
-
-        }
+        public static List<DocumentacaoComplementar> DocumentacaoComplementares { get; set; } = [];
 
         public static List<KeyValuePair<int, string>> TipoStatus
         {

@@ -88,5 +88,23 @@ namespace AppAwm.Services
             using var contexto = new RepositoryGeneric<Empresa>(db, out status);
           //  contexto.FinishTransactio();
         }
+
+        public List<Cliente> GetClientes(Expression<Func<Cliente, bool>> predicate)
+        {
+            using DbCon db = new();
+            using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+            try
+            {
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    return [.. contexto.GetAll(predicate)];
+                }
+                return [];
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

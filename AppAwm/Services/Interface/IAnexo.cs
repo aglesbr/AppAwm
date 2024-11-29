@@ -13,5 +13,6 @@ namespace AppAwm.Services.Interface
         HistoricoExecucao? GetLastHistoricoExecucao();
         int InsereProximaExecucao(HistoricoExecucao historicoExecucao);
         void Notify();
+        List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo);
     }
 }

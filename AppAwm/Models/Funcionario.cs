@@ -92,9 +92,14 @@ namespace AppAwm.Models
         [Column("OBSERVACAO", TypeName = "VARCHAR(200)", Order = 85)]
         public string? Observacao { get; set; }
 
-
         [Column("FOTO", TypeName = "BINARY", Order = 90)]
         public byte[]? Foto { get; set; }
+
+        [Column("CD_CLIENTE", TypeName = "INT", Order = 95)]
+        public int Cd_Cliente { get; set; }
+
+        [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
+        public int Id_UsuarioCriacao { get; set; }
 
         public virtual Empresa? Empresa { get; set; }
 

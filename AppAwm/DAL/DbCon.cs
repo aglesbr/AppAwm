@@ -18,8 +18,8 @@ namespace AppAwm.DAL
             if (!optionsBuilder.IsConfigured)
             {
                 var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Staging";
+                
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                    //.AddJsonFile($"appsettings.json", true, true)
                     .AddJsonFile($"appsettings.{appSeting}.json", true);
 
                 var config = builder.Build();
@@ -57,12 +57,6 @@ namespace AppAwm.DAL
              .HasForeignKey<Endereco>(e => e.Cd_Funcionario_id)
              .IsRequired(false);
 
-            modelBuilder.Entity<Funcionario>()
-           .HasOne(e => e.Cargo)
-           .WithOne(e => e.Funcionario)
-           .HasForeignKey<Funcionario>(e => e.Cd_Cargo)
-           .IsRequired(false); ;
-
             modelBuilder.Entity<Empresa>()
                 .HasMany(e => e.Funcionarios)
                 .WithOne(e => e.Empresa)
@@ -86,6 +80,18 @@ namespace AppAwm.DAL
               .WithOne(e => e.Treinamento)
               .HasForeignKey(f => f.Cd_Treinamento_Id)
               .IsRequired(false);
+
+            modelBuilder.Entity<Cargo>()
+                .HasMany(e => e.DocumentoComplementar)
+                .WithOne(e => e.Cargo)
+                .HasForeignKey(e => e.Cd_Cargo_Id)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Cliente>()
+                .HasMany(e => e.Usuarios)
+                .WithOne(e => e.Cliente)
+                .HasForeignKey(e => e.Cd_Cliente_Id)
+                .IsRequired(false);
         }
 
 
@@ -99,5 +105,9 @@ namespace AppAwm.DAL
         public virtual DbSet<Treinamento> Treinamentos { get; set; }
         public virtual DbSet<TreinamentoHabilidade> Habilidades { get; set; }
         public virtual DbSet<HistoricoExecucao> HistoricoExecucoes { get; set; }
+        public virtual DbSet<DocumentacaoComplementar> DocumentacoesComplementares { get; set; }
+        public virtual DbSet<DocumentacaoCargo> DocumentacaoCargos { get; set; }
+        public virtual DbSet<Cliente> Clientes { get; set; }
+
     }
 }

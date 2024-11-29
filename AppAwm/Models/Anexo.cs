@@ -59,7 +59,14 @@ namespace AppAwm.Models
         public string? TipoAnexo { get; set; }
 
         [Display(Name = "Status")]
+        [Column("STATUS", TypeName = "INT")]
         public EnumStatusDocs? Status { get; set; }
+
+        [Column("CD_CLIENTE", TypeName = "INT")]
+        public int Cd_Cliente { get; set; }
+
+        [NotMapped]
+        public string? CodigosDocumentos { get; set; }
 
         [NotMapped]
         public virtual Funcionario? Funcionario  { get; set; }

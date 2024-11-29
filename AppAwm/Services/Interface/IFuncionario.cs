@@ -13,6 +13,7 @@ namespace AppAwm.Services.Interface
         int UpdateFoto(Funcionario funcionario);
         List<Cargo> GetCargos(string nome);
         List<Empresa> GetEmpresas(Expression<Func<Empresa, bool>> predicate);
-        Cracha GetCracha(int id);
+        Cracha? GetCracha(int? id = 0);
+        int UpdateCliente(bool isAdd);
     }
 }

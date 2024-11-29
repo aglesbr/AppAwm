@@ -42,7 +42,7 @@
                         @Html.DisplayFor(modelItem => item.Descricao)
                     </td>
                     <td class="dt-body-left">
-                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.ListaTipoAnexo.FirstOrDefault(f => f.Key == item.TipoAnexo).Value)
+                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar.ToString() == item.TipoAnexo)!.Nome)
                     </td>
 
                     <td>

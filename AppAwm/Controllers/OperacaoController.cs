@@ -16,13 +16,17 @@ namespace AppAwm.Controllers
                 IAnexo<AnexoAnswer> _servicoAnexo,
                 IUsuario<UsuarioAnswer> _servicoUsuario,
                 IFuncionario<FuncionarioAnswer> _servicoFuncionario,
-                ITreinamento<TreinamentoAnswer> _servicoTreinamento) : Controller
+                ITreinamento<TreinamentoAnswer> _servicoTreinamento,
+                ICargo<CargoAnswer> _servicoCargo,
+                IDocumentacaoComplementar<DocumentacaoComplementarAnswer> _servicoDocumentacaoComplementar) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servicoEmpresa = _servicoEmpresa;
         private readonly IAnexo<AnexoAnswer> servicoAnexo = _servicoAnexo;
         private readonly IUsuario<UsuarioAnswer> servicoUsuario = _servicoUsuario;
         private readonly IFuncionario<FuncionarioAnswer> servicoFuncionario = _servicoFuncionario;
         private readonly ITreinamento<TreinamentoAnswer> servicoTreinamento = _servicoTreinamento;
+        private readonly ICargo<CargoAnswer> servicoCargo = _servicoCargo;
+        private readonly IDocumentacaoComplementar<DocumentacaoComplementarAnswer> servicoDocumentacaoComplementar = _servicoDocumentacaoComplementar;
 
         [Authorize(Roles = "Administrador")]
         public ActionResult Index()
@@ -319,13 +323,15 @@ namespace AppAwm.Controllers
             {
                 AnexoAnswer? anexoAnswer = null;
                 string motivo = "Rejeitado por falta de ajuste no prazo da resalva";
-                AnexoAnswer resposta = servicoAnexo.List(l => l.Status == EnumStatusDocs.Aprovado || l.Status == EnumStatusDocs.Resalva);
+                AnexoAnswer resposta = servicoAnexo.List(l => l.Status == EnumStatusDocs.Resalva);
 
                 if (resposta.Success)
                 {
                     foreach (var item in resposta.Anexos)
                     {
-                        if ((item.Dt_Validade_Documento - DateTime.Now.Date).TotalDays <= 0)
+                        DateTime dateValidate = (item.Status == EnumStatusDocs.Resalva ? item.Dt_Criacao.Date.AddDays(1) : item.Dt_Validade_Documento);
+
+                        if ((dateValidate - DateTime.Now.Date).TotalDays <= 0)
                         {
                             anexoAnswer = await Task.Run(() => servicoAnexo.UpdateStatus(item.Cd_Anexo,item.Status == EnumStatusDocs.Aprovado ?  EnumStatusDocs.Expirado : EnumStatusDocs.Rejeitado , "Sistema HDdoc", item.Status == EnumStatusDocs.Resalva ? motivo : null));
                         }
@@ -377,6 +383,40 @@ namespace AppAwm.Controllers
             }
 
             return BadRequest(funcionarioAnswer.Message);
+        }
+
+        [HttpGet]
+        [Route("/Operacao/GetCargos")]
+        public IActionResult GetCargosParcialPorNomeCargo(string? nome = null)
+        {
+            CargoAnswer cargoAnswer = servicoCargo.List(s => s.Nome.StartsWith(nome ?? s.Nome));
+
+            return Ok(cargoAnswer);
+        }
+
+        [HttpPut]
+        [Route("/Operacao/UpdateStatusDocumentoCargo")]
+        public IActionResult PutUpdateStatusDocumento(int id, string id_documento, bool isAtivo)
+        { 
+            CargoAnswer cargoAnswer = servicoCargo.UpdateStatus(id, id_documento, isAtivo);
+
+            return Ok(cargoAnswer);
+        }
+
+        [HttpGet]
+        [Route("/Operacao/GetDocumentoVsCargo")]
+        public IActionResult GetDocumentoVsCargo(int id)
+        {
+           List<DocumentacaoCargo> lst = servicoCargo.GetDocumentoVsCargo(s => s.Cd_Cargo_Id == id);
+           return Ok(lst);
+        }
+
+        [HttpGet]
+        [Route("/Operacao/GetDocumentoComplementar")]
+        public IActionResult DocumentoComplementar(int cd_documento)
+        {
+           DocumentacaoComplementarAnswer documentacao = servicoDocumentacaoComplementar.Get(s => cd_documento > 0 ? s.Cd_Documentaco_Complementar == cd_documento : s.Cd_Documentaco_Complementar > 0);
+           return Ok(documentacao);
         }
     }
 }

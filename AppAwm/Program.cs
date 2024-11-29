@@ -1,10 +1,12 @@
 using AppAwm.DAL;
+using AppAwm.Models;
 using AppAwm.Respostas;
 using AppAwm.Services;
 using AppAwm.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
@@ -28,7 +30,6 @@ builder.Services.AddSession(s =>
 builder.Services.AddDbContext<DbCon>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("WAConnection"), b => b.MigrationsHistoryTable("__EFMigrationsHistory"));
- 
 });
 
 builder.Services.Configure<IISServerOptions>(options =>
@@ -42,6 +43,8 @@ builder.Services.AddScoped<IAnexo<AnexoAnswer>, AnexoService>();
 builder.Services.AddScoped<IFuncionario<FuncionarioAnswer>, FuncionarioService>();
 builder.Services.AddScoped<IObra<ObraAnswer>, ObraService>();
 builder.Services.AddScoped<ITreinamento<TreinamentoAnswer>, TreinamentoService>();
+builder.Services.AddScoped<ICargo<CargoAnswer>, CargoService>();
+builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAnswer>, DocumentacaoComplementarService>();
 builder.Services.AddScoped<DepartamentoService>();
 
 builder.Services.AddSession(s =>
@@ -54,7 +57,6 @@ builder.Services.AddSession(s =>
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-
 
 var key = Encoding.ASCII.GetBytes(AppAwm.Util.Utility.Secret);
 
@@ -76,7 +78,6 @@ builder.Services.AddAuthentication(x =>
             };
         });
 
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -85,7 +86,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 
 app.UseSession();
 
@@ -108,7 +108,6 @@ app.UseStatusCodePages(context =>
         response.Redirect("/Home/unauthorized");
     return Task.CompletedTask;
 });
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -122,7 +122,7 @@ namespace AppAwm.Services
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    var retorno = contexto.GetItem(x => x.Cd_Empresa_Id == vinculoObra.Cd_Empresa_Id && x.Cd_Funcionario_Id == vinculoObra.Cd_Funcionario_Id && x.Cd_Obra_Id == vinculoObra.Cd_Obra_Id);
+                    var retorno = contexto.GetItem(x => x.Cd_Cliente == vinculoObra.Cd_Cliente && x.Cd_Empresa_Id == vinculoObra.Cd_Empresa_Id && x.Cd_Funcionario_Id == vinculoObra.Cd_Funcionario_Id && x.Cd_Obra_Id == vinculoObra.Cd_Obra_Id);
 
                     vinculoObra.DataVinculado = retorno == null ? DateTime.Now.Date : retorno.DataVinculado;
 

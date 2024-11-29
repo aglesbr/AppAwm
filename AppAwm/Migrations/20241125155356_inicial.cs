@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AppAwm.Migrations
 {
     /// <inheritdoc />
-    public partial class azureV10 : Migration
+    public partial class inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,22 @@ namespace AppAwm.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AWM_CARGO", x => x.CD_CARGO);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AWM_DOCUMENTO_COMPLEMENTAR",
+                schema: "dbo",
+                columns: table => new
+                {
+                    CD_DOCUMENTACO_COMPLEMENTAR = table.Column<int>(type: "INT", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Cd_DocumentoComplementar_Id = table.Column<string>(type: "VARCHAR(6)", nullable: true),
+                    NOME = table.Column<string>(type: "VARCHAR(150)", nullable: true),
+                    STATUS = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AWM_DOCUMENTO_COMPLEMENTAR", x => x.CD_DOCUMENTACO_COMPLEMENTAR);
                 });
 
             migrationBuilder.CreateTable(
@@ -107,6 +123,27 @@ namespace AppAwm.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AWM_USUARIO", x => x.CD_USUARIO);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AWM_DOCUMENTO_CARGO",
+                schema: "dbo",
+                columns: table => new
+                {
+                    CD = table.Column<int>(type: "INT", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CD_CARGO_ID = table.Column<int>(type: "INT", nullable: false),
+                    CD_DOCUMENTO_ID = table.Column<int>(type: "INT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AWM_DOCUMENTO_CARGO", x => x.CD);
+                    table.ForeignKey(
+                        name: "FK_AWM_DOCUMENTO_CARGO_AWM_CARGO_CD_CARGO_ID",
+                        column: x => x.CD_CARGO_ID,
+                        principalSchema: "dbo",
+                        principalTable: "AWM_CARGO",
+                        principalColumn: "CD_CARGO");
                 });
 
             migrationBuilder.CreateTable(
@@ -214,7 +251,7 @@ namespace AppAwm.Migrations
                     CD_FUNCIONARIO_ID = table.Column<int>(type: "INT", nullable: true),
                     NOME = table.Column<string>(type: "VARCHAR(50)", nullable: true),
                     DESCRICAO = table.Column<string>(type: "VARCHAR(300)", nullable: true),
-                    ANEXO = table.Column<byte[]>(type: "BINARY", nullable: true),
+                    ANEXO = table.Column<byte[]>(type: "VARBINARY(MAX)", nullable: true),
                     DT_CRIACAO = table.Column<DateTime>(type: "DATE", nullable: false),
                     DT_VALIDADE_DOCUMENTO = table.Column<DateTime>(type: "DATE", nullable: false),
                     CD_USUARIO_CRIACAO = table.Column<string>(type: "VARCHAR(50)", maxLength: 50, nullable: true),
@@ -320,6 +357,12 @@ namespace AppAwm.Migrations
                 column: "CD_FUNCIONARIO_ID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AWM_DOCUMENTO_CARGO_CD_CARGO_ID",
+                schema: "dbo",
+                table: "AWM_DOCUMENTO_CARGO",
+                column: "CD_CARGO_ID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AWM_ENDERECO_CD_EMPRESA",
                 schema: "dbo",
                 table: "AWM_ENDERECO",
@@ -372,6 +415,14 @@ namespace AppAwm.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AWM_ANEXO",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "AWM_DOCUMENTO_CARGO",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "AWM_DOCUMENTO_COMPLEMENTAR",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

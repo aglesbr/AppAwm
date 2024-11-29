@@ -1,6 +1,8 @@
 ﻿@using System.Text.RegularExpressions
 @model AppAwm.Models.Cracha
 
+@if(Model != null)
+{
 <div class="printMe">
     <div class="row" >
         <div class="col s4">
@@ -47,3 +49,10 @@
     $('#crachaEmpresa').trigger('focus');
     $('#crachaFuncao').trigger('focus');
 </script>
+}
+else
+{
+    <div class="col s12 h5">
+        Ocorreu um erro ao tentar<br/>gerar o crachá do colaborador!
+    </div>
+}

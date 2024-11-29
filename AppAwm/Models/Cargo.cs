@@ -16,6 +16,10 @@ namespace AppAwm.Models
         [Column("STATUS", Order = 10)]
         public bool Status { get; set; } = true;
 
+
+        [NotMapped]
+        public virtual ICollection<DocumentacaoCargo>? DocumentoComplementar { get; }
+
         [NotMapped]
         public virtual Funcionario? Funcionario { get; set; }
     }

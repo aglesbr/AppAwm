@@ -1,5 +1,4 @@
-﻿using AppAwm.Comando;
-using AppAwm.Models;
+﻿using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
@@ -21,7 +20,6 @@ namespace AppAwm.Controllers
 
         public ActionResult Index()
         {
-
             return View();
         }
 
@@ -38,9 +36,14 @@ namespace AppAwm.Controllers
         {
             try
             {
+                var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+                if (sessao ==  null)
+                    return RedirectToAction("Index", "Start");
+
                 ModelState.Remove("Cd_Empresa");
                 ModelState.Remove("Endereco.Cd_Endereco");
                 ModelState.Remove("Endereco.Cd_Empresa");
+
                 if (ModelState.IsValid)
                 {
                     if (empresa.Cd_Empresa > 0)
@@ -54,6 +57,7 @@ namespace AppAwm.Controllers
                     {
                         empresa.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
                         empresa.Endereco.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
+                        empresa.Cd_Cliente = sessao.Cd_Cliente_Id;
 
                         var emp = servico.Get(s => s.Cnpj!.Equals(empresa.Cnpj), EnumAcao.Criar);
 
@@ -103,6 +107,9 @@ namespace AppAwm.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return PartialView("ListRecord", BadRequest("Usuario não autenticado"));
+
                 Empresa? obj = JsonConvert.DeserializeObject<Empresa>(empresa);
 
                 if (!string.IsNullOrWhiteSpace(obj.Cnpj))
@@ -112,7 +119,7 @@ namespace AppAwm.Controllers
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 EmpresaAnswer resposta = servico.List(
-                     x => (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
+                     x => x.Cd_Cliente == sessao!.Cd_Cliente_Id &&  (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
                      && x.Cd_UsuarioCriacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioCriacao : sessao.Nome)
                      && (string.IsNullOrWhiteSpace(obj.NomeFantasia) ? x.NomeFantasia == x.NomeFantasia : x.NomeFantasia.ToUpper().StartsWith(obj.NomeFantasia.ToUpper()))
                      && x.Cnpj!.StartsWith(obj.Cnpj ?? x.Cnpj)
@@ -135,19 +142,21 @@ namespace AppAwm.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return PartialView("ListRecord", BadRequest("Usuario não autenticado"));
+
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 ObraAnswer resposta = servicoObra.List(
-                    x => x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
+                    x => x.Cd_Cliente == sessao!.Cd_Cliente_Id &&  x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
                     && x.Cd_Empresa_Id == id);
 
-                var query = resposta.Obras.ToPagedList(skip, 6);
+                var query = resposta.Obras.ToPagedList(skip, 14);
                 return PartialView("ListObraRecord", query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+               return PartialView("ListRecord", BadRequest($"Ocorreu um erro na execução, ERRO:{ex.Message}"));
             }
         }
 
@@ -158,19 +167,26 @@ namespace AppAwm.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Start");
+
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                ObraAnswer resposta = servicoObra.List(
-                    x => x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
-                    && x.Cd_Empresa_Id == id && x.Status);
+                if (sessao != null)
+                {
+                    ObraAnswer resposta = servicoObra.List(
+                        x => x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
+                        && x.Cd_Empresa_Id == id && x.Status);
 
-                List<SelectListItem> listEmp = [..resposta.Obras.Select(s => new SelectListItem(s.Nome, s.Cd_Empresa_Id.ToString()))];
-                return new JsonResult(resposta);
+                    List<SelectListItem> listEmp = [.. resposta.Obras.Select(s => new SelectListItem(s.Nome, s.Cd_Empresa_Id.ToString()))];
+                    return new JsonResult(resposta);
+                }
+
+                return RedirectToAction("Index", "Start");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return new JsonResult(new { success = false, message = ex.Message });
             }
         }
 
@@ -187,6 +203,8 @@ namespace AppAwm.Controllers
                 {
                     Obra obj = JsonConvert.DeserializeObject<Obra>(comandoObra) ?? new();
                     obj.Cd_Usuario_Criacao = sessao.Nome;
+                    obj.Id_UsuarioCriacao = sessao.Cd_Usuario;
+                    obj.Cd_Cliente = sessao.Cd_Cliente_Id;
 
                     if (!obj.Status)
                     {
@@ -223,15 +241,17 @@ namespace AppAwm.Controllers
                 if (!User.Identity.IsAuthenticated)
                     return PartialView("ListColaboradorRecord", BadRequest("Usuario não autenticado"));
 
+                var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
                 FuncionarioAnswer resposta = servicoFuncionario.List(
-                     x => x.Status && x.Id_Empresa == id_Empresa);
+                     x => x.Status && x.Cd_Cliente == sessao.Cd_Cliente_Id && x.Id_Empresa == id_Empresa);
                 var query = resposta.Funcionarios;
                 var filter = query.Select(s => new Funcionario { 
                     Cd_Funcionario = s.Cd_Funcionario,
                     Nome = s.Nome, 
                     Documento = s.Documento,
                     Telefone = s.Telefone,
-                    VinculoObras = s.VinculoObras.Where(g => g.Cd_Obra_Id == id_Obra).ToList() }).ToPagedList(skip, 12);
+                    VinculoObras = s.VinculoObras.Where(g => g.Cd_Obra_Id == id_Obra).ToList() }).ToPagedList(skip, 15);
                 return PartialView("ListColaboradorRecord", filter);
             }
             catch
@@ -247,12 +267,17 @@ namespace AppAwm.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Start");
+
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 if (sessao != null)
                 {
                     FuncionarioVinculoObra obj = JsonConvert.DeserializeObject<FuncionarioVinculoObra>(comandoVincularObra) ?? new();
                     obj.Cd_UsuarioCriacao = sessao.Nome;
+                    obj.Cd_Cliente = sessao.Cd_Cliente_Id;
+
                     int ret = servico.Vincular(obj);
                     var retorno = new { success = ret > 0, message = "item registrado com sucesso" };
                     return new JsonResult(retorno);
@@ -260,10 +285,9 @@ namespace AppAwm.Controllers
 
                 return BadRequest(ObraAnswer.DeErro("não foi poissivel inserir a Obra."));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ObraAnswer.DeErro($"Ocorreu um erro na execução, ERRO: {ex.Message}")) ;
             }
 
         }

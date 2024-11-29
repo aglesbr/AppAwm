@@ -3,6 +3,7 @@ using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
+using AppAwm.Util;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System.Linq.Expressions;
@@ -117,12 +118,14 @@ namespace AppAwm.Services
             {
                 static IConnection cnn()
                 {
-                    ConnectionFactory factory = new ConnectionFactory();
-                    factory.UserName = "hddoc";
-                    factory.Password = "hddoc";
-                    factory.HostName = "40.88.41.23";
-                    factory.Port = 5672;
-                    factory.RequestedChannelMax = 10;
+                    ConnectionFactory factory = new()
+                    {
+                        UserName = Utility.Cliente!.UsuarioMq,
+                        Password = Utility.Cliente.PasswordMq,
+                        HostName = Utility.Cliente.HostMq,
+                        Port = 5672,
+                        RequestedChannelMax = 10
+                    };
 
                     IConnection conn = factory.CreateConnection();
 
@@ -169,6 +172,21 @@ namespace AppAwm.Services
             using var contexto = new RepositoryGeneric<HistoricoExecucao>(db, out status);
 
             return contexto.Create(historicoExecucao);
+        }
+
+        public List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo)
+        {
+            using DbCon db = new();
+            using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
+
+            List<int> list = [.. db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).Select(ss => ss.Cd_Documento_Id)];
+           
+            if(list.Count == 0)
+                return [];    
+
+            var documentos =  contexto.GetAll(s => list.Contains(Convert.ToInt32(s.Cd_DocumentoComplementar_Id!)) && s.Status);
+
+            return [.. documentos];
         }
     }
 }

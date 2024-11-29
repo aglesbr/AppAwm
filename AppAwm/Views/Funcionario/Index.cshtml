@@ -52,6 +52,7 @@
     <input type="hidden" id="codigo" name="codigo" />
     <input type="hidden" id="documento" name="documento" />
     <input type="hidden" id="codigoEmpresa" name="codigoEmpresa" />
+    <input type="hidden" id="codigoCargo" name="codigoCargo" />
 
 <!-- Modal Anexo Funcionario -->
 <div id="modalAnexoFuncionario" class="modal modal-fixed-footer">
@@ -99,26 +100,17 @@
                         <input class="file-path validate" type="text" placeholder="Adicionar arquivos">
                     </div>
                 </div>
-                <div class="input-field col s1">
+                <div class="input-field col s2">
                     <input id="dataValidade" type="date">
                     <label>Data de Validade</label>
                 </div>
                 <div class="input-field col s4">
                     <select id="tipoAnexo">
-                        <option value="" disabled selected >Selecione</option>
-                        <option value="0004">CONTRATO INDIVIDUAL DE TRABALHO</option>
-                        <option value="0005">CTPS DIGITAL COMPLETA/E-SOCIAL ATUALIZADO</option>
-                        <option value="0007">FICHA DE EPI</option>
-                        <option value="0036">FICHA DE REGISTRO COM FOTO(FRENTE/VERSO)</option>
-                        <option value="0035">FOTO 3X4 DIGITAL COLORIDA</option>
-                        <option value="0006">OSS (NR01)</option>
-                        <option value="0016">NR 10 BASICO BT</option>
-                        <option value="0026">NR 35 TRABALHADOR</option>
-                        <option value="0034">NR 18 CONSTRUÇÃO</option>
+                        <option value="" disabled selected>Selecione</option>
                     </select>
                     <label>Tipo do documento</label>
                 </div>
-                <div class="input-field  col s3">
+                <div class="input-field  col s2">
                     <input id="descricaoColaborador" type="text">
                     <label for="Descricao">Descrição</label>
                 </div>

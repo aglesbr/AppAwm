@@ -27,7 +27,7 @@ namespace AppAwm.Controllers
 
             var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-            List<SelectListItem> selectListItems = [.. servico.GetEmpresas(s => 
+            List<SelectListItem> selectListItems = [.. servico.GetEmpresas(s => s.Cd_Cliente == userSession.Cd_Cliente_Id &&
             s.Cd_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? s.Cd_UsuarioCriacao : userSession.Nome) && s.Status)
                 .Select(s => new SelectListItem { Text = s.Nome, Value = s.Cd_Empresa.ToString() }).OrderBy(o => o.Text)];
             ViewData["selectsEmpresa"] = selectListItems;
@@ -39,13 +39,13 @@ namespace AppAwm.Controllers
         {
 
             if (!User.Identity.IsAuthenticated)
-                return View(BadRequest("Usuario não autenticado"));
+                return RedirectToAction("Index", "Start");
 
             var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
             FuncionarioAnswer funcionarioAnswer =  servico.Get(p => 
-            p.Cd_Funcionario == id
-            && p.Cd_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? p.Cd_UsuarioCriacao : userSession.Nome!) && p.Status
+            p.Cd_Funcionario == id && p.Cd_Cliente == userSession!.Cd_Cliente_Id
+            && p.Cd_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? p.Cd_UsuarioCriacao : userSession.Nome!)
             , userSession);
 
             return View(funcionarioAnswer);
@@ -65,8 +65,16 @@ namespace AppAwm.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
+                    Funcionario? colaborador = null;
+
+                    bool isNovosuario =  false;
+
                     if (funcionario.Cd_Funcionario > 0)
                     {
+                        colaborador = servico.Get(g => g.Cd_Funcionario == funcionario.Cd_Funcionario, userSession).Funcionario;
+
                         funcionario.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         funcionario.Dt_Atualizacao = DateTime.Now;
                         funcionario.Endereco.Dt_Atualizacao = DateTime.Now;
@@ -76,6 +84,8 @@ namespace AppAwm.Controllers
                     {
                         funcionario.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
                         funcionario.Endereco.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
+                        funcionario.Id_UsuarioCriacao = userSession!.Cd_Usuario;
+                        funcionario.Cd_Cliente = userSession.Cd_Cliente_Id;
 
                         string doc = Regex.Replace(funcionario.Documento!, @"[^\d]", string.Empty);
 
@@ -83,11 +93,31 @@ namespace AppAwm.Controllers
 
                         if (check)
                             return BadRequest(EmpresaAnswer.DeFalha("CPF já cadastrado"));
+
+                        isNovosuario = true;
                     }
 
                     funcionario.Documento = Regex.Replace(funcionario.Documento!, @"[^\d]", string.Empty);
 
                     FuncionarioAnswer funcionarioAnswer = servico.Save(funcionario, (funcionario.Cd_Funcionario == 0 ? EnumAcao.Criar : EnumAcao.Editar));
+
+                    if (funcionarioAnswer.Success)
+                    {
+                        int resposta = 0;
+
+                        if (isNovosuario)
+                            resposta = servico.UpdateCliente(true);
+                        else
+                        {
+                            if (colaborador.Status != funcionario.Status)
+                                resposta = servico.UpdateCliente(funcionario.Status);
+                        }
+                        if (resposta > 0)
+                        {
+                            HttpContext.Session.Remove("ClientAuth");
+                            HttpContext.Session.SetString("ClientAuth", JsonConvert.SerializeObject(Utility.Cliente));
+                        }
+                    }
 
                     return funcionarioAnswer.Success ? Ok(funcionarioAnswer) : BadRequest(funcionarioAnswer);
                 }
@@ -140,7 +170,7 @@ namespace AppAwm.Controllers
                     obj.Documento= Regex.Replace(obj.Documento, @"[^0-9$]", string.Empty);
 
                 FuncionarioAnswer resposta = servico.List(
-                     x => (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
+                     x => x.Cd_Cliente == userSession!.Cd_Cliente_Id && (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
                      && x.Cd_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioCriacao : userSession.Nome)
                      && x.Documento!.StartsWith(obj.Documento ?? x.Documento)
                      && (x.Id_Empresa == (obj.Id_Empresa == 0 ? x.Id_Empresa : obj.Id_Empresa))
@@ -182,9 +212,10 @@ namespace AppAwm.Controllers
                 if (!User.Identity.IsAuthenticated)
                     return PartialView("PartilCracha", BadRequest("Usuario não autenticado"));
 
-                var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
-
                 Cracha resposta = servico.GetCracha(Id);
+
+                if (resposta == null)
+                    return PartialView("PartilCracha", resposta);
 
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode($"https://{Request.Host}/Funcionario/qrcode/{Id}", QRCodeGenerator.ECCLevel.Q);
@@ -201,13 +232,11 @@ namespace AppAwm.Controllers
             }
         }
 
-        private static Byte[] BitmapToBytes(Bitmap img)
+        private static byte[] BitmapToBytes(Bitmap img)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return stream.ToArray();
-            }
+            using MemoryStream stream = new();
+            img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            return stream.ToArray();
         }
     }
 }

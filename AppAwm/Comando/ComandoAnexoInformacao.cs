@@ -32,5 +32,10 @@ namespace AppAwm.Comando
         [JsonProperty("codigoEmpresa")]
         [JsonPropertyName("codigoEmpresa")]
         public string? CodigoEmpresa { get; set; }
+
+        [JsonProperty("CodigoCargo")]
+        [JsonPropertyName("CodigoCargo")]
+        public string? CodigoCargo { get; set; }
+
     }
 }

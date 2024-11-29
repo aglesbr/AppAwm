@@ -60,7 +60,13 @@ namespace AppAwm.Models
         
         [Column("COMPLEMENTO", TypeName = "VARCHAR(5000)", Order = 14)]
         public string? Complemento { get; set; }
-        
+
+        [Column("CD_CLIENTE", TypeName = "INT", Order = 95)]
+        public int Cd_Cliente { get; set; }
+
+        [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
+        public int Id_UsuarioCriacao { get; set; }
+
         public virtual Endereco Endereco { get; set; } = new();
 
         public virtual ICollection<Anexo>? Anexos { get; set; }

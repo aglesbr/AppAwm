@@ -2,13 +2,77 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Tela principal apos o login</h1>
+<div class="row">
+    <div class="col s11 blue-grey-text accent-4" style="font-size:18px;">
+            O HDDoc disponbiliza alguns vídes curtos para lhe guiar durante o processo de operação
+            você també poderá acessar o menu de posicionado no campo superior ao lado esquerdo da tela
+    </div>
+</div>
+<hr />
+<br>
+<div class="row">
+    <div class="col s4">
+        <div class="card hoverable">
+            <div class="card-image">
+                <iframe width="100%" height="300" src="https://www.youtube.com/embed/_KSNyuKs4PE?si=KUqdqzb7hTiXNM8-" 
+                    title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <span class="card-title">Cadastrar Colaboradores</span>
+            </div>
+            <div class="card-content">
+                <p>
+                    Olá @User.Identity.Name, tudo joia!!!
+                    Nesse vídeo, você irá aprender como cadastrar e editar seus colaboradores
+                </p>
+            </div>
+            <div class="card-action">
+                  <a href="#">Acessar pagina</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s4">
+        <div class="card hoverable">
+            <div class="card-image">
+                <iframe width="100%" height="300" src="https://www.youtube.com/embed/2N9Azigg2rw?si=jPoEy8Hg-q0d7IRp"
+                        title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <span class="card-title">Cadastrar Empresas</span>
+            </div>
+            <div class="card-content">
+                <p>
+                    E neste video @User.Identity.Name.Split(' ')[0]<br>
+                    você irá aprender como cadastrar e editar seus tercerios<br>
+                </p>
+            </div>
+            <div class="card-action">
+                <a href="#">Acessar pagina</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s4">
+        <div class="card hoverable">
+            <div class="card-image">
+                <iframe width="100%" height="300" src="https://www.youtube.com/embed/gm2LmELpBG8?si=lukxzJFU50LcS55_"
+                        title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <span class="card-title">Enviar Documentação</span>
+            </div>
+            <div class="card-content">
+                <p>
+                    preparamos também @User.Identity.Name.Split(' ')[0] um passo a passo<br>
+                    para o envio de documentação ténica dos seus colaboradores<br>
+                </p>
+            </div>
+            <div class="card-action">
+                <a href="#">Acessar pagina</a>
+            </div>
+        </div>
+    </div>
 </div>
 
+
 <!-- Modal Structure -->
-<div id="modalMudarSenha"  class="modal">
+<div id="modalMudarSenha" class="modal">
     <div class="modal-content">
         <h5>Alterar senha temporária de @Model.Nome</h5>
         <hr />
@@ -35,15 +99,15 @@
         <a asp-controller="Start" asp-action="Logout" class="waves-effect waves-green btn purple">
             <i class="material-icons left">reply</i>sair
         </a>
-        <button id="btnLimpar"  class="waves-effect waves-green btn">
+        <button id="btnLimpar" class="waves-effect waves-green btn">
             <i class="material-icons left">clear</i>Limpar
         </button>
         <button id="btnMudarSenha" class="waves-effect waves-green btn">
             <i class="material-icons left">edit</i>Alterar senha
-         </button>
+        </button>
 
-        
-        
+
+
     </div>
 </div>
 
@@ -53,7 +117,7 @@
 
     if (isMudarSenha)
         setTimeout(() => { $('#modalMudarSenha').modal({ dismissible: false }).modal('open'); }, 500);
-    
+
     $('#btnMudarSenha').on('click', () => {
 
         if ($('#password').val() == '' ||  $('#confirmPassword').val() == '') {
@@ -75,7 +139,7 @@
             url: '/Start/changePassword',
             dataType: "json",
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data: frm 
+            data: frm
         })
             .done(function (data) {
 

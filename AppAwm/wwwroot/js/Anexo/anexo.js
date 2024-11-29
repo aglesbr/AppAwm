@@ -1,4 +1,7 @@
 ﻿
+M.AutoInit();
+const tipoDocAnexo = document.querySelector('#tipoAnexo');
+
 $('#enviarAnexo').on('click', () => {
 
     loading(true);
@@ -52,7 +55,7 @@ $('#enviarAnexo').on('click', () => {
                 M.toast({
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
-
+                obj.descricao = null;
                 bindAnexos(obj);
                 $('#frmAnexo').trigger("reset");
             }
@@ -66,6 +69,55 @@ $('#enviarAnexo').on('click', () => {
             });
         });
 });
+
+var bindAnexos = (obj) => {
+
+    let action = '/Anexo/Search/' + (obj.pagina == undefined ? 1 : obj.pagina);
+    $.ajax({
+        type: 'Get',
+        url: action,
+        contentType: "application/json; charset=utf-8",
+        dataType: "html",
+        async: true,
+        data: { comandoAnexoInformacao: JSON.stringify(obj) }
+    })
+        .done(function (data) {
+
+            if (obj.scope != 'colaborador') {
+                $("#DivRecordAnexo").empty().html(data);
+            }
+            else {
+
+                for (var op of tipoAnexo.options) {
+
+                    if (op.value != '') {
+                        op.removeAttribute('disabled');
+                    }
+                }
+
+                var documentos = listaTipoDocumento($('#codigoCargo').val());
+
+                $("#DivRecordAnexoColaborador").empty().html(data);
+
+                var tipo = $('#listAnexo').val();
+
+                if (tipo != undefined) {
+
+                    tipo.split(',').forEach(f => {
+                        if (f != '') {
+                            $('#tipoAnexo option[value=' + f + ']').attr('disabled', 'disabled');
+                        }
+                    });
+
+                }
+
+                $('select').formSelect();
+            }
+        })
+        .fail(function (data) {
+            $("#DivRecordAnexo").empty().html('Ocorreu um erro ao tentar executar a conslta');
+        });
+}
 
 var downloadFile = (objeto) => {
     window.location.href = '/Anexo/downloadFile/' + objeto.id;
@@ -102,8 +154,6 @@ var removeFile = (objeto) => {
         });
 }
 
-
-
 var modalParams = (objeto) => {
 
     var scopes = ['empresa', 'funcionario'];
@@ -114,6 +164,7 @@ var modalParams = (objeto) => {
         $('#codigo').val(objeto.codigo);
         $('#documento').val(objeto.documento);
         $('#codigoEmpresa').val(objeto.codigoEmpresa);
+        $('#codigoCargo').val(objeto.codigoCargo);
 
         if (scopes.some(s => s == objeto.scope)) {
 
@@ -145,7 +196,6 @@ var modalParams = (objeto) => {
     }
 
 }
-
 
 // enviar anexo do colaborador para analise do documento
 $('#enviarAnexoColaborador').on('click', () => {
@@ -254,53 +304,6 @@ var pesquisarAnexo = () => {
     bindAnexos(obj);
 }
 
-var bindAnexos = (obj) => {
-
-    let action = '/Anexo/Search/' + (obj.pagina == undefined ? 1 : obj.pagina);
-    $.ajax({
-        type: 'Get',
-        url: action,
-        contentType: "application/json; charset=utf-8",
-        dataType: "html",
-        async: true,
-        data: { comandoAnexoInformacao: JSON.stringify(obj) }
-    })
-        .done(function (data) {
-
-            if (obj.scope != 'colaborador') {
-                $("#DivRecordAnexo").empty().html(data);
-            }
-            else {
-
-                for (var op of tipoAnexo.options) {
-
-                    if (op.value != '') {
-                        op.removeAttribute('disabled');
-                    }
-                }
-
-                $("#DivRecordAnexoColaborador").empty().html(data);
-
-
-                var tipo = $('#listAnexo').val();
-
-                if (tipo != undefined) {
-
-                    tipo.split(',').forEach(f => {
-                        if (f != '') {
-                            $('#tipoAnexo option[value=' + f + ']').attr('disabled', 'disabled');
-                        }
-                    });
-
-                }
-
-                $('select').formSelect();
-            }
-        })
-        .fail(function (data) {
-            $("#DivRecordAnexo").empty().html('Ocorreu um erro ao tentar executar a conslta');
-        });
-}
 
 var abreCracha = (id) => {
     $.confirm({
@@ -353,4 +356,37 @@ var abreCracha = (id) => {
             });
         }
     });
+}
+
+var listaTipoDocumento = (id) => {
+    var list;
+    $.ajax({
+        type: 'Get',
+        url: '/Anexo/listDocuments/' + id,
+        contentType: "application/json; charset=utf-8",
+        dataType: "html",
+        async: false
+    })
+        .done(function (data) {
+
+            list = JSON.parse(data)
+            while (tipoDocAnexo.options.length > 1)
+                tipoDocAnexo.remove(1);
+
+            if (list.success == true) {
+
+                M.FormSelect.getInstance(tipoDocAnexo);
+                list.documentos.forEach(s => {
+                    tipoDocAnexo.append(new Option(s.nome, s.cd_Documentaco_Complementar))
+                })
+
+                M.FormSelect.init(tipoDocAnexo);
+            }
+            
+        })
+        .fail(function (data) {
+            list = JSON.parse(data)
+        });
+
+    return list;
 }

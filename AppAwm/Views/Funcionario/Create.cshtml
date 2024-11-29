@@ -1,5 +1,8 @@
 ﻿@model AppAwm.Respostas.FuncionarioAnswer
 
+@{
+    var isChecked = Model?.Funcionario.Cd_Funcionario == 0 ? "true" : Model?.Funcionario.Status.ToString().ToLower();
+}
 
 <p class="flow-text"> @(Model.Funcionario.Cd_Funcionario == 0 ? "Cadastrar" : "Atualizar") Colaborador</p>
 
@@ -8,6 +11,8 @@
     <input asp-for="Funcionario.Endereco.Cd_Funcionario_id" type="hidden" />
     <input asp-for="Funcionario.Endereco.Cd_Endereco" type="hidden" />
     <input asp-for="Funcionario.Cd_Cargo" id="Cd_Cargo" type="hidden" />
+    <input asp-for="Funcionario.Cd_Cliente" id="Cd_Cliente" type="hidden" />
+    <input asp-for="Funcionario.Id_UsuarioCriacao" id="Id_UsuarioCriacao" type="hidden" />
     <div class="row">
         <div class="input-field col s2 center-align">
             <div class="image-upload">
@@ -170,7 +175,7 @@
                 Status: &nbsp;
                 <label>
                     Inativo
-                    <input type="checkbox" checked asp-for="Funcionario.Status" id="Status">
+                    <input type="checkbox" asp-for="Funcionario.Status" id="Status">
                     <span class="lever"></span>
                     Ativo
                 </label>
@@ -202,3 +207,8 @@
         display: none;
     }
 </style>
+<script>
+    $(document).ready(function () {
+        $('#Status').prop('checked', @isChecked);
+    });
+</script>

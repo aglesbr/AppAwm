@@ -3,6 +3,7 @@ using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
+using AppAwm.Util;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -28,16 +29,19 @@ namespace AppAwm.Services
         {
             try
             {
-
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
                     Funcionario? funcionario = contexto.GetAll(predicate)
-                        .Include(f => f.Cargo)
                         .Include(f => f.Endereco).FirstOrDefault();
 
-
+                    if (funcionario != null)
+                    {
+                        var contextoCargo = new RepositoryGeneric<Cargo>(db, out status);
+                        funcionario.Cargo = contextoCargo.GetItem(s => s.Cd_Cargo == funcionario.Cd_Cargo);
+                        
+                    }
                     // consome lista de empresas
                     using var contextoEmpresa = new RepositoryGeneric<Empresa>(db, out status);
                     List<SelectListItem> empresas = [.. contextoEmpresa.GetAll(p =>
@@ -182,24 +186,57 @@ namespace AppAwm.Services
             }
         }
 
-        public Cracha GetCracha(int id)
+        public Cracha? GetCracha(int? id = 0)
         {
             try
             {
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
 
+
                 var resposta = db.Funcionarios.Where(w => w.Cd_Funcionario == id)
-                    .Include(emp => emp.Empresa)
-                    .Include(c => c.Cargo).FirstOrDefault();
+                    .Include(emp => emp.Empresa).FirstOrDefault();
 
-                Cracha cracha = new Cracha { Nome = resposta.Nome, Documento = resposta.Documento, Empresa = resposta.Empresa.Nome, Foto = resposta.Foto, Cargo = resposta.Cargo.Nome, QrCode =  null  };
+                if (resposta != null)
+                {
+                    var cargo = db.Cargos.SingleOrDefault(s => s.Cd_Cargo == resposta.Cd_Cargo);
 
-                return cracha;
+                    Cracha cracha = new() { Nome = resposta.Nome, Documento = resposta.Documento, Empresa = resposta.Empresa.Nome, Foto = resposta.Foto, Cargo = cargo.Nome, QrCode = null };
+
+                    return cracha;
+                }
+
+                return null;
             }
             catch
             {
-                return new Cracha();
+                return null;
+            }
+        }
+
+        public int UpdateCliente(bool isAdd)
+        {
+            using DbCon db = new();
+            using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+            try
+            {
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    if (isAdd)
+                        Utility.Cliente.PlanoVidasAtivadas++;
+                    else
+                        Utility.Cliente.PlanoVidasAtivadas--;
+
+                    int ret = contexto.Edit(Utility.Cliente);
+
+                    return ret;
+                }
+
+                return 0;
+            }
+            catch
+            {
+                return 0;
             }
         }
     }
