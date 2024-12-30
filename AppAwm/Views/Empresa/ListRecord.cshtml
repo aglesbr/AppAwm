@@ -20,6 +20,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model[0].Status)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].DocumentacaoValidada)
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -39,8 +42,11 @@
                     <td class="@(item.Status ? "green-text": "red-text" )">
                         @(item.Status ? "Ativo" : "Inativo")
                     </td>
+                    <td class="@(item.DocumentacaoValidada ? "green-text": "red-text" )">
+                        @(item.DocumentacaoValidada ? "Concluída" : "Pendente")
+                    </td>
                     <td class="right-align">
-                        <a data-position="left" data-tooltip="Vincular Colaboradores ao contrato"  enable
+                        <a data-position="left" data-tooltip="Vincular Colaboradores ao Contrato/Obra"  enable
                             class="waves-effect waves-light btn-small teal modal-trigger blue-grey darken-2 tooltipped"
                            onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa,nome:'@item.Nome', cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")' ,scope:'vincularColaborador'})"
                         @(item.Obras.Count == 0 ? "disabled" : "")>
@@ -50,7 +56,7 @@
                                 transfer_within_a_station
                             </i>
                         </a>
-                        <a data-position="bottom" data-tooltip="Anexar Arquivo" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Empresa, documento:@item.Cnpj, titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="bottom" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Empresa, documento:@item.Cnpj, titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
                         <a data-position="right" data-tooltip="Editar" asp-controller="Empresa" asp-action="Create" asp-route-id="@item.Cd_Empresa" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
                     </td>
                 </tr>
@@ -58,7 +64,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">
+                <td colspan="5">
                     <input type="hidden" value="@Model.PageCount" id="pageCount" />
                     @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
                    {

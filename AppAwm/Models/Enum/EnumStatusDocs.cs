@@ -1,7 +1,7 @@
 ﻿namespace AppAwm.Models.Enum
 {
     [Flags]
-    public enum EnumStatusDocs: int
+    public enum EnumStatusDocs : int
     {
         None = 0,
         Enviado = 1,

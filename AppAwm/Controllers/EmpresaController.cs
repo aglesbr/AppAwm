@@ -12,21 +12,43 @@ using X.PagedList.Extensions;
 namespace AppAwm.Controllers
 {
     [Authorize]
-    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IFuncionario<FuncionarioAnswer> _servicoFuncionario) : Controller
+    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IColaborador<ColaboradorAnswer> _servicoFuncionario) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;
         private readonly IObra<ObraAnswer> servicoObra = _servicoObra;
-        private readonly IFuncionario<FuncionarioAnswer> servicoFuncionario = _servicoFuncionario;
+        private readonly IColaborador<ColaboradorAnswer> servicoFuncionario = _servicoFuncionario;
 
+        [HttpGet]
+        [Authorize(Roles = "Terceiro, Administrador")]
         public ActionResult Index()
         {
-            return View();
+            if (!User.Identity.IsAuthenticated)
+                return BadRequest("Usuario não autenticado");
+
+            var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+            if (sessao == null)
+                return RedirectToAction("Index", "Start");
+
+            var empresa = servico.Get(g => g.Cd_Empresa == sessao.Cd_Empresa, EnumAcao.Criar);
+            return sessao.Perfil == EnumPerfil.Terceiro ? View(empresa) : View(empresa);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
         public ActionResult Create(int id)
         {
-            var resposta = servico.Get(s => s.Cd_Empresa == id, EnumAcao.Editar);
-            return id == 0 ? View() : View(resposta.Empresa);
+            if (!User.Identity.IsAuthenticated)
+                return BadRequest("Usuario não autenticado");
+
+            EmpresaAnswer? resposta = null;
+
+            if (id > 0)
+                resposta = servico.Get(s => s.Cd_Empresa == id, EnumAcao.Editar);
+
+            List<SelectListItem> selectListItems = [.. servico.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+            ViewData["selectCliente"] = selectListItems;
+
+            return id == 0 ? View() : View(resposta?.Empresa);
         }
 
         [HttpPost]
@@ -37,12 +59,10 @@ namespace AppAwm.Controllers
             try
             {
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
-                if (sessao ==  null)
+                if (sessao == null)
                     return RedirectToAction("Index", "Start");
 
                 ModelState.Remove("Cd_Empresa");
-                ModelState.Remove("Endereco.Cd_Endereco");
-                ModelState.Remove("Endereco.Cd_Empresa");
 
                 if (ModelState.IsValid)
                 {
@@ -50,14 +70,12 @@ namespace AppAwm.Controllers
                     {
                         empresa.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         empresa.Dt_Atualizacao = DateTime.Now;
-                        empresa.Endereco.Dt_Atualizacao = DateTime.Now;
-                        empresa.Endereco.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                     }
                     else
                     {
+                        empresa.Cnpj = Regex.Replace(empresa.Cnpj!, @"[^\d]", string.Empty);
+
                         empresa.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
-                        empresa.Endereco.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
-                        empresa.Cd_Cliente = sessao.Cd_Cliente_Id;
 
                         var emp = servico.Get(s => s.Cnpj!.Equals(empresa.Cnpj), EnumAcao.Criar);
 
@@ -119,7 +137,7 @@ namespace AppAwm.Controllers
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 EmpresaAnswer resposta = servico.List(
-                     x => x.Cd_Cliente == sessao!.Cd_Cliente_Id &&  (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
+                     x => (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
                      && x.Cd_UsuarioCriacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioCriacao : sessao.Nome)
                      && (string.IsNullOrWhiteSpace(obj.NomeFantasia) ? x.NomeFantasia == x.NomeFantasia : x.NomeFantasia.ToUpper().StartsWith(obj.NomeFantasia.ToUpper()))
                      && x.Cnpj!.StartsWith(obj.Cnpj ?? x.Cnpj)
@@ -148,7 +166,7 @@ namespace AppAwm.Controllers
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 ObraAnswer resposta = servicoObra.List(
-                    x => x.Cd_Cliente == sessao!.Cd_Cliente_Id &&  x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
+                    x => x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
                     && x.Cd_Empresa_Id == id);
 
                 var query = resposta.Obras.ToPagedList(skip, 14);
@@ -156,7 +174,7 @@ namespace AppAwm.Controllers
             }
             catch (Exception ex)
             {
-               return PartialView("ListRecord", BadRequest($"Ocorreu um erro na execução, ERRO:{ex.Message}"));
+                return PartialView("ListRecord", BadRequest($"Ocorreu um erro na execução, ERRO:{ex.Message}"));
             }
         }
 
@@ -204,12 +222,11 @@ namespace AppAwm.Controllers
                     Obra obj = JsonConvert.DeserializeObject<Obra>(comandoObra) ?? new();
                     obj.Cd_Usuario_Criacao = sessao.Nome;
                     obj.Id_UsuarioCriacao = sessao.Cd_Usuario;
-                    obj.Cd_Cliente = sessao.Cd_Cliente_Id;
 
                     if (!obj.Status)
                     {
                         ObraAnswer answerCheck = servicoObra.SeVinculado(v => v.Vinculado && v.Cd_Empresa_Id == obj.Cd_Empresa_Id && v.Cd_Obra_Id == obj.Cd_Obra);
-                        
+
                         if (!answerCheck.Success)
                         {
                             return BadRequest(answerCheck);
@@ -243,15 +260,17 @@ namespace AppAwm.Controllers
 
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                FuncionarioAnswer resposta = servicoFuncionario.List(
-                     x => x.Status && x.Cd_Cliente == sessao.Cd_Cliente_Id && x.Id_Empresa == id_Empresa);
-                var query = resposta.Funcionarios;
-                var filter = query.Select(s => new Funcionario { 
+                ColaboradorAnswer resposta = servicoFuncionario.List(
+                     x => x.Status && x.Id_Empresa == id_Empresa);
+                var query = resposta.Colaboradore;
+                var filter = query.Select(s => new Colaborador
+                {
                     Cd_Funcionario = s.Cd_Funcionario,
-                    Nome = s.Nome, 
+                    Nome = s.Nome,
                     Documento = s.Documento,
                     Telefone = s.Telefone,
-                    VinculoObras = s.VinculoObras.Where(g => g.Cd_Obra_Id == id_Obra).ToList() }).ToPagedList(skip, 15);
+                    VinculoObras = s.VinculoObras.Where(g => g.Cd_Obra_Id == id_Obra).ToList()
+                }).ToPagedList(skip, 15);
                 return PartialView("ListColaboradorRecord", filter);
             }
             catch
@@ -274,9 +293,8 @@ namespace AppAwm.Controllers
 
                 if (sessao != null)
                 {
-                    FuncionarioVinculoObra obj = JsonConvert.DeserializeObject<FuncionarioVinculoObra>(comandoVincularObra) ?? new();
+                    ColaboradorVinculoObra obj = JsonConvert.DeserializeObject<ColaboradorVinculoObra>(comandoVincularObra) ?? new();
                     obj.Cd_UsuarioCriacao = sessao.Nome;
-                    obj.Cd_Cliente = sessao.Cd_Cliente_Id;
 
                     int ret = servico.Vincular(obj);
                     var retorno = new { success = ret > 0, message = "item registrado com sucesso" };
@@ -287,7 +305,7 @@ namespace AppAwm.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ObraAnswer.DeErro($"Ocorreu um erro na execução, ERRO: {ex.Message}")) ;
+                return BadRequest(ObraAnswer.DeErro($"Ocorreu um erro na execução, ERRO: {ex.Message}"));
             }
 
         }

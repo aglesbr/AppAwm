@@ -1,7 +1,5 @@
 ﻿using AppAwm.Models.Enum;
-using AppAwm.Models;
 using System.Linq.Expressions;
-using AppAwm.Respostas;
 
 namespace AppAwm.Services.Interface
 {

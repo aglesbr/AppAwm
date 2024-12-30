@@ -93,7 +93,7 @@ namespace AppAwm.DAL
             }
             catch
             {
-               throw;
+                throw;
             }
         }
 

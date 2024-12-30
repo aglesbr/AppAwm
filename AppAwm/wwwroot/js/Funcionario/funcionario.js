@@ -77,7 +77,7 @@ $('#postButton').on('click', (event) => {
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
 
-                setTimeout(() => location.href = location.origin + '/Funcionario', 3000);
+                setTimeout(() => location.href = location.origin + '/Colaborador', 3000);
             }
             else {
                 M.toast({
@@ -132,7 +132,6 @@ $('.datepicker').datepicker({
         selectMonths: true
     }
 });
-
 
 $('#file-input').on('input', () => {
 

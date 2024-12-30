@@ -14,7 +14,7 @@ namespace AppAwm.Respostas
         public List<Departamento> Departamentos { get; } = [];
         public EnumAcao Acao { get; }
 
-        public DepartamentoAnswer(bool success, string message) : base(success, message){}
+        public DepartamentoAnswer(bool success, string message) : base(success, message) { }
         public DepartamentoAnswer(bool success, string message, string[] erro) : base(success, message) => Erros = erro;
         public DepartamentoAnswer(bool success, string message, Departamento departamento) : base(success, message) => Departamento = departamento;
         public DepartamentoAnswer(bool success, string message, List<Departamento> departamentos) : base(success, message) => Departamentos = departamentos;
@@ -25,7 +25,7 @@ namespace AppAwm.Respostas
         public static DepartamentoAnswer DeSucesso(List<Departamento> departamentos) => new(true, messageOfSuccess, departamentos);
 
         public static DepartamentoAnswer DeErro(string[] error) => new(false, string.Empty, error);
-        public static DepartamentoAnswer DeErro(string error) => new(false,  error);
+        public static DepartamentoAnswer DeErro(string error) => new(false, error);
 
         public static DepartamentoAnswer DeFalha() => new(false, messageOfFalha);
     }

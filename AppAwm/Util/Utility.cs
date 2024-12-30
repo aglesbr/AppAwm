@@ -1,6 +1,5 @@
 ﻿using AppAwm.Models;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mail;
@@ -49,8 +48,7 @@ namespace AppAwm.Util
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                return ex.Message;
             }
         }
 
@@ -66,7 +64,7 @@ namespace AppAwm.Util
             return sb.ToString();
         }
 
-        public static void EnviarEmail(bool isNovoUsuario, Usuario usuario)
+        public static void EnviarEmail(bool isNovoUsuario, Usuario usuario, string? linkGddoc = null)
         {
             try
             {
@@ -74,19 +72,26 @@ namespace AppAwm.Util
                 SmtpClient client;
                 MailMessage msg;
 
+                string perfil = usuario.Perfil == Models.Enum.EnumPerfil.Terceiro ? "Terceiro" : usuario.Perfil == Models.Enum.EnumPerfil.Analista ? "Analista" : "Funcionário";
+
                 string mensagem = string.Empty;
-                mensagem += $"<html><body><h3><center>HDdoc - {(isNovoUsuario ? "NOVO USUÁRIO" : " SOLICITAÇÃO DE SENHA")}</center><hr/></h3><br/><p>Olá {usuario.Nome}<br/></p>";
-                mensagem += $"<p>Foi gerada uma senha temporária de acesso!<br>Será solicitado a alteração da senha temporária para uma senha de sua preferência.</p>";
-                mensagem += $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'>Usuário:<b> {usuario.Login}</b><br/>Senha: <b>$123Master</b></div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
+                mensagem += $"<html><body><h3><center>HDDOC - {(isNovoUsuario ? "NOVO USUÁRIO" : " SOLICITAÇÃO DE SENHA")}</center><hr/></h3><br/><p>Olá {usuario.Nome}<br/></p>" +
+                    $"<p>Foi gerada uma senha temporária de acesso!<br>Será solicitado a alteração da senha temporária para uma senha de sua preferência.</p>" +
+                    $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'>Perfil de acesso: <b>{perfil}</b><br/>Usuário:<b> {usuario.Login}</b><br/>Senha: <b>$123Master</b><br/>";
+                if (!string.IsNullOrWhiteSpace(linkGddoc))
+                    mensagem += $"<br><b>Click no link para acessar o sistema HDDOC</b>: <a href='{linkGddoc}'>{linkGddoc}</a>";
+
+                mensagem += $"</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
+
                 login = new NetworkCredential("agles.developer", "gfljmaxbyxtrnwdg");
 
                 login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
                 client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = login;
-                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDdoc", Encoding.Default), };
+                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
-                msg.Subject = $"HDdoc - {(isNovoUsuario ? "Bem Vindo(a)" : "Nova Senha")}";
+                msg.Subject = $"HDDOC - {(isNovoUsuario ? "Bem Vindo(a)" : "Nova Senha")}";
                 msg.Body = mensagem;
                 msg.BodyEncoding = Encoding.Default;
                 msg.IsBodyHtml = true;
@@ -115,9 +120,9 @@ namespace AppAwm.Util
                 client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = login;
-                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDdoc", Encoding.Default), };
+                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
-                msg.Subject = $"HDdoc - Vencimento de Documento";
+                msg.Subject = $"HDDOC - Vencimento de Documento";
                 msg.Body = message;
                 msg.BodyEncoding = Encoding.Default;
                 msg.IsBodyHtml = true;
@@ -135,23 +140,23 @@ namespace AppAwm.Util
         }
 
 
-        public static async ValueTask<Endereco?> GetCepAsync(string cep)
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://viacep.com.br/ws/{cep}/json/");
-            var response = await client.SendAsync(request);
+        //public static async ValueTask<Endereco?> GetCepAsync(string cep)
+        //{
+        //    var client = new HttpClient();
+        //    var request = new HttpRequestMessage(HttpMethod.Get, $"https://viacep.com.br/ws/{cep}/json/");
+        //    var response = await client.SendAsync(request);
 
-            if (response.EnsureSuccessStatusCode().IsSuccessStatusCode)
-            {
-                cep = response.Content.ReadAsStringAsync().Result;
+        //    if (response.EnsureSuccessStatusCode().IsSuccessStatusCode)
+        //    {
+        //        cep = response.Content.ReadAsStringAsync().Result;
 
-                Endereco? endereco = JsonConvert.DeserializeObject<Endereco>(cep);
+        //        Endereco? endereco = JsonConvert.DeserializeObject<Endereco>(cep);
 
-                return endereco ?? new();
-            }
+        //        return endereco ?? new();
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
 
         public static List<DocumentacaoComplementar> DocumentacaoComplementares { get; set; } = [];

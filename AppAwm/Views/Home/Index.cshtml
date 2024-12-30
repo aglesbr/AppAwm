@@ -1,6 +1,18 @@
 ﻿@model AppAwm.Models.Usuario
 @{
     ViewData["Title"] = "Home Page";
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+    string titulo, perfil;
+
+    titulo = perfil = string.Empty;
+
+    if (userSession != null)
+    {
+        titulo = userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? " Cenário de documentação de Empresas" : userSession.Empresa.Nome;
+        perfil = userSession.Perfil.ToString().ToLower();
+    }
+
 }
 <div class="row">
     <div class="col s11 blue-grey-text accent-4" style="font-size:18px;">
@@ -10,67 +22,29 @@
 </div>
 <hr />
 <br>
+
+@if (!Model.MudarSenha)
+{
+
 <div class="row">
-    <div class="col s4">
-        <div class="card hoverable">
-            <div class="card-image">
-                <iframe width="100%" height="300" src="https://www.youtube.com/embed/_KSNyuKs4PE?si=KUqdqzb7hTiXNM8-" 
-                    title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                <span class="card-title">Cadastrar Colaboradores</span>
-            </div>
-            <div class="card-content">
-                <p>
-                    Olá @User.Identity.Name, tudo joia!!!
-                    Nesse vídeo, você irá aprender como cadastrar e editar seus colaboradores
-                </p>
-            </div>
-            <div class="card-action">
-                  <a href="#">Acessar pagina</a>
-            </div>
-        </div>
+    <div class="col s5 offset-s1" id="charTituloColaborador" style="display:none;">
+            <h5>Cenário de documentação dos colaboradores </h5>
     </div>
-    <div class="col s4">
-        <div class="card hoverable">
-            <div class="card-image">
-                <iframe width="100%" height="300" src="https://www.youtube.com/embed/2N9Azigg2rw?si=jPoEy8Hg-q0d7IRp"
-                        title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                <span class="card-title">Cadastrar Empresas</span>
-            </div>
-            <div class="card-content">
-                <p>
-                    E neste video @User.Identity.Name.Split(' ')[0]<br>
-                    você irá aprender como cadastrar e editar seus tercerios<br>
-                </p>
-            </div>
-            <div class="card-action">
-                <a href="#">Acessar pagina</a>
-            </div>
+        <div class="col s5 offset-s1 " id="charTituloEmpresa" style="display:none;">
+            <h5> @titulo </h5>
         </div>
-    </div>
-    <div class="col s4">
-        <div class="card hoverable">
-            <div class="card-image">
-                <iframe width="100%" height="300" src="https://www.youtube.com/embed/gm2LmELpBG8?si=lukxzJFU50LcS55_"
-                        title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                <span class="card-title">Enviar Documentação</span>
-            </div>
-            <div class="card-content">
-                <p>
-                    preparamos também @User.Identity.Name.Split(' ')[0] um passo a passo<br>
-                    para o envio de documentação ténica dos seus colaboradores<br>
-                </p>
-            </div>
-            <div class="card-action">
-                <a href="#">Acessar pagina</a>
-            </div>
+</div>
+<div class="row">
+        <div class="col s6 center">
+        <canvas id="homeChartColaborador" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
         </div>
-    </div>
+        <div class="col s6 center">
+            <canvas id="homeChartEmpresa" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
+        </div>
 </div>
 
 
+}
 <!-- Modal Structure -->
 <div id="modalMudarSenha" class="modal">
     <div class="modal-content">
@@ -111,10 +85,13 @@
     </div>
 </div>
 
+<script src="~/js/chart/chart.umd.js"></script>
+<script src="~/js/home/home.js"></script>
 
 <script>
     var isMudarSenha = Boolean(@(Convert.ToInt16(Model.MudarSenha)));
 
+    loading(true);
     if (isMudarSenha)
         setTimeout(() => { $('#modalMudarSenha').modal({ dismissible: false }).modal('open'); }, 500);
 
@@ -151,7 +128,7 @@
 
                 M.toast({ html: `<i class="material-icons white-text">check_circle</i>&nbsp - ${ data.message}`, classes: `${clss} darken-2 rounded`});
 
-                setTimeout(() => { window.location.href = '/Start/Logout'; }, 3000);
+                setTimeout(() => { window.location.href = '/Start/Logout'; }, 2000);
             })
             .fail(function (data) {
 
@@ -163,8 +140,18 @@
             });
 
     });
-
+    
     $('#btnLimpar').on('click', () => { $('#frmMudarSenha').trigger("reset");});
 
+     setTimeout(() => { 
+         grafico(1,'@perfil');
+            $('#charTituloColaborador').css("display", "");
+        grafico(2, '@perfil');
+            $('#charTituloEmpresa').css("display", "");
+          loading(false);
+     },1000);
+
+    
+       
 
 </script>

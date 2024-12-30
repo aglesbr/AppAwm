@@ -31,11 +31,14 @@ $('#enviarAnexo').on('click', () => {
         formData.append("files", files[i]);
     }
 
+    var escopo = $('#scope').val();
+
     let obj = {
         codigo: $('#codigo').val(),
-        descricao: $('#descricao').val(),
-        scope: $('#scope').val(),
-        documento: $('#documento').val()
+        descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
+        scope: escopo,
+        documento: $('#documento').val(),
+        tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
     }
 
     formData.append('comandoAnexoInformacao', JSON.stringify(obj));
@@ -56,6 +59,9 @@ $('#enviarAnexo').on('click', () => {
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
                 obj.descricao = null;
+                obj.tipoAnexo = 0;
+                obj.documento = 0;
+
                 bindAnexos(obj);
                 $('#frmAnexo').trigger("reset");
             }
@@ -72,6 +78,14 @@ $('#enviarAnexo').on('click', () => {
 
 var bindAnexos = (obj) => {
 
+    
+    const divRecord = obj.scope == 'colaborador' ? '#DivRecordAnexoColaborador' :'#DivRecordAnexo'
+
+    $(divRecord).css('display', '');
+
+    $(divRecord).empty().html('<div class="progress"><div class="indeterminate"></div></div>');
+
+
     let action = '/Anexo/Search/' + (obj.pagina == undefined ? 1 : obj.pagina);
     $.ajax({
         type: 'Get',
@@ -83,36 +97,87 @@ var bindAnexos = (obj) => {
     })
         .done(function (data) {
 
-            if (obj.scope != 'colaborador') {
+            $("#DivRecordAnexo").empty();
+            $("#DivRecordAnexoColaborador").empty()
+
+            if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
+                var documentos = populaTipoDocumento(2020);// pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
-            else {
 
-                for (var op of tipoAnexo.options) {
+            if (obj.scope == 'colaborador') {
+                var documentos = populaTipoDocumento($('#codigoCargo').val());
+                $("#DivRecordAnexoColaborador").empty().html(data);
+            }
 
-                    if (op.value != '') {
-                        op.removeAttribute('disabled');
+            if (obj.scope == 'anexoComumColaborador' || obj.scope == 'anexoComumEmpresa' ) {
+                $("#DivRecordAnexo").empty().html(data);
+                return;
+            }
+
+            for (var op of tipoAnexo.options) {
+
+                if (op.value != '0') {
+                    op.removeAttribute('disabled');
+                }
+            }
+
+            var tipo = $('#listAnexo').val();
+
+            var totalTipoAnexoDisabled = true;
+
+            if (tipo != undefined) {
+
+                tipo.split(',').forEach(f => {
+                    if (f != '') {
+                        $('#tipoAnexo option[value=' + f + ']').attr('disabled', 'disabled');
+                    }
+                });
+
+            }
+
+            for (var op of tipoAnexo.options) {
+
+                if (op.value != '0') {
+                    if (!op.disabled) {
+                        totalTipoAnexoDisabled = false;
+                        break;
                     }
                 }
-
-                var documentos = listaTipoDocumento($('#codigoCargo').val());
-
-                $("#DivRecordAnexoColaborador").empty().html(data);
-
-                var tipo = $('#listAnexo').val();
-
-                if (tipo != undefined) {
-
-                    tipo.split(',').forEach(f => {
-                        if (f != '') {
-                            $('#tipoAnexo option[value=' + f + ']').attr('disabled', 'disabled');
-                        }
-                    });
-
-                }
-
-                $('select').formSelect();
             }
+
+
+            $('select').formSelect();
+
+            var msgContent = `<p>Após a validação carreta de todos os documentos enviados, solicite a administração da HDDOC a liberação da
+                              ${(obj.scope == 'colaborador' ? ' integração do colaborador' : ' empresa para o acesso a planta da obra')}.<br><br><b>Contato: (11) 98539-9315<br>E-mail:documentacao@hddoc.com.br</b></p>`
+
+            if (obj.scope == 'colaborador') {
+                if (obj.integrado.toLowerCase() == 'false') {
+                    if (totalTipoAnexoDisabled) {
+                        $.alert({
+                            title: 'Alerta de Integração!',
+                            boxWidth: '25%',
+                            useBootstrap: false,
+                            content: msgContent
+                        });
+                    }
+                }
+            }
+
+            if (obj.scope == 'empresa') {
+                if (obj.documentacaoPendente.toLowerCase() == 'false') {
+                    if (totalTipoAnexoDisabled) {
+                        $.alert({
+                            title: 'Liberação de acesso a planta da obra!',
+                            boxWidth: '25%',
+                            useBootstrap: false,
+                            content: msgContent
+                        });
+                    }
+                }
+            }
+
         })
         .fail(function (data) {
             $("#DivRecordAnexo").empty().html('Ocorreu um erro ao tentar executar a conslta');
@@ -156,7 +221,7 @@ var removeFile = (objeto) => {
 
 var modalParams = (objeto) => {
 
-    var scopes = ['empresa', 'funcionario'];
+    var scopes = ['empresa', 'anexoComumColaborador', 'anexoComumEmpresa'];
     
     if (objeto.pagina == undefined) {
 
@@ -165,16 +230,26 @@ var modalParams = (objeto) => {
         $('#documento').val(objeto.documento);
         $('#codigoEmpresa').val(objeto.codigoEmpresa);
         $('#codigoCargo').val(objeto.codigoCargo);
+        $('#isIntegrado').val(objeto.integrado);
 
         if (scopes.some(s => s == objeto.scope)) {
 
             $('#titulo').html(`<h6>${objeto.titulo} - ${objeto.documento}</h6>`);
 
             if (objeto.scope == 'empresa') {
+                $('#divTipoAnexo').css('display', '');
+                $("#divFileAnexo").removeClass('s8').addClass('s4');
                 $('#modalAnexoEmpresa').modal({ dismissible: false }).modal('open');
             }
 
-            if (objeto.scope == 'funcionario') {
+            if (objeto.scope == 'anexoComumEmpresa') {
+
+                $('#divTipoAnexo').css('display', 'none');
+                $("#divFileAnexo").removeClass('s4').addClass('s8');
+                $('#modalAnexoEmpresa').modal({ dismissible: false }).modal('open');
+            }
+
+            if (objeto.scope == 'anexoComumColaborador') {
                 $('#modalAnexoFuncionario').modal({ dismissible: false }).modal('open');
             }
 
@@ -222,16 +297,19 @@ $('#enviarAnexoColaborador').on('click', () => {
         return;
     }
 
-    if ($('#dataValidade').val() == '') {
+    var dataValid = $('#dataValidade').val();
+    var dataAtual = new Date();
+
+    if (dataValid.trim() == '' || new Date(dataValid) <= new Date(dataAtual.toDateString())) {
         M.toast({
-            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Informe o prazo de validade do documento.', classes: 'red darken-2 rounded'
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Informe o prazo de validade do documento e que seja maior que a data atual', classes: 'red darken-2 rounded'
         });
 
         loading(false);
         return;
     }
 
-    if ($('#tipoAnexo').val() == null || $('#tipoAnexo').val() == '') {
+    if ($('#tipoAnexo').val() == null || $('#tipoAnexo').val() == '0') {
         M.toast({
             html: '<i class="material-icons white-text">check_circle</i>&nbsp - Selecione o tipo do documento.', classes: 'red darken-2 rounded'
         });
@@ -275,7 +353,8 @@ $('#enviarAnexoColaborador').on('click', () => {
                 });
 
                 obj.descricao = null;
-                obj.tipoAnexo = null;
+                obj.tipoAnexo = 0;
+
                 bindAnexos(obj);
                 $('#frmDocumentoColaborador').trigger("reset");
             }
@@ -290,20 +369,20 @@ $('#enviarAnexoColaborador').on('click', () => {
         });
 });
 
-var pesquisarAnexo = () => {
+//var pesquisarAnexo = () => {
 
-    let obj = {
-        codigo: $('#codigo').val(),
-        descricao: $('#descricaoColaborador').val(),
-        scope: $('#scope').val(),
-        documento: $('#documento').val(),
-        tipoAnexo: $('#tipoAnexo').val(),
-        codigoEmpresa: $('#codigoEmpresa').val(),
-    }
+//    let obj = {
+//        codigo: $('#codigo').val(),
+//        descricao: $('#descricaoColaborador').val(),
+//        scope: $('#scope').val(),
+//        documento: $('#documento').val(),
+//        tipoAnexo: $('#tipoAnexo').val(),
+//        codigoEmpresa: $('#codigoEmpresa').val(),
+//        origemPesquuisa: true
+//    }
 
-    bindAnexos(obj);
-}
-
+//    bindAnexos(obj);
+//}
 
 var abreCracha = (id) => {
     $.confirm({
@@ -344,10 +423,10 @@ var abreCracha = (id) => {
         content: function () {
             var self = this;
             return $.ajax({
-                url: 'Funcionario/Cracha/' + id,
+                url: 'Colaborador/Cracha/' + id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "html",
-                method: 'get'
+                method: 'get',
             }).done(function (response) {
                 self.setTitle(' ');
                 self.setContentAppend(response);
@@ -358,14 +437,55 @@ var abreCracha = (id) => {
     });
 }
 
-var listaTipoDocumento = (id) => {
+var historicoDocumento = (item) => {
+
+    let obj = {
+        codigo: $('#codigo').val(),
+        descricao: $('#descricaoColaborador').val(),
+        scope: $('#scope').val(),
+        documento: $('#documento').val(),
+        tipoAnexo: item.tipoAnexo,
+        codigoAnexo: item.codigoAnexo,
+        codigoEmpresa: $('#codigoEmpresa').val(),
+    }
+
+    $.confirm({
+        boxWidth: '50%',
+        useBootstrap: false,
+        type: 'dark',
+        buttons: {
+            Fechar: {
+                btnClass: 'btn-red any-other-class', // multiple classes.
+            }
+        },
+        content: function () {
+            var self = this;
+            return $.ajax({
+                url: 'Anexo/historico/',
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                method: 'get',
+                data: { comandoAnexoInformacao: JSON.stringify(obj) }
+            }).done(function (response) {
+                self.setTitle('Historio de Documentação');
+                self.setContentAppend(response);
+            }).fail(function (dataError) {
+                self.setContent('Ocorreu um erro inesperado<br> contacto o suporte ténico');
+            });
+        }
+    });
+}
+
+var populaTipoDocumento = (id) => {
     var list;
+
     $.ajax({
         type: 'Get',
         url: '/Anexo/listDocuments/' + id,
         contentType: "application/json; charset=utf-8",
         dataType: "html",
-        async: false
+        async: false,
+        data: { tipoAnexoEmpresa: id == 2020 }
     })
         .done(function (data) {
 

@@ -1,5 +1,6 @@
 ﻿using AppAwm.DAL;
 using AppAwm.Models;
+using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +34,7 @@ namespace AppAwm.Controllers
 
                     if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                     {
-                        var _Usuario = contexto.GetAll(n => n.Login == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status)
-                            .Include(c => c.Cliente).FirstOrDefault();
+                        var _Usuario = contexto.GetAll(n => n.Login == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status).FirstOrDefault();
 
                         if (_Usuario is null)
                         {
@@ -47,19 +47,29 @@ namespace AppAwm.Controllers
 
                         if (_Usuario.Status)
                         {
-                            Usuario user = _Usuario;
-                            Util.Utility.Cliente = _Usuario.Cliente;
-                            Util.Utility.DocumentacaoComplementares = [..db.DocumentacoesComplementares];
-                            user.Cliente!.Usuarios!.Clear();
 
-                            var token = Util.Utility.GenerateToken(new Usuario { Login = login.UserName, Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone});
-                            HttpContext.Session.SetString("Token", token);
-                            HttpContext.Session.SetString("UserAuth",JsonSerializer.Serialize(user));
-                            HttpContext.Session.SetString("ClientAuth",JsonSerializer.Serialize(user.Cliente));
+                            var contextoCliente = new RepositoryGeneric<Empresa>(db, out status);
+
+                            var empresaCliente = contextoCliente.GetAll(cli => cli.Cd_Empresa == _Usuario.Cd_Empresa).Include(cl => cl.Cliente).FirstOrDefault();
+                            Usuario user = _Usuario;
+                            user.Empresa = empresaCliente;
+                            user.Empresa!.Complemento = null;
+
+                            if (empresaCliente is not null)
+                            {
+                                Utility.DocumentacaoComplementares = [.. db.DocumentacoesComplementares];
+                                Utility.Cliente = _Usuario.Cliente = empresaCliente.Cliente;
+                                _Usuario.Cliente!.Empresas!.Clear();
+                            }
 
                             if (login.Operacao)
                                 return new JsonResult(_Usuario);
-                            
+
+                            var token = Utility.GenerateToken(new Usuario { Login = login.UserName, Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone });
+                            HttpContext.Session.SetString("Token", token);
+                            HttpContext.Session.SetString("UserAuth", JsonSerializer.Serialize(user));
+
+
                             return RedirectToAction(nameof(HomeController.Index), "Home");
                         }
                         else
@@ -120,10 +130,10 @@ namespace AppAwm.Controllers
                 {
                     var _usuario = contexto.GetItem(n => n.Documento == documento);
 
-                    if( _usuario == null )
+                    if (_usuario == null)
                         return Json(new { cpf = documento, success = false, message = " Usuário não localizado." });
-                    
-                    if(!_usuario.Status)
+
+                    if (!_usuario.Status)
                         return Json(new { cpf = documento, success = false, message = $" O usuário {_usuario.Nome} está bloqueado." });
 
                     _usuario.Senha = Util.Utility.Criptografar("$123Master");
@@ -131,10 +141,10 @@ namespace AppAwm.Controllers
                     _usuario.Dt_Atualizacao = DateTime.Now.Date;
                     _usuario.Cd_Usuario_Atualizacao = User.Identity.Name;
 
-                    int ret =  contexto.Edit(_usuario);
+                    int ret = contexto.Edit(_usuario);
 
                     if (ret > 0)
-                        Util.Utility.EnviarEmail(false, _usuario);
+                        Utility.EnviarEmail(false, _usuario);
 
                     string msg = ret > 0 ? "Dados enviados para" : "Não foi possivel eniar os dados de acesso, contate o adminitrador.";
 
@@ -147,7 +157,7 @@ namespace AppAwm.Controllers
             {
                 return Json(new { cpf = documento, success = false, message = $"Ocorreu um ERRO: {ex.Message}." });
             }
-            
+
         }
 
 

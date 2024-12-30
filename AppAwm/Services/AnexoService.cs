@@ -12,7 +12,7 @@ using System.Text.Json;
 
 namespace AppAwm.Services
 {
-    public class AnexoService: IAnexo<AnexoAnswer>
+    public class AnexoService : IAnexo<AnexoAnswer>
     {
 
         public AnexoService() { }
@@ -30,7 +30,7 @@ namespace AppAwm.Services
 
                 return ret > 0 ? AnexoAnswer.DeSucesso() : AnexoAnswer.DeErro();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return AnexoAnswer.DeErro(ex.Message);
             }
@@ -60,7 +60,7 @@ namespace AppAwm.Services
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<Anexo>(db, out status);
 
-                int resposta =  contexto.Delete(anexo);
+                int resposta = contexto.Delete(anexo);
 
                 return resposta > 0 ? AnexoAnswer.DeSucesso("Anexo removido com sucesso!") : AnexoAnswer.DeErro("Ocorreu algum erro ao tentar remover o item.");
             }
@@ -70,7 +70,7 @@ namespace AppAwm.Services
             }
         }
 
-       
+
 
         public AnexoAnswer UpdateStatus(int id, EnumStatusDocs statusDocs, string usuario, string? message = null)
         {
@@ -79,7 +79,7 @@ namespace AppAwm.Services
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<Anexo>(db, out status);
 
-                if(string.IsNullOrWhiteSpace(message))
+                if (string.IsNullOrWhiteSpace(message))
                     message = null;
 
                 int resposta = 0;
@@ -124,7 +124,7 @@ namespace AppAwm.Services
                         Password = Utility.Cliente.PasswordMq,
                         HostName = Utility.Cliente.HostMq,
                         Port = 5672,
-                        RequestedChannelMax = 10
+                        RequestedChannelMax = 20
                     };
 
                     IConnection conn = factory.CreateConnection();
@@ -140,16 +140,18 @@ namespace AppAwm.Services
                 props.ContentType = "text/plain";
                 props.DeliveryMode = 2;
 
-                canal.ExchangeDeclare("changeMq", ExchangeType.Fanout);
+                canal.ExchangeDeclare("ChangeHDdoc", ExchangeType.Direct);
 
                 var corpo = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(1));
 
-                var queueName = canal.QueueDeclare(queue: "operacao", false, false, false, null).QueueName;
-                canal.QueueBind(queue: queueName, exchange: "changeMq", routingKey: string.Empty);
+                var queueName = canal.QueueDeclare(queue: Utility.Cliente!.CanalMq, false, false, false, null).QueueName;
+                canal.QueueBind(queue: queueName, exchange: "ChangeHDdoc", routingKey: "docs");
 
-                canal.BasicPublish(exchange: "changeMq", routingKey: "", basicProperties: props, body: corpo);
+                canal.BasicPublish(exchange: "ChangeHDdoc", routingKey: "docs", basicProperties: props, body: corpo);
 
                 canal.WaitForConfirmsOrDie(TimeSpan.FromSeconds(2));
+
+                conexao.Close();
             }
             catch (Exception ex)
             {
@@ -180,13 +182,37 @@ namespace AppAwm.Services
             using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
 
             List<int> list = [.. db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).Select(ss => ss.Cd_Documento_Id)];
-           
-            if(list.Count == 0)
-                return [];    
 
-            var documentos =  contexto.GetAll(s => list.Contains(Convert.ToInt32(s.Cd_DocumentoComplementar_Id!)) && s.Status);
+            if (list.Count == 0)
+                return [];
+
+            var documentos = contexto.GetAll(s => list.Contains(Convert.ToInt32(s.Cd_DocumentoComplementar_Id!)) && s.Status);
 
             return [.. documentos];
+        }
+
+        public List<DocumentacaoComplementar> DocumentacaoComplementar(Expression<Func<DocumentacaoComplementar, bool>> predicate)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
+
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    List<DocumentacaoComplementar> list = [.. contexto.GetAll(predicate)];
+
+                    if (list.Count == 0)
+                        return [];
+
+                    return list;
+                }
+                return [];
+            }
+            catch
+            {
+                return [];
+            }
         }
     }
 }

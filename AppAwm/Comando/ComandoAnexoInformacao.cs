@@ -5,6 +5,10 @@ namespace AppAwm.Comando
 {
     public class ComandoAnexoInformacao
     {
+        [JsonProperty("codigoAnexo")]
+        [JsonPropertyName("codigoAnexo")]
+        public int CodigoAnexo { get; set; }
+
         [JsonProperty("codigo")]
         [JsonPropertyName("codigo")]
         public string? Codigo { get; set; }
@@ -27,7 +31,7 @@ namespace AppAwm.Comando
 
         [JsonProperty("tipoAnexo")]
         [JsonPropertyName("tipoAnexo")]
-        public string? TipoAnexo { get; set; }
+        public int TipoAnexo { get; set; }
 
         [JsonProperty("codigoEmpresa")]
         [JsonPropertyName("codigoEmpresa")]

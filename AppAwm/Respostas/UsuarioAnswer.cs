@@ -14,13 +14,13 @@ namespace AppAwm.Respostas
         public Usuario? Usuario { get; } = new();
         public string[] Erros { get; } = [];
         public List<Usuario> Usuarios { get; } = [];
-        public EnumAcao Acao { get; } 
+        public EnumAcao Acao { get; }
 
         public UsuarioAnswer(bool success, string message) : base(success, message) { }
 
-        public UsuarioAnswer(bool success, string message, string[] erro) : base(success, message)  => Erros = erro;
+        public UsuarioAnswer(bool success, string message, string[] erro) : base(success, message) => Erros = erro;
 
-        public UsuarioAnswer(bool success, string message, List<Usuario> list ) : base(success, message) => Usuarios = list;
+        public UsuarioAnswer(bool success, string message, List<Usuario> list) : base(success, message) => Usuarios = list;
 
         public UsuarioAnswer(bool success, string message, Usuario _usuario, EnumAcao _acao) : base(success, message)
         {
@@ -32,9 +32,9 @@ namespace AppAwm.Respostas
 
         public UsuarioAnswer(bool success, string message, EnumAcao acao) : base(success, message) => Acao = acao;
 
-        public static UsuarioAnswer DeSucesso(Usuario usuario, EnumAcao acao) => new(true, string.Format(messageOfSuccess, (usuario.Dt_Atualizacao == null ? "Cadastrado" : "Atualizado" )), usuario, acao) ;
+        public static UsuarioAnswer DeSucesso(Usuario usuario, EnumAcao acao) => new(true, string.Format(messageOfSuccess, (usuario.Dt_Atualizacao == null ? "Cadastrado" : "Atualizado")), usuario, acao);
 
-        public static UsuarioAnswer DeSucesso(List<Usuario> list) => new(true, messageOfConsulta, list) ;
+        public static UsuarioAnswer DeSucesso(List<Usuario> list) => new(true, messageOfConsulta, list);
 
         public static UsuarioAnswer DeErro(string error) => new(false, error ?? messageOfError);
 

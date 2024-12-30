@@ -9,7 +9,6 @@
         tipoAnexoDocumento = Model.First().CodigosDocumentos!;
 }
 
-
 @if (Model?.Count() > 0)
 {
     <table id="tableAnexoColaboradorRecord" class="display compact">
@@ -19,7 +18,9 @@
                 <th>Descrição</th>
                 <th>Status</th>
                 <th>Validade</th>
+                <th>Data Enviado</th>
                 <th>Tipo</th>
+                <th>&nbsp;</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -44,6 +45,9 @@
                             if ((int?)item.Status == 6)
                                 statusIcon = "report_problem";
 
+                            if (new int?[] { 4, 6 }.Contains((int?)item.Status))
+                                tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
+
                         }
                         <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
                     </td>
@@ -51,22 +55,36 @@
                         @string.Format("{0:d}", item.Dt_Validade_Documento)
                     </td>
                     <td>
+                        @item.Dt_Criacao
+                    </td>
+                    <td>
                         @{
-                            var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar.ToString() == item.TipoAnexo);
+                            var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo);
                         }
 
-                        <i data-position="right" data-tooltip="@itemTipo?.Nome" class="material-icons prefix tooltipped">description</i>
+                        <i data-position="left" data-tooltip="@itemTipo?.Nome" class="material-icons prefix blue-grey-text accent-3 tooltipped">description</i>
+                    </td>
+                    <td>
+                        @if(!string.IsNullOrWhiteSpace(item.MotivoRejeicao))
+                        {
+                            <i data-position="left" data-tooltip="@item.MotivoRejeicao <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i> 
+                        }
+                        else
+                        {
+                            <i class="material-icons prefix grey-text">feedback</i>
+                        }
+                        <i  class="material-icons prefix blue-grey-text accent-3" style="cursor:pointer" onclick="javascript:historicoDocumento({tipoAnexo:@item.TipoAnexo, codigoAnexo:@item.Cd_Anexo})" ;>insert_comment</i>
                     </td>
                     <td class="dt-body-right">
                         <a data-position="left" data-tooltip="Baixar arquivo" class="waves-effect waves-light tooltipped btn-small downloadFile" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
-                        <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
+                        <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3,6}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
                     </td>
                 </tr>
             }        
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="6">
+            <td colspan="8">
                 <input type="hidden" value="@Model.PageCount" id="pageCount" />
                 @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
                 {

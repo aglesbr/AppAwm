@@ -9,8 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Endereco.cs" />
     <Compile Remove="Models\ModalidadeContrato.cs" />
+    <Compile Remove="Models\Treinamento.cs" />
+    <Compile Remove="Models\TreinamentoHabilidade.cs" />
     <Compile Remove="Models\UploadDb.cs" />
+    <Compile Remove="Respostas\TreinamentoAnswer .cs" />
+    <Compile Remove="Services\Interface\ITreinamento.cs" />
+    <Compile Remove="Services\TreinamentoService.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,123 +10,116 @@ using System.Linq.Expressions;
 
 namespace AppAwm.Services
 {
-    public class FuncionarioService : IFuncionario<FuncionarioAnswer>
+    public class ColaboradorService : IColaborador<ColaboradorAnswer>
     {
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
 
-        public bool Check(Expression<Func<Funcionario, bool>> predicate)
+        public bool Check(Expression<Func<Colaborador, bool>> predicate)
         {
             using DbCon db = new();
-            using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
+            using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
 
             if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 return contexto.GetItem(predicate) is not null;
-            
+
             return false;
         }
 
-        public FuncionarioAnswer Get(Expression<Func<Funcionario, bool>> predicate, Usuario? usuario)
+        public ColaboradorAnswer Get(Expression<Func<Colaborador, bool>> predicate, Usuario? usuario)
         {
             try
             {
                 using DbCon db = new();
-                using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
+                using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    Funcionario? funcionario = contexto.GetAll(predicate)
-                        .Include(f => f.Endereco).FirstOrDefault();
+                    Colaborador? funcionario = contexto.GetAll(predicate).FirstOrDefault();
 
                     if (funcionario != null)
                     {
                         var contextoCargo = new RepositoryGeneric<Cargo>(db, out status);
                         funcionario.Cargo = contextoCargo.GetItem(s => s.Cd_Cargo == funcionario.Cd_Cargo);
-                        
+
                     }
                     // consome lista de empresas
                     using var contextoEmpresa = new RepositoryGeneric<Empresa>(db, out status);
                     List<SelectListItem> empresas = [.. contextoEmpresa.GetAll(p =>
-                     p.Cd_UsuarioCriacao == (usuario!.Perfil == EnumPerfil.Administrador ? p.Cd_UsuarioCriacao : usuario.Nome)
+                     (usuario!.Perfil == EnumPerfil.Administrador ? p.Cd_Empresa > 0 : p.Cd_Empresa == usuario.Cd_Empresa)
                      && p.Status
                     ).
                     Select(p => new SelectListItem { Value = p.Cd_Empresa.ToString(), Text = p.Nome })];
 
 
-                    return FuncionarioAnswer.Bind(funcionario,empresas) ;
+                    return ColaboradorAnswer.Bind(funcionario, empresas);
                 }
 
-                return FuncionarioAnswer.DeFalha();
+                return ColaboradorAnswer.DeFalha();
             }
             catch (Exception ex)
             {
-                return FuncionarioAnswer.DeErro(ex.Message);
+                return ColaboradorAnswer.DeErro(ex.Message);
             }
         }
 
-        public FuncionarioAnswer List(Expression<Func<Funcionario, bool>> predicate)
+        public ColaboradorAnswer List(Expression<Func<Colaborador, bool>> predicate)
         {
             try
             {
                 using DbCon db = new();
-                using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
+                using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<Funcionario> funcionarios = [.. contexto.GetAll(predicate).Include(emp => emp.Empresa).OrderBy(o => o.Nome)
+                    List<Colaborador> funcionarios = [.. contexto.GetAll(predicate).Include(emp => emp.Empresa).OrderBy(o => o.Nome)
                         .Include(o => o.VinculoObras)
                         .Include(a =>  a.Anexos)];
 
                     funcionarios.ForEach(f =>
                     {
                         if (f.Anexos.Any())
-                        { 
-                            f.Anexos.ToList().ForEach(a => { a.Arquivo =  null; });
+                        {
+                            f.Anexos.ToList().ForEach(a => { a.Arquivo = null; });
                         }
-                        
+
                     });
-                    return funcionarios.Count > 0 ? FuncionarioAnswer.DeSucesso(funcionarios) : FuncionarioAnswer.DeErro("Nenhum registro fui localizado");
+                    return funcionarios.Count > 0 ? ColaboradorAnswer.DeSucesso(funcionarios) : ColaboradorAnswer.DeErro("Nenhum registro fui localizado");
                 }
 
-                return FuncionarioAnswer.DeFalha();
+                return ColaboradorAnswer.DeFalha();
             }
             catch (Exception ex)
             {
-                return FuncionarioAnswer.DeErro(ex.Message);
+                return ColaboradorAnswer.DeErro(ex.Message);
             }
         }
 
-        public FuncionarioAnswer Save(Funcionario funcionario, EnumAcao acao)
+        public ColaboradorAnswer Save(Colaborador funcionario, EnumAcao acao)
         {
             using DbCon db = new();
-            using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
+            using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
             try
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
                     if (acao == EnumAcao.Editar)
-                    { 
-                       var obj = contexto.GetItem(x => x.Cd_Funcionario == funcionario.Cd_Funcionario) ?? new();
+                    {
+                        var obj = contexto.GetItem(x => x.Cd_Funcionario == funcionario.Cd_Funcionario) ?? new();
                         funcionario.Foto = obj.Foto!;
                     }
                     int ret = acao == EnumAcao.Criar ? contexto.Create(funcionario) : contexto.Edit(funcionario);
 
-                    if (acao == EnumAcao.Editar)
-                    {
-                        var contextoEndereco = new RepositoryGeneric<Endereco>(db, out status);
-                        contextoEndereco.Edit(funcionario.Endereco);
-                    }
-
-                    return ret > 0 ? FuncionarioAnswer.DeSucesso(acao) : FuncionarioAnswer.DeErro("Ocorreu um erro ao tentar registar a empresa"); ;
+                    return ret > 0 ? ColaboradorAnswer.DeSucesso(acao) : ColaboradorAnswer.DeErro("Ocorreu um erro ao tentar registar a empresa"); ;
                 }
 
-                return FuncionarioAnswer.DeFalha();
+                return ColaboradorAnswer.DeFalha();
             }
             catch (Exception ex)
             {
-                return FuncionarioAnswer.DeErro(ex.Message);
+                return ColaboradorAnswer.DeErro(ex.Message);
             }
         }
 
 
-        public List<Cargo> GetCargos(string nome) 
+        public List<Cargo> GetCargos(string nome)
         {
             try
             {
@@ -135,13 +128,13 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    return contexto.GetAll(g =>  g.Nome!.StartsWith(nome)).Take(50).ToList();   
+                    return contexto.GetAll(g => g.Nome!.StartsWith(nome)).Take(50).ToList();
                 }
 
                 return [];
 
             }
-            catch 
+            catch
             {
                 throw;
             }
@@ -168,15 +161,15 @@ namespace AppAwm.Services
             }
         }
 
-        public int UpdateFoto(Funcionario funcionario)
+        public int UpdateFoto(Colaborador funcionario)
         {
             try
             {
                 using DbCon db = new();
-                using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
-                
+                using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
+
                 var resposta = db.Funcionarios.Where(w => w.Cd_Funcionario == funcionario.Cd_Funcionario)
-                .ExecuteUpdate(ax => ax.SetProperty(sp=> sp.Foto, funcionario.Foto));
+                .ExecuteUpdate(ax => ax.SetProperty(sp => sp.Foto, funcionario.Foto));
 
                 return resposta;
             }
@@ -191,7 +184,7 @@ namespace AppAwm.Services
             try
             {
                 using DbCon db = new();
-                using var contexto = new RepositoryGeneric<Funcionario>(db, out status);
+                using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
 
 
                 var resposta = db.Funcionarios.Where(w => w.Cd_Funcionario == id)

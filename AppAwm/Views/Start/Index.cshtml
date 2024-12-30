@@ -15,18 +15,18 @@
 <div class="row" style="margin-top:10%;">
     <form asp-action="Index" method="post">
         <div class="col l4 offset-l4">
-            <div class="z-depth-3" style="border-radius: 15px 15px 15px 15px; border:1px solid #808080;" id="frmlogin">
+            <div class="z-depth-3" style="border-radius: 15px 15px 15px 15px; border:1px solid #808080;  background-color:white;" id="frmlogin">
                 <div asp-validation-summary="ModelOnly" class="red-text"></div>
                 <div style="padding:15px;">
                     <div class="flow-text center-align">Autenticação de Usuário</div>
 
                     <div class="input-field ">
-                        <i class="material-icons prefix">fingerprint</i>
+                        <i class="material-icons prefix">tune</i>
                         <select id="StatusFilter" asp-for="Perfil" >
                             <option value="0" disabled selected>...</option>
                             <option value="1">Terceiro</option>
-                            <option value="2">Funcionário</option>
-                            <option value="3">Administrador</option>
+                            @* <option value="2">Funcionário</option> *@
+                            <option value="7">Administrador</option>
                         </select>
                         <label asp-for="Perfil"></label>
                         <span asp-validation-for="Perfil" class="red-text"></span>

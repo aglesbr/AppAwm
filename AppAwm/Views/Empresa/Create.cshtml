@@ -1,8 +1,11 @@
 ﻿@model AppAwm.Models.Empresa
 
 @{
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+
     ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
 
+    List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectCliente"]!;
 
     if (Convert.ToInt32(ViewData["retorno"]) > 0)
     {
@@ -18,26 +21,24 @@
         <form asp-action='@(Model == null ? "Create" : "Edit")' id="frmForm">
             <div asp-validation-summary="ModelOnly" class="red-text"></div>
             <input asp-for="Cd_Empresa" type="hidden" />
-            <input asp-for="Endereco.Cd_Endereco" type="hidden" />
-            <input asp-for="Endereco.Cd_Empresa" type="hidden" />
-            <input asp-for="Endereco.Cd_UsuarioCriacao" type="hidden" />
             <input asp-for="Cd_UsuarioCriacao" type="hidden" />
             <input asp-for="Complemento" type="hidden" id="complemento" />
             <div class="row">
-                <div class="col s3 input-field">
+                <div class="input-field col s4">
+                    <select id="Perfil" asp-for="Cd_Cliente_Id" asp-items="selectLists">
+                        <option value="0" disabled selected>Selecione...</option>
+                    </select>
+                    <label>Empresa Contratante</label>
+                </div>
+                <div class="col s2 input-field">
                     <i class="material-icons prefix">code</i>
                     <input asp-for="Cnpj" id="Cnpj" />
                     <label asp-for="Cnpj"></label>
                 </div>
-                <div class="col s4 input-field">
+                <div class="col s3 input-field">
                     <i class="material-icons prefix">location_city</i>
                     <input asp-for="Nome" id="empresa" maxlength="100"/>
                     <label asp-for="Nome"></label>
-                </div>
-                <div class="col s2 input-field">
-                    <i class="material-icons prefix">short_text</i>
-                    <input asp-for="Equity" id="equity" maxlength="5" />
-                    <label asp-for="Equity"></label>
                 </div>
                 <div class="col s3 input-field">
                     <i class="material-icons prefix">local_library</i>
@@ -46,42 +47,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s3 input-field">
-                    <i class="material-icons prefix">location_on</i>
-                    <input asp-for="Endereco.Logradouro" id="logradouro" maxlength="100" />
-                    <label asp-for="Endereco.Logradouro"></label>
-                </div>
+
                 <div class="col s2 input-field">
-                    <i class="material-icons prefix">filter_2</i>
-                    <input asp-for="Endereco.Numero" id="numero" maxlength="15"/>
-                    <label asp-for="Endereco.Numero"></label>
-                </div>
-                <div class="col s2 input-field">
-                    <i class="material-icons prefix">filter_1</i>
-                    <input asp-for="Endereco.Cep" id="cep" />
-                    <label asp-for="Endereco.Cep"></label>
-                </div>
-                <div class="col s5 input-field">
-                    <i class="material-icons prefix">chat_bubble_outline</i>
-                    <input asp-for="Endereco.Detalhes" id="detalhes" maxlength="100" />
-                    <label asp-for="Endereco.Detalhes"></label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s3 input-field">
-                    <i class="material-icons prefix">edit_location</i>
-                    <input asp-for="Endereco.Bairro" id="bairro" maxlength="50"/>
-                    <label asp-for="Endereco.Bairro"></label>
-                </div>
-                <div class="col s2 input-field">
-                    <i class="material-icons prefix">chevron_right</i>
-                    <input asp-for="Endereco.Cidade" id="cidade" maxlength="50"/>
-                    <label asp-for="Endereco.Cidade"></label>
-                </div>
-                <div class="col s1 input-field">
-                    <i class="material-icons prefix">chevron_right</i>
-                    <input asp-for="Endereco.Estado" id="estado" maxlength="2" />
-                    <label asp-for="Endereco.Estado"></label>
+                    <i class="material-icons prefix">short_text</i>
+                    <input asp-for="Equity" id="equity" maxlength="5" />
+                    <label asp-for="Equity"></label>
                 </div>
                 <div class="col s2 input-field">
                     <i class="material-icons prefix">local_phone</i>
@@ -94,14 +64,32 @@
                     <label asp-for="Email"></label>
                 </div>
             </div>
-            <div class="switch">
-                Status: &nbsp;
-                <label>
-                    Inativo
-                    <input type="checkbox" asp-for="Status" name="Status" id="status">
-                    <span class="lever"></span>
-                    Ativo
-                </label>
+            <div class="row">
+                <div class="col s2">
+                    <div class="switch">
+                        Status: &nbsp;
+                        <label>
+                            Inativo
+                            <input type="checkbox" asp-for="Status" name="Status" id="status">
+                            <span class="lever"></span>
+                            Ativo
+                        </label>
+                    </div>
+                </div>
+                @if (userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+                {
+                    <div class="col s3">
+                        <div class="switch">
+                            Documentação Pendente: &nbsp;
+                            <label>
+                                Sim
+                                <input type="checkbox" asp-for="DocumentacaoValidada" id="Integrado">
+                                <span class="lever"></span>
+                                Não
+                            </label>
+                        </div>
+                    </div>
+                }
             </div>
             <br />
             <div class="input-field">

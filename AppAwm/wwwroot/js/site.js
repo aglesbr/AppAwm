@@ -9,6 +9,7 @@ window.onload = () => {
     $('.fixed-action-btn').floatingActionButton();
     $('select').formSelect();
     $('.modal').modal();
+    $('.collapsible').collapsible();
     //************************************************* VARIAVEIS DE AMBIENTE  *******************************************************
 
     var errorMsg = '<div class="col row z-depth-3 teal white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">';
@@ -17,6 +18,7 @@ window.onload = () => {
 
     //************************************************* MASCARAS / VALIDAÇÕES/ FUNÇÕES  **********************************************
     $("#Cnpj").mask("99.999.999/9999-99");
+    $("#cnpjEmpresa").mask("99.999.999/9999-99");
     $("#cep").mask("99999-999");
     $("#Cpf").mask("999.999.999-99");
     $("#telefone").mask("(99) 99999-9999");
@@ -45,6 +47,7 @@ window.onload = () => {
     $("#btnSearch").on('click', function (event, param) {
         let body = {};
         var tipo = location.pathname.replace(/[^\w\s]/gi, '')
+
         body = getObejt(tipo);
 
         if (param == "&gt;&gt;") // >>
@@ -127,17 +130,16 @@ var getObejt = function (patname) {
         case 'Empresa':
             obj = {
                 nome: $("#Empresa").val().toUpperCase(),
-                cnpj: $("#Cnpj").val(),
+                cnpj: $("#cnpjEmpresa").val(),
                 nomeFantasia: $("#nomeFantasia").val(),
                 statusfilter: $("#StatusFilter").val() 
             }
             return { empresa: JSON.stringify(obj) };
 
-        case 'Funcionario':
+        case 'Colaborador':
              obj = {
                 nome: $("#funcionario").val(),
                 id_empresa: $('#cd_empresa').val(),
-                documento: $('#Cpf').val(),
                 tipoContrato: $('#tipoContrato').val(),
                 statusfilter: $("#StatusFilter").val() 
             }
@@ -149,42 +151,6 @@ var getObejt = function (patname) {
             }
             return { cd_empresa: $("#cd_empresa").val() };
 
-        case 'Contrato':
-            obj = {
-                ds_contrato: $("#Contrato").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { contrato: JSON.stringify(obj) };
-
-        case 'Familia':
-            obj = {
-                Ds_Grupo_Familia: $("#Familia").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { familia: JSON.stringify(obj) };
-
-        case 'Link':
-            obj = {
-                no_sistema: $("#Sistema").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { link: JSON.stringify(obj) };
-
-        case 'Pedido':
-            obj = {
-                ds_tipo_pedido: $("#dspedido").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { pedido: JSON.stringify(obj) };
-
-        case 'MotivoAvaliacao':
-            obj = {
-                ds_motivo: $("#ds_motivo").val(),
-                tipo: $("#tipo").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { motivo: JSON.stringify(obj) };
-
         case 'Usuario':
             obj = {
                 nome: $("#nome").val(),
@@ -192,40 +158,6 @@ var getObejt = function (patname) {
                 statusfilter: $("#StatusFilter").val(),
             }
             return { usuario: JSON.stringify(obj) };
-
-        case 'Questionamento':
-            obj = {
-                ds_questao: $("#ds_questao").val(),
-                cd_tipo_questionamento: $("#cd_tipo_questionamento").val(),
-                cd_tipo_contrato: $("#cd_tipo_contrato").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { questionamento: JSON.stringify(obj) };
-
-        case 'Advogado':
-            obj = {
-                nu_oab: $("#Nu_Oab").val(),
-                no_advogado: $("#no_advogado").val(),
-                tipo_advogado: $("#tipo_advogado").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { advogado: JSON.stringify(obj) };
-
-        case 'OrigemEnvolvida':
-            obj = {
-                cd_empresa_envolvida: $("#Cd_Empresa_Envolvida").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { origemenvolvida: JSON.stringify(obj) };
-
-        case 'Calendario':
-            obj = {
-                dt_nacional: $("#dt_nacional").val(),
-                sg_uf: $("#sg_uf").val(),
-                ds_titulo_data: $("#ds_titulo_data").val(),
-                statusfilter: $("#StatusFilter").val()
-            }
-            return { calendario: JSON.stringify(obj) };
 
         default:
             return { id: 100, error: 'caminho desconhecido' };

@@ -1,10 +1,14 @@
 ﻿@using Newtonsoft.Json
+@{
+    Random random = new Random();
+    string img = random.Next(1, 8).ToString() + "background.jpg";
+}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HDdoc</title>
+    <title>@ViewData["Title"] - HDDOC</title>
     @* <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> *@
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/css/materialize.min.css" rel="stylesheet" />
@@ -12,22 +16,22 @@
     <link href="~/css/jquery-confirm.min.css" rel="stylesheet" />
 
 </head>
-<body style="overflow:hidden;" id="bodyMain">
+<body style="overflow:hidden; background-image:url(../images/@(!Context.User.Identity.IsAuthenticated ? img : "")); background-size:cover;" id="bodyMain">
     <header style="height:30px;">
         <nav class="z-depth-2" id="navHeader">
             <div class="row">
-                @if (Context.User.Identity.IsAuthenticated)
-                {
-                    <div class="col s2">
-                        <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">menu</i>
+                    <div class="col s1">
+                        @if (Context.User.Identity.IsAuthenticated)
+                        {
+                             <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">menu</i>
+                        }
                     </div>
-                }
 
-                <div class="center col @(!Context.User.Identity.IsAuthenticated ? "s11" : "s7")">
-                    TÉNOLOGINA EM CONFERÊNCIA DOCUMENTAL <small>HDdoc - v1.0</small>
+                <div class="center col s10">
+                    TÉNOLOGINA EM CONFERÊNCIA DOCUMENTAL <small>HDDOC - v1.0</small>
                 </div>
 
-                @if (Context.User.Identity.IsAuthenticated)
+               @*  @if (Context.User.Identity.IsAuthenticated)
                 {
                     var clientSession = JsonConvert.DeserializeObject<Cliente>(Context.Session.GetString("ClientAuth")!);
 
@@ -36,10 +40,10 @@
                     var strVidas = clientSession.PlanoVidasAtivadas + " vidas utilizadas de " + clientSession.PlanoVidas +" contratadas";
 
                     <div class="col s2"><span class="new badge @(isRedLimiteVida ? "red" : "green")" style="margin-top:20px;" data-badge-caption="">@strVidas</span></div>
-                }
+                } *@
 
                 <div class="col s1 right-align">
-                    <img src="~/images/Preview.png" style="width:48%;">
+                    <img src="~/images/Preview.png" style="width:48%; height:63px;">
                 </div>
             </div>
         </nav>
@@ -77,25 +81,26 @@
 
                 if(userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
                 {
-                    <li class='dropdown-trigger' href='#' data-target='dropdownSubMenu'>
+                    @* <li class='dropdown-trigger' href='#' data-target='dropdownSubMenu'>
                         <a class="waves-effect waves-red"><i class="material-icons red-text">subdirectory_arrow_right</i>Mais...</a>
                         <div>
                             <!-- Dropdown Structure -->
                             <ul id='dropdownSubMenu' class='dropdown-content'>
-                                <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Operacao" asp-action="Index"><i class="material-icons red-text">attach_money</i>Operação de Analise</a></li>
                                 <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Calendario" asp-action="Index"><i class="material-icons red-text">view_comfy</i>Calendário ajustavel</a></li>
                         
                                 <li class="divider" tabindex="-1"></li>
                                 <li style="height:6%;"><a class="waves-effect"><i class="material-icons red-text">keyboard_return</i>Voltar</a></li>
                             </ul>
                         </div>
-                     </li>
+                    
+                    </li> *@
+                    <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Operacao" asp-action="Index"><i class="material-icons red-text">assignment</i>Operação de Analise</a></li>
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Usuario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Usuários</a></li>
                 }
             }
 
-            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Usuario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Usuários</a></li>
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
-            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Funcionario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
+            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Colaborador" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
 @*             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Contrato" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">assignment</i>Contratos</a></li>
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Documento" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">insert_drive_file</i>Documentos</a></li>
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Familia" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">grain</i>Família</a></li>

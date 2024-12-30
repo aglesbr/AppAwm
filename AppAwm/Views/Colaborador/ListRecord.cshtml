@@ -1,4 +1,4 @@
-﻿@model X.PagedList.IPagedList<Funcionario>
+﻿@model X.PagedList.IPagedList<Colaborador>
 @using System.Text.RegularExpressions
 @using X.PagedList
 @using X.Web.PagedList
@@ -20,6 +20,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model[0].Status)
                 </th>
+                <th>
+                    Integração
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -39,18 +42,21 @@
                     <td class="@(item.Status ? "green-text": "red-text" )">
                         @(item.Status ? "Ativo" : "Inativo")
                     </td>
+                    <td class="@(item.Integrado ? "green-text": "red-text" )">
+                        @(item.Integrado ? "Integrado" : "Pendente")
+                    </td>
                     <td class="right-align">
-                        <a data-position="bottom" data-tooltip="Crachá do colaborador" class="waves-effect waves-light btn-small modal-trigger tooltipped" onclick="javascript:abreCracha(@item.Cd_Funcionario);"><i class="material-icons center">perm_contact_calendar</i></a>
-                        <a data-position="top" data-tooltip="@item.Anexos.Count(c => c.Status != null) documentos enviados" class="waves-effect waves-light btn-small @(item.Anexos?.Count > 0 ? "deep-purple darken-1" : "grey darken-1") modal-trigger  tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, codigoEmpresa: @item.Empresa?.Cd_Empresa, documento:@item.Documento, codigoCargo:@item.Cd_Cargo ,titulo:'@item.Nome', scope:'colaborador'})"><i class="material-icons center">description</i></a>
-                        <a data-position="bottom" data-tooltip="Anexo do colaborador" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, documento:@item.Documento ,titulo:'@item.Nome', scope:'funcionario'})"><i class="material-icons center">attach_file</i></a>
-                        <a data-position="right" data-tooltip="Editar" asp-controller="Funcionario" asp-action="Create" asp-route-id="@item.Cd_Funcionario" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
+                        <a data-position="bottom" data-tooltip="Crachá do colaborador" class="waves-effect waves-light btn-small modal-trigger tooltipped @(!item.Integrado ? "disabled" : "")" onclick="javascript:abreCracha(@item.Cd_Funcionario);"><i class="material-icons center">perm_contact_calendar</i></a>
+                        <a data-position="top" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small @(item.Anexos?.Count(ac => ac.TipoAnexo > 0) > 0 ? "deep-purple darken-1" : "grey darken-1") modal-trigger  tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, codigoEmpresa: @item.Empresa?.Cd_Empresa, documento:@item.Documento, codigoCargo:@item.Cd_Cargo ,titulo:'@item.Nome', scope:'colaborador', integrado:'@item.Integrado'})"><i class="material-icons center">description</i></a>
+                        <a data-position="bottom" data-tooltip="Documentação opcional" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Funcionario, documento:@item.Documento ,titulo:'@item.Nome', scope:'anexoComumColaborador'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="right" data-tooltip="Editar" asp-controller="Colaborador" asp-action="Create" asp-route-id="@item.Cd_Funcionario" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
                     </td>
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">
+                <td colspan="5">
                     <input type="hidden" value="@Model.PageCount" id="pageCount" />
                     @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
                    {
@@ -99,7 +105,6 @@ else
         $('#tableList .btnSearchColaborador').click((event) => { 
              $("#btnSearch").trigger("click", event.target.innerHTML);
         });
-
 
         $('#tableList').DataTable({
             language: {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20241127190744_Refatoracao-semRelacionamento")]
-    partial class RefatoracaosemRelacionamento
+    [Migration("20241230202657_second")]
+    partial class second
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,10 +38,6 @@ namespace AppAwm.Migrations
                         .HasColumnType("VARBINARY(MAX)")
                         .HasColumnName("ANEXO");
 
-                    b.Property<int>("Cd_Cliente")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE");
-
                     b.Property<int?>("Cd_Empresa_Id")
                         .HasColumnType("INT")
                         .HasColumnName("CD_EMPRESA_ID");
@@ -61,11 +57,11 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_USUARIO_CRIACAO");
 
                     b.Property<string>("Descricao")
-                        .HasColumnType("VARCHAR(300)")
+                        .HasColumnType("VARCHAR(100)")
                         .HasColumnName("DESCRICAO");
 
                     b.Property<DateTime>("Dt_Criacao")
-                        .HasColumnType("DATE")
+                        .HasColumnType("DATETIME")
                         .HasColumnName("DT_CRIACAO");
 
                     b.Property<DateTime>("Dt_Validade_Documento")
@@ -77,11 +73,11 @@ namespace AppAwm.Migrations
                         .HasColumnName("ID_USUARIO_CRIACAO");
 
                     b.Property<string>("MotivoRejeicao")
-                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnType("VARCHAR(200)")
                         .HasColumnName("MOTIVO_REJEICAO");
 
                     b.Property<string>("MotivoResalva")
-                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnType("VARCHAR(200)")
                         .HasColumnName("MOTIVO_RESALVA");
 
                     b.Property<string>("Nome")
@@ -92,8 +88,8 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("STATUS");
 
-                    b.Property<string>("TipoAnexo")
-                        .HasColumnType("VARCHAR(4)")
+                    b.Property<int>("TipoAnexo")
+                        .HasColumnType("INT")
                         .HasColumnName("TIPO_ANEXO");
 
                     b.HasKey("Cd_Anexo");
@@ -140,6 +136,11 @@ namespace AppAwm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Cliente"));
 
+                    b.Property<string>("CanalMq")
+                        .HasColumnType("VARCHAR(30)")
+                        .HasColumnName("CANALMQ")
+                        .HasColumnOrder(21);
+
                     b.Property<string>("HostMq")
                         .HasColumnType("VARCHAR(100)")
                         .HasColumnName("HOSTMQ")
@@ -154,6 +155,21 @@ namespace AppAwm.Migrations
                         .HasColumnType("VARCHAR(100)")
                         .HasColumnName("PASSWORDMQ")
                         .HasColumnOrder(15);
+
+                    b.Property<string>("PlanoPacoteVidas")
+                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnName("PLANO_PACOTE_VIDAS")
+                        .HasColumnOrder(26);
+
+                    b.Property<int>("PlanoVidas")
+                        .HasColumnType("INT")
+                        .HasColumnName("PLANO_VIDAS")
+                        .HasColumnOrder(27);
+
+                    b.Property<int>("PlanoVidasAtivadas")
+                        .HasColumnType("INT")
+                        .HasColumnName("PLANO_VIDAS_ATIVADAS")
+                        .HasColumnOrder(28);
 
                     b.Property<bool>("Status")
                         .HasColumnType("BIT")
@@ -170,242 +186,7 @@ namespace AppAwm.Migrations
                     b.ToTable("AWM_CLIENTE", "dbo");
                 });
 
-            modelBuilder.Entity("AppAwm.Models.DocumentacaoCargo", b =>
-                {
-                    b.Property<int>("Cd")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INT")
-                        .HasColumnName("CD")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd"));
-
-                    b.Property<int>("Cd_Cargo_Id")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CARGO_ID")
-                        .HasColumnOrder(5);
-
-                    b.Property<int>("Cd_Documento_Id")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_DOCUMENTO_ID")
-                        .HasColumnOrder(10);
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("BIT")
-                        .HasColumnName("STATUS")
-                        .HasColumnOrder(15);
-
-                    b.HasKey("Cd");
-
-                    b.HasIndex("Cd_Cargo_Id");
-
-                    b.ToTable("AWM_DOCUMENTO_CARGO", "dbo");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.DocumentacaoComplementar", b =>
-                {
-                    b.Property<int>("Cd_Documentaco_Complementar")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_DOCUMENTACO_COMPLEMENTAR")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Documentaco_Complementar"));
-
-                    b.Property<string>("Cd_DocumentoComplementar_Id")
-                        .HasColumnType("VARCHAR(6)")
-                        .HasColumnName("CD_DOCUMENTOCOMPLEMENTAR_ID")
-                        .HasColumnOrder(5);
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("VARCHAR(150)")
-                        .HasColumnName("NOME")
-                        .HasColumnOrder(10);
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit")
-                        .HasColumnName("STATUS")
-                        .HasColumnOrder(15);
-
-                    b.HasKey("Cd_Documentaco_Complementar");
-
-                    b.ToTable("AWM_DOCUMENTO_COMPLEMENTAR", "dbo");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Empresa", b =>
-                {
-                    b.Property<int>("Cd_Empresa")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CD_EMPRESA")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Empresa"));
-
-                    b.Property<int>("Cd_Cliente")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE")
-                        .HasColumnOrder(95);
-
-                    b.Property<string>("Cd_UsuarioAtualizacao")
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR(30)")
-                        .HasColumnName("CD_USUARIO_ATUALIZACAO")
-                        .HasColumnOrder(13);
-
-                    b.Property<string>("Cd_UsuarioCriacao")
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR(30)")
-                        .HasColumnName("CD_USUARIO_CRIACAO")
-                        .HasColumnOrder(11);
-
-                    b.Property<string>("Cnpj")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(14)")
-                        .HasColumnName("CNPJ")
-                        .HasColumnOrder(2);
-
-                    b.Property<string>("Complemento")
-                        .HasColumnType("VARCHAR(5000)")
-                        .HasColumnName("COMPLEMENTO")
-                        .HasColumnOrder(14);
-
-                    b.Property<DateTime?>("Dt_Atualizacao")
-                        .HasColumnType("DATE")
-                        .HasColumnName("DT_ATUALIZACAO")
-                        .HasColumnOrder(12);
-
-                    b.Property<DateTime>("Dt_Criacao")
-                        .HasColumnType("DATE")
-                        .HasColumnName("DT_CRIACAO")
-                        .HasColumnOrder(10);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("EMAIL")
-                        .HasColumnOrder(6);
-
-                    b.Property<int>("Equity")
-                        .HasColumnType("INT")
-                        .HasColumnName("EQUITY")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("Id_UsuarioCriacao")
-                        .HasColumnType("INT")
-                        .HasColumnName("ID_USUARIO_CRIACAO")
-                        .HasColumnOrder(100);
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("NOME")
-                        .HasColumnOrder(3);
-
-                    b.Property<string>("NomeFantasia")
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("NOMEFANTASIA")
-                        .HasColumnOrder(5);
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit")
-                        .HasColumnName("STATUS")
-                        .HasColumnOrder(9);
-
-                    b.Property<string>("Telefone")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(15)")
-                        .HasColumnName("TELEFONE")
-                        .HasColumnOrder(8);
-
-                    b.HasKey("Cd_Empresa");
-
-                    b.ToTable("AWM_EMPRESA", "dbo");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Endereco", b =>
-                {
-                    b.Property<int>("Cd_Endereco")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_ENDERECO");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Endereco"));
-
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)")
-                        .HasColumnName("BAIRRO");
-
-                    b.Property<int?>("Cd_Empresa")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_EMPRESA");
-
-                    b.Property<int?>("Cd_Funcionario_id")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_FUNCIONARIO");
-
-                    b.Property<string>("Cd_UsuarioAtualizacao")
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR(30)")
-                        .HasColumnName("CD_USUARIO_ATUALIZACAO");
-
-                    b.Property<string>("Cd_UsuarioCriacao")
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR(30)")
-                        .HasColumnName("CD_USUARIO_CRIACAO");
-
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(10)")
-                        .HasColumnName("CEP");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)")
-                        .HasColumnName("CIDADE");
-
-                    b.Property<string>("Detalhes")
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("DETALHES");
-
-                    b.Property<DateTime?>("Dt_Atualizacao")
-                        .HasColumnType("DATE")
-                        .HasColumnName("DT_ATUALIZACAO");
-
-                    b.Property<DateTime>("Dt_Criacao")
-                        .HasColumnType("DATE")
-                        .HasColumnName("DT_CRIACAO");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(2)")
-                        .HasColumnName("ESTADO");
-
-                    b.Property<string>("Logradouro")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("LOGRADOURO");
-
-                    b.Property<string>("Numero")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(15)")
-                        .HasColumnName("NUMERO");
-
-                    b.HasKey("Cd_Endereco");
-
-                    b.HasIndex("Cd_Empresa")
-                        .IsUnique()
-                        .HasFilter("[CD_EMPRESA] IS NOT NULL");
-
-                    b.HasIndex("Cd_Funcionario_id")
-                        .IsUnique()
-                        .HasFilter("[CD_FUNCIONARIO] IS NOT NULL");
-
-                    b.ToTable("AWM_ENDERECO", "dbo");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Funcionario", b =>
+            modelBuilder.Entity("AppAwm.Models.Colaborador", b =>
                 {
                     b.Property<int>("Cd_Funcionario")
                         .ValueGeneratedOnAdd()
@@ -419,11 +200,6 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CARGO")
                         .HasColumnOrder(40);
-
-                    b.Property<int>("Cd_Cliente")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE")
-                        .HasColumnOrder(95);
 
                     b.Property<string>("Cd_UsuarioAtualizacao")
                         .HasMaxLength(30)
@@ -463,11 +239,6 @@ namespace AppAwm.Migrations
                         .HasColumnName("ESCOLARIDADE")
                         .HasColumnOrder(30);
 
-                    b.Property<int>("EstadoCivil")
-                        .HasColumnType("INT")
-                        .HasColumnName("ESTADOCIVIL")
-                        .HasColumnOrder(20);
-
                     b.Property<bool>("Estrangeiro")
                         .HasColumnType("BIT")
                         .HasColumnName("ESTRANGEIRO")
@@ -487,6 +258,11 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("ID_USUARIO_CRIACAO")
                         .HasColumnOrder(100);
+
+                    b.Property<bool>("Integrado")
+                        .HasColumnType("bit")
+                        .HasColumnName("INTEGRADO")
+                        .HasColumnOrder(81);
 
                     b.Property<DateTime>("Nascimento")
                         .HasColumnType("DATE")
@@ -521,7 +297,6 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(80);
 
                     b.Property<string>("Telefone")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(15)")
                         .HasColumnName("TELEFONE")
                         .HasColumnOrder(25);
@@ -538,7 +313,7 @@ namespace AppAwm.Migrations
                     b.ToTable("AWM_FUNCIONARIO", "dbo");
                 });
 
-            modelBuilder.Entity("AppAwm.Models.FuncionarioVinculoObra", b =>
+            modelBuilder.Entity("AppAwm.Models.ColaboradorVinculoObra", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -605,6 +380,171 @@ namespace AppAwm.Migrations
                     b.HasIndex("Cd_Funcionario_Id");
 
                     b.ToTable("AWM_FUNCIONARIO_VINCULO_OBRA", "dbo");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.DocumentacaoCargo", b =>
+                {
+                    b.Property<int>("Cd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasColumnName("CD")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd"));
+
+                    b.Property<int>("Cd_Cargo_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_CARGO_ID")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("Cd_Documento_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_DOCUMENTO_ID")
+                        .HasColumnOrder(10);
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("BIT")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(15);
+
+                    b.HasKey("Cd");
+
+                    b.HasIndex("Cd_Cargo_Id");
+
+                    b.ToTable("AWM_DOCUMENTO_CARGO", "dbo");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.DocumentacaoComplementar", b =>
+                {
+                    b.Property<int>("Cd_Documentaco_Complementar")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_DOCUMENTACO_COMPLEMENTAR")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Documentaco_Complementar"));
+
+                    b.Property<string>("Cd_DocumentoComplementar_Id")
+                        .HasColumnType("VARCHAR(6)")
+                        .HasColumnName("CD_DOCUMENTOCOMPLEMENTAR_ID")
+                        .HasColumnOrder(5);
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("VARCHAR(150)")
+                        .HasColumnName("NOME")
+                        .HasColumnOrder(10);
+
+                    b.Property<int>("Origem")
+                        .HasColumnType("INT")
+                        .HasColumnName("ORIGEM")
+                        .HasColumnOrder(11);
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(15);
+
+                    b.HasKey("Cd_Documentaco_Complementar");
+
+                    b.ToTable("AWM_DOCUMENTO_COMPLEMENTAR", "dbo");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Empresa", b =>
+                {
+                    b.Property<int>("Cd_Empresa")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CD_EMPRESA")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Empresa"));
+
+                    b.Property<int>("Cd_Cliente_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_CLIENTE_ID")
+                        .HasColumnOrder(16);
+
+                    b.Property<string>("Cd_UsuarioAtualizacao")
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR(30)")
+                        .HasColumnName("CD_USUARIO_ATUALIZACAO")
+                        .HasColumnOrder(13);
+
+                    b.Property<string>("Cd_UsuarioCriacao")
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR(30)")
+                        .HasColumnName("CD_USUARIO_CRIACAO")
+                        .HasColumnOrder(11);
+
+                    b.Property<string>("Cnpj")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(14)")
+                        .HasColumnName("CNPJ")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("Complemento")
+                        .HasColumnType("VARCHAR(5000)")
+                        .HasColumnName("COMPLEMENTO")
+                        .HasColumnOrder(14);
+
+                    b.Property<bool>("DocumentacaoValidada")
+                        .HasColumnType("BIT")
+                        .HasColumnName("DOCUMENTACAO_VALIDADA")
+                        .HasColumnOrder(17);
+
+                    b.Property<DateTime?>("Dt_Atualizacao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DT_ATUALIZACAO")
+                        .HasColumnOrder(12);
+
+                    b.Property<DateTime>("Dt_Criacao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DT_CRIACAO")
+                        .HasColumnOrder(10);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("EMAIL")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("Equity")
+                        .HasColumnType("INT")
+                        .HasColumnName("EQUITY")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("Id_UsuarioCriacao")
+                        .HasColumnType("INT")
+                        .HasColumnName("ID_USUARIO_CRIACAO")
+                        .HasColumnOrder(100);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("NOME")
+                        .HasColumnOrder(3);
+
+                    b.Property<string>("NomeFantasia")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("NOMEFANTASIA")
+                        .HasColumnOrder(5);
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(9);
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(15)")
+                        .HasColumnName("TELEFONE")
+                        .HasColumnOrder(8);
+
+                    b.HasKey("Cd_Empresa");
+
+                    b.HasIndex("Cd_Cliente_Id");
+
+                    b.ToTable("AWM_EMPRESA", "dbo");
                 });
 
             modelBuilder.Entity("AppAwm.Models.HistoricoExecucao", b =>
@@ -697,65 +637,6 @@ namespace AppAwm.Migrations
                     b.ToTable("AWM_OBRA", "dbo");
                 });
 
-            modelBuilder.Entity("AppAwm.Models.Treinamento", b =>
-                {
-                    b.Property<int>("Cd_Treinamento")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CD_TREINAMENTO")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Treinamento"));
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)")
-                        .HasColumnName("NOME")
-                        .HasColumnOrder(10);
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("BIT")
-                        .HasColumnName("STATUS")
-                        .HasColumnOrder(30);
-
-                    b.HasKey("Cd_Treinamento");
-
-                    b.ToTable("AWM_TREINAMENTO", "dbo");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.TreinamentoHabilidade", b =>
-                {
-                    b.Property<int>("Cd_Habilidade")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CD_HABILIDADE")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Habilidade"));
-
-                    b.Property<int>("Cd_Treinamento_Id")
-                        .HasColumnType("int")
-                        .HasColumnName("CD_TREINAMENTO_ID")
-                        .HasColumnOrder(10);
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)")
-                        .HasColumnName("NOME")
-                        .HasColumnOrder(20);
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("BIT")
-                        .HasColumnName("STATUS")
-                        .HasColumnOrder(30);
-
-                    b.HasKey("Cd_Habilidade");
-
-                    b.HasIndex("Cd_Treinamento_Id");
-
-                    b.ToTable("AWM_TREINAMENTO_HABILIDADE", "dbo");
-                });
-
             modelBuilder.Entity("AppAwm.Models.Usuario", b =>
                 {
                     b.Property<int>("Cd_Usuario")
@@ -765,9 +646,9 @@ namespace AppAwm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Usuario"));
 
-                    b.Property<int>("Cd_Cliente_Id")
+                    b.Property<int>("Cd_Empresa")
                         .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE");
+                        .HasColumnName("CD_EMPERSA");
 
                     b.Property<string>("Cd_Usuario_Atualizacao")
                         .HasMaxLength(30)
@@ -841,13 +722,31 @@ namespace AppAwm.Migrations
                         .WithMany("Anexos")
                         .HasForeignKey("Cd_Empresa_Id");
 
-                    b.HasOne("AppAwm.Models.Funcionario", "Funcionario")
+                    b.HasOne("AppAwm.Models.Colaborador", "Colaborador")
                         .WithMany("Anexos")
                         .HasForeignKey("Cd_Funcionario_Id");
 
-                    b.Navigation("Empresa");
+                    b.Navigation("Colaborador");
 
-                    b.Navigation("Funcionario");
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Colaborador", b =>
+                {
+                    b.HasOne("AppAwm.Models.Empresa", "Empresa")
+                        .WithMany("Funcionarios")
+                        .HasForeignKey("Id_Empresa");
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.ColaboradorVinculoObra", b =>
+                {
+                    b.HasOne("AppAwm.Models.Colaborador", "Colaborador")
+                        .WithMany("VinculoObras")
+                        .HasForeignKey("Cd_Funcionario_Id");
+
+                    b.Navigation("Colaborador");
                 });
 
             modelBuilder.Entity("AppAwm.Models.DocumentacaoCargo", b =>
@@ -859,37 +758,13 @@ namespace AppAwm.Migrations
                     b.Navigation("Cargo");
                 });
 
-            modelBuilder.Entity("AppAwm.Models.Endereco", b =>
+            modelBuilder.Entity("AppAwm.Models.Empresa", b =>
                 {
-                    b.HasOne("AppAwm.Models.Empresa", "Empresa")
-                        .WithOne("Endereco")
-                        .HasForeignKey("AppAwm.Models.Endereco", "Cd_Empresa");
+                    b.HasOne("AppAwm.Models.Cliente", "Cliente")
+                        .WithMany("Empresas")
+                        .HasForeignKey("Cd_Cliente_Id");
 
-                    b.HasOne("AppAwm.Models.Funcionario", "Funcionario")
-                        .WithOne("Endereco")
-                        .HasForeignKey("AppAwm.Models.Endereco", "Cd_Funcionario_id");
-
-                    b.Navigation("Empresa");
-
-                    b.Navigation("Funcionario");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Funcionario", b =>
-                {
-                    b.HasOne("AppAwm.Models.Empresa", "Empresa")
-                        .WithMany("Funcionarios")
-                        .HasForeignKey("Id_Empresa");
-
-                    b.Navigation("Empresa");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.FuncionarioVinculoObra", b =>
-                {
-                    b.HasOne("AppAwm.Models.Funcionario", "Funcionario")
-                        .WithMany("VinculoObras")
-                        .HasForeignKey("Cd_Funcionario_Id");
-
-                    b.Navigation("Funcionario");
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Obra", b =>
@@ -901,45 +776,30 @@ namespace AppAwm.Migrations
                     b.Navigation("Empresa");
                 });
 
-            modelBuilder.Entity("AppAwm.Models.TreinamentoHabilidade", b =>
-                {
-                    b.HasOne("AppAwm.Models.Treinamento", "Treinamento")
-                        .WithMany("Habilidades")
-                        .HasForeignKey("Cd_Treinamento_Id");
-
-                    b.Navigation("Treinamento");
-                });
-
             modelBuilder.Entity("AppAwm.Models.Cargo", b =>
                 {
                     b.Navigation("DocumentoComplementar");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Cliente", b =>
+                {
+                    b.Navigation("Empresas");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Colaborador", b =>
+                {
+                    b.Navigation("Anexos");
+
+                    b.Navigation("VinculoObras");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Empresa", b =>
                 {
                     b.Navigation("Anexos");
 
-                    b.Navigation("Endereco")
-                        .IsRequired();
-
                     b.Navigation("Funcionarios");
 
                     b.Navigation("Obras");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Funcionario", b =>
-                {
-                    b.Navigation("Anexos");
-
-                    b.Navigation("Endereco")
-                        .IsRequired();
-
-                    b.Navigation("VinculoObras");
-                });
-
-            modelBuilder.Entity("AppAwm.Models.Treinamento", b =>
-                {
-                    b.Navigation("Habilidades");
                 });
 #pragma warning restore 612, 618
         }

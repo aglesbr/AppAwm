@@ -1,6 +1,5 @@
 ﻿using AppAwm.Models;
 using AppAwm.Models.Enum;
-using AppAwm.Services.Interface;
 using Newtonsoft.Json;
 
 namespace AppAwm.Respostas
@@ -12,12 +11,12 @@ namespace AppAwm.Respostas
         public const string messageOfFalha = "Não foi possivel estabelecer conexão com o banco de dados";
         public const string messageOfConsulta = "Consulta realizada com Sucesso.";
 
-        public List<Empresa> Empresas { get;} = [];
+        public List<Empresa> Empresas { get; } = [];
         public Empresa Empresa { get; } = new();
         public ReceitaConsumerCnpj ReceitaConsumerCnpj { get; } = new();
         public string[] Erros { get; } = [];
 
-        public EmpresaAnswer(bool success, string message) : base(success, message){}
+        public EmpresaAnswer(bool success, string message) : base(success, message) { }
 
         public EmpresaAnswer(bool success, string message, string[] erro) : base(success, message) => Erros = erro;
 
@@ -30,7 +29,7 @@ namespace AppAwm.Respostas
 
         public EmpresaAnswer(bool success, string message, List<Empresa> empresas) : base(success, message) => Empresas = empresas;
 
-        public static EmpresaAnswer DeSucesso(EnumAcao acao) => new(true, string.Format(messageOfSuccess,  (acao == EnumAcao.Criar ? "Cadastrada" : "Atualizada")));
+        public static EmpresaAnswer DeSucesso(EnumAcao acao) => new(true, string.Format(messageOfSuccess, (acao == EnumAcao.Criar ? "Cadastrada" : "Atualizada")));
 
         public static EmpresaAnswer DeSucesso(Empresa empresa) => new(true, string.Format(messageOfSuccess, (empresa.Dt_Atualizacao == null ? "Cadastrada" : "Atualizada")), empresa);
 

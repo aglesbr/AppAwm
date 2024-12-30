@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
     [Table("AWM_FUNCIONARIO_VINCULO_OBRA", Schema = "dbo")]
-    public class FuncionarioVinculoObra
+    public class ColaboradorVinculoObra
     {
         [Key]
         [Column("ID", TypeName = "int", Order = 1)]
@@ -42,7 +42,7 @@ namespace AppAwm.Models
         [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
         public int Id_UsuarioCriacao { get; set; }
 
-        public virtual Funcionario? Funcionario { get; }
+        public virtual Colaborador? Colaborador { get; }
 
     }
 }

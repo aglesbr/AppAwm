@@ -4,9 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AppAwm.Models
 {
     [Table("AWM_FUNCIONARIO", Schema = "dbo")]
-    public class Funcionario
+    public class Colaborador
     {
-
         [Key]
         [Column("CD_FUNCIONARIO", TypeName = "INT", Order = 1)]
         public int Cd_Funcionario { get; set; }
@@ -39,23 +38,17 @@ namespace AppAwm.Models
         [Column("ESTRANGEIRO", TypeName = "BIT", Order = 16)]
         public bool Estrangeiro { get; set; }
 
-        [Display(Name = "Estado Civil")]
-        [Column("ESTADOCIVIL", TypeName = "INT", Order = 20)]
-        public int EstadoCivil { get; set; }
-
         [Display(Name = "Tel. Cel")]
         [Column("TELEFONE", TypeName = "VARCHAR(15)", Order = 25)]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o telefone.")]
         public string? Telefone { get; set; }
 
         [Display(Name = "Escolaridade")]
         [Column("ESCOLARIDADE", TypeName = "INT", Order = 30)]
-        [Range(1,50, ErrorMessage = "Selecione o grau de escolaridade.")]
         public int Escolaridade { get; set; }
 
         [Display(Name = "Tipo de Contrato")]
         [Column("TIPOCONTRATO", TypeName = "INT", Order = 35)]
-        [Range(1,20, ErrorMessage = "Selecione o tipo do contrato.")]
+        [Range(1, 20, ErrorMessage = "Selecione o tipo do contrato.")]
         public int TipoContrato { get; set; }
 
         [Display(Name = "Cargo|Função *")]
@@ -64,12 +57,12 @@ namespace AppAwm.Models
         public int Cd_Cargo { get; set; }
 
         [Display(Name = "Pcd")]
-        [Column("PCD",  Order = 46)]
+        [Column("PCD", Order = 46)]
         public bool Pcd { get; set; }
 
         [Display(Name = "Admissão *")]
         [Column("DT_ADMISSAO", TypeName = "DATE", Order = 55)]
-        public DateTime Dt_Admissao{ get; set; } = DateTime.Now.Date;
+        public DateTime Dt_Admissao { get; set; } = DateTime.Now.Date;
 
         [Column("DT_CRIACAO", TypeName = "DATE", Order = 60)]
         public DateTime Dt_Criacao { get; set; } = DateTime.Now;
@@ -88,6 +81,9 @@ namespace AppAwm.Models
         [Column("STATUS", Order = 80)]
         public bool Status { get; set; }
 
+        [Column("INTEGRADO", Order = 81)]
+        public bool Integrado { get; set; }
+
         [Display(Name = "Observações")]
         [Column("OBSERVACAO", TypeName = "VARCHAR(200)", Order = 85)]
         public string? Observacao { get; set; }
@@ -95,25 +91,20 @@ namespace AppAwm.Models
         [Column("FOTO", TypeName = "BINARY", Order = 90)]
         public byte[]? Foto { get; set; }
 
-        [Column("CD_CLIENTE", TypeName = "INT", Order = 95)]
-        public int Cd_Cliente { get; set; }
-
         [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
         public int Id_UsuarioCriacao { get; set; }
 
         public virtual Empresa? Empresa { get; set; }
 
-        public virtual Endereco Endereco { get; set; } =  new();
-
         [NotMapped]
         public virtual Cargo? Cargo { get; set; } = null;
 
-        public virtual ICollection<FuncionarioVinculoObra>? VinculoObras { get; set; }
+        public virtual ICollection<ColaboradorVinculoObra>? VinculoObras { get; set; }
 
         [NotMapped]
         public virtual ICollection<Anexo>? Anexos { get; set; }
 
-       [NotMapped]
+        [NotMapped]
         public int? StatusFilter { get; set; }
     }
 }

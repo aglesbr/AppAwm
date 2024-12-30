@@ -6,6 +6,7 @@
         None = 0,
         Terceiro = 1,
         Funcionario = 2,
-        Administrador = Terceiro | Funcionario
+        Analista = 4,
+        Administrador = Terceiro | Funcionario | Analista
     }
 }

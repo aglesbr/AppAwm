@@ -7,6 +7,6 @@ namespace AppAwm.Services.Interface
     {
         T Save(Obra anexo);
         T List(Expression<Func<Obra, bool>> predicate);
-        T SeVinculado(Expression<Func<FuncionarioVinculoObra, bool>> predicate);
+        T SeVinculado(Expression<Func<ColaboradorVinculoObra, bool>> predicate);
     }
 }

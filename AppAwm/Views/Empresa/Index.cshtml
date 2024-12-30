@@ -1,40 +1,71 @@
-﻿@{
+﻿@model AppAwm.Respostas.EmpresaAnswer
+
+@{
     ViewData["Title"] = "Empresas";
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
 }
 
-<h4>Pesquisar Empresas</h4>
+@if (userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+{
+    <form>
+        <div class="row">
+            <h4>Pesquisar Empresas</h4>
+            <div class="input-field col s3">
+                <input id="cnpjEmpresa" type="text">
+                <label for="Cnpj">CNPJ</label>
+            </div>
+            <div class="input-field col s3">
+                <input id="Empresa" type="text">
+                <label for="Empresa">Empresa</label>
+            </div>
+            <div class="input-field col s3">
+                <input id="nomeFantasia" type="text">
+                <label>Nome Fantasia</label>
+            </div>
+            <div class="input-field col s3">
+                <select id="StatusFilter">
+                    <option value="" selected>Todos</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                </select>
+                <label>Status</label>
+            </div>
+        </div>
 
-<form>
-    <div class="row">
-        <div class="input-field col s3">
-            <input id="Cnpj" type="text" class="validate">
-            <label for="Cnpj">CNPJ</label>
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small " id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Empresa" asp-action="Create" class="waves-effect waves-light btn-small "><i class="material-icons left small">add</i>Nova Empresa</a>
         </div>
-        <div class="input-field col s3">
-            <input id="Empresa" type="text">
-            <label for="Empresa">Empresa</label>
-        </div>
-        <div class="input-field col s3">
-            <input id="nomeFantasia" type="text" >
-            <label>Nome Fantasia</label>
-        </div>
-        <div class="input-field col s3">
-            <select id="StatusFilter">
-                <option value="" selected>Todos</option>
-                <option value="1">Ativo</option>
-                <option value="0">Inativo</option>
-            </select>
-            <label>Status</label>
-        </div>
-    </div>
-
-    <div class="col s12">
-        <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
-        <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
-        <a asp-controller="Empresa" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Nova Empresa</a>
-    </div>
-</form>
+    </form>
 <hr>
+}
+else
+{
+    <div class="row">
+        <div class="col s6">
+            <div class="card blue-grey z-depth-3">
+                <div class="card-content white-text">
+                    <span class="card-title">@Model.Empresa.Nome</span>
+                    <p>
+                        Nome Fantasia: @(Model.Empresa.NomeFantasia ?? " ****** ") <br/>
+                        STATUS: @(Model.Empresa.Status ? "ATIVO" : "INATIVO")<br/>
+                        CNPJ: @Convert.ToUInt64(Model.Empresa.Cnpj).ToString(@"00\.000\.000\/0000\-00")
+                    </p>
+                </div>
+                <div class="card-action orange-text accent-3">
+                    <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigo:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
+                        <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos obrigatórios
+                    </a>
+                    <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" onclick="javascript:modalParams({codigo:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">
+                        <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos Opcionais
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 <!-- Modal Anexo Empresa -->
 <div id="modalAnexoEmpresa" class="modal modal-fixed-footer">
     <input type="hidden" id="scope" name="scope" />
@@ -44,7 +75,7 @@
         <div class="modal-content">
             <div class="right-align" id="titulo"></div>
             <div class="row" style="margin-bottom:2px;">
-                <div class="file-field input-field col s8">
+                <div id="divFileAnexo" class="file-field input-field col s4">
                     <div class="btn">
                         <span>Localizar</span>
                         <input type="file" class="btn-small" accept="application/pdf" name="files" id="files" multiple>
@@ -53,9 +84,15 @@
                         <input class="file-path validate" type="text" placeholder="Adicionar arquivos">
                     </div>
                 </div>
+                <div id="divTipoAnexo" class="input-field col s4">
+                    <select id="tipoAnexo" data-size="6" size="6">
+                        <option value="0" disabled selected>Selecione</option>
+                    </select>
+                    <label>Tipo do documento</label>
+                </div>
                 <div class="input-field col s4">
-                    <input id="descricao" type="text" maxlength="200">
-                    <label for="Descricao">Descriçao</label>
+                    <input id="descricao" type="text" maxlength="100">
+                    <label for="Descricao">Descrição</label>
                 </div>
             </div>
 
@@ -83,7 +120,7 @@
                     <label for="NomeObra">Nome da Obra</label>
                 </div>
                 <div class="input-field col s6">
-                    <input id="descricaoObra" type="text" maxlength="200">
+                    <input id="descricaoObra" type="text" maxlength="100">
                     <label for="DescricaoObra">Descrição da Obra</label>
                 </div>
             </div>

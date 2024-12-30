@@ -12,7 +12,7 @@ namespace AppAwm.Services
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
 
         public UsuarioService() { }
-      
+
         public UsuarioAnswer Get(Expression<Func<Usuario, bool>> predicate, EnumAcao acao)
         {
             try
@@ -79,20 +79,20 @@ namespace AppAwm.Services
         {
             using DbCon db = new();
             using var contexto = new RepositoryGeneric<Empresa>(db, out status);
-          //  contexto.StartTransaction();
+            //  contexto.StartTransaction();
         }
 
         public void CloseTransaction()
         {
             using DbCon db = new();
             using var contexto = new RepositoryGeneric<Empresa>(db, out status);
-          //  contexto.FinishTransactio();
+            //  contexto.FinishTransactio();
         }
 
-        public List<Cliente> GetClientes(Expression<Func<Cliente, bool>> predicate)
+        public List<Empresa> GetEmpresas(Expression<Func<Empresa, bool>> predicate)
         {
             using DbCon db = new();
-            using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+            using var contexto = new RepositoryGeneric<Empresa>(db, out status);
             try
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)

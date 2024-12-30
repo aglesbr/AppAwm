@@ -1,12 +1,10 @@
 using AppAwm.DAL;
-using AppAwm.Models;
 using AppAwm.Respostas;
 using AppAwm.Services;
 using AppAwm.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
@@ -40,11 +38,11 @@ builder.Services.Configure<IISServerOptions>(options =>
 builder.Services.AddScoped<IUsuario<UsuarioAnswer>, UsuarioService>();
 builder.Services.AddScoped<IEmpresa<EmpresaAnswer>, EmpresaService>();
 builder.Services.AddScoped<IAnexo<AnexoAnswer>, AnexoService>();
-builder.Services.AddScoped<IFuncionario<FuncionarioAnswer>, FuncionarioService>();
+builder.Services.AddScoped<IColaborador<ColaboradorAnswer>, ColaboradorService>();
 builder.Services.AddScoped<IObra<ObraAnswer>, ObraService>();
-builder.Services.AddScoped<ITreinamento<TreinamentoAnswer>, TreinamentoService>();
 builder.Services.AddScoped<ICargo<CargoAnswer>, CargoService>();
 builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAnswer>, DocumentacaoComplementarService>();
+builder.Services.AddScoped<IChart<ChartAnswer>, ChartService>();
 builder.Services.AddScoped<DepartamentoService>();
 
 builder.Services.AddSession(s =>

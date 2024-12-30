@@ -11,6 +11,6 @@ namespace AppAwm.Models
         public int Id { get; set; }
 
         [Column("DT_EXECUCAO", TypeName = "DATE", Order = 10)]
-        public DateTime Dt_Execucao{ get; set; }
+        public DateTime Dt_Execucao { get; set; }
     }
 }

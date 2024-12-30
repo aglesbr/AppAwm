@@ -78,11 +78,14 @@ namespace AppAwm.Models
         [MaxLength(30)]
         public string? Cd_Usuario_Atualizacao { get; set; }
 
-        [Column("CD_CLIENTE", TypeName = "INT")]
-        public int Cd_Cliente_Id { get; set; }
+        [Column("CD_EMPERSA", TypeName = "INT")]
+        public int Cd_Empresa { get; set; }
 
         [NotMapped]
-        public virtual Cliente? Cliente { get; } = null;
+        public Empresa? Empresa { get; set; }
+
+        [NotMapped]
+        public Cliente? Cliente { get; set; }
 
         [NotMapped]
         public int? StatusFilter { get; set; }

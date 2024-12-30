@@ -18,10 +18,6 @@
             <label>Nome</label>
         </div>
         <div class="input-field col s2">
-            <input id="Cpf" type="text">
-            <label>Cpf</label>
-        </div>
-        <div class="input-field col s2">
             <select id="tipoContrato">
                 <option value="0" selected>Todos</option>
                 <option value="1">Clt</option>
@@ -38,12 +34,15 @@
             </select>
             <label>Status</label>
         </div>
+        <div class="input-field col s2">
+            <span class="new badge green" data-badge-caption="@AppAwm.Util.Utility.Cliente.PlanoVidasAtivadas vidas utilizadas de @AppAwm.Util.Utility.Cliente.PlanoVidas contratadas"></span>
+        </div>
     </div>
     <div>
         <div class="col s12">
             <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
             <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
-            <a asp-controller="Funcionario" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Novo Colaborador</a>
+            <a asp-controller="Colaborador" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Novo Colaborador</a>
         </div>
     </div>
 </form>
@@ -53,8 +52,9 @@
     <input type="hidden" id="documento" name="documento" />
     <input type="hidden" id="codigoEmpresa" name="codigoEmpresa" />
     <input type="hidden" id="codigoCargo" name="codigoCargo" />
+    <input type="hidden" id="isIntegrado" name="isIntegrado" />
 
-<!-- Modal Anexo Funcionario -->
+<!-- Modal Anexo Colaborador -->
 <div id="modalAnexoFuncionario" class="modal modal-fixed-footer">
     <form method="post" enctype="multipart/form-data" id="frmAnexo">
         <div class="modal-content">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="input-field col s4">
-                    <input id="descricao" type="text">
+                    <input id="descricao" type="text" maxlength="100">
                     <label for="Descricao">Descriçao</label>
                 </div>
             </div>
@@ -106,17 +106,17 @@
                 </div>
                 <div class="input-field col s4">
                     <select id="tipoAnexo">
-                        <option value="" disabled selected>Selecione</option>
+                        <option value="0" disabled selected>Selecione</option>
                     </select>
                     <label>Tipo do documento</label>
                 </div>
                 <div class="input-field  col s2">
-                    <input id="descricaoColaborador" type="text">
+                    <input id="descricaoColaborador" type="text" maxlength="100">
                     <label for="Descricao">Descrição</label>
                 </div>
                 <div class="col s1 right-align" style="margin-top:30px;">
-                    <a data-position="left" data-tooltip="Tipo de documento ou descrição" onclick="javascript:pesquisarAnexo();" class="waves-effect waves-light tooltipped btn-small">
-                        <i class="material-icons center">search</i></a>
+@*                     <a data-position="left" data-tooltip="Tipo de documento ou descrição" onclick="javascript:pesquisarAnexo();" class="waves-effect waves-light tooltipped btn-small">
+                        <i class="material-icons center">search</i></a> *@
                     <button type="reset" data-position="button" data-tooltip="Limpar Formulario" class="waves-effect waves-light tooltipped btn-small red darken-4">
                         <i class="material-icons center">clear</i>
                     </button>

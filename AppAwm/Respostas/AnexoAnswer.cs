@@ -19,6 +19,6 @@ namespace AppAwm.Respostas
 
         public static AnexoAnswer DeSucesso() => new(true, messageOfSuccess);
         public static AnexoAnswer DeSucesso(string sucesso) => new(true, sucesso ?? messageOfSuccess);
-        public static AnexoAnswer DeSucesso(List<Anexo> anexos) => new(true,messageOfConsulta, anexos);
+        public static AnexoAnswer DeSucesso(List<Anexo> anexos) => new(true, messageOfConsulta, anexos);
     }
 }

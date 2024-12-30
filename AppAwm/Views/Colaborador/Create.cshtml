@@ -1,0 +1,178 @@
+﻿@model AppAwm.Respostas.ColaboradorAnswer
+
+@{
+    var isChecked = Model?.Colaborador.Cd_Funcionario == 0 ? "true" : Model?.Colaborador.Status.ToString().ToLower();
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+}
+
+<p class="flow-text"> @(Model.Colaborador.Cd_Funcionario == 0 ? "Cadastrar" : "Atualizar") Colaborador</p>
+
+<form asp-action='@(Model?.Colaborador.Cd_Funcionario == 0 ? "Create" : "Edit")'>
+    <input asp-for="Colaborador.Cd_Funcionario" id="cd_funcionario" type="hidden" />
+    <input asp-for="Colaborador.Cd_Cargo" id="Cd_Cargo" type="hidden" />
+    <input asp-for="Colaborador.Id_UsuarioCriacao" id="Id_UsuarioCriacao" type="hidden" />
+    <div class="row">
+        <div class="input-field col s2 center-align">
+            <div class="image-upload">
+                <label for="file-input">
+                    @if (Model.Colaborador.Foto == null)
+                    {
+                        <img src="~/images/user.png" style="height:100px; width:100px; cursor:pointer;" />
+                    }
+                    else
+                    {
+                        var base64 = Convert.ToBase64String(Model.Colaborador.Foto);
+                        var imgSrc = String.Format("data:image/*;base64,{0}", base64);
+                        <img src="@imgSrc" style="height:100px; width:120px; cursor:pointer;" />
+                    }
+                </label>
+                <input id="file-input" name="file" type="file" accept="image/*" />
+            </div>
+        </div>
+        <div class="input-field col s4" style="top:30px;">
+            <select id="id_Empresa" asp-for="Colaborador.Id_Empresa" asp-items="Model?.Empresas">
+                <option value="0" disabled selected>...</option>
+            </select>
+            <label>Empresa *</label>
+        </div>
+        <div class="input-field col s4" style="top:30px;">
+            <label asp-for="Colaborador.Nome"></label>
+            <input asp-for="Colaborador.Nome" id="funcionario" autocomplete="off" />
+        </div>
+        <div class="input-field col s2" style="top:30px;">
+            <label asp-for="Colaborador.Documento"></label>
+            <input asp-for="Colaborador.Documento" id="Cpf" autocomplete="off" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s2">
+            <label asp-for="Colaborador.Telefone"></label>
+            <input asp-for="Colaborador.Telefone" id="telefone" type="tel" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <select id="sexo" asp-for="Colaborador.Sexo">
+                <option value="" disabled selected>...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+                <option value="O">Outros</option>
+            </select>
+            <label>Sexo</label>
+        </div>
+        <div class="input-field col s2">
+            <select id="escolaridade" asp-for="Colaborador.Escolaridade">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Ensino Fundamental</option>
+                <option value="2">Ensino Médio</option>
+                <option value="3">Ensino Superior</option>
+                <option value="5">Pós-graduação</option>
+                <option value="6">Mestrado</option>
+                <option value="7">Doutorado</option>
+            </select>
+            <label>Escolaridade</label>
+        </div>
+
+        <div class="input-field col s4">
+            <input asp-for="Colaborador.Cargo.Nome" type="text" id="cargo" class="autocomplete" autocomplete="off">
+            <label for="cargo">Função/Cargo *</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s2">
+            <label asp-for="Colaborador.Nascimento"></label>
+            <input type="date" asp-for="Colaborador.Nascimento" id="dtNacimento" autocomplete="off" />
+        </div>
+        <div class="input-field col s2">
+            <label asp-for="Colaborador.Dt_Admissao"></label>
+            <input asp-for="Colaborador.Dt_Admissao" id="dtAdmissao" type="date" autocomplete="off"/>
+        </div>
+        <div class="input-field col s2">
+            <select id="tipoContrato" asp-for="Colaborador.TipoContrato">
+                <option value="0" disabled selected>...</option>
+                <option value="1">Autônomo</option>
+                <option value="1">PJ</option>
+                <option value="1">PJ (MEI)</option>
+                <option value="3">CLT Horista</option>
+                <option value="4">CLT Temporário</option>
+                <option value="5">CLT Indeterminado</option>
+                <option value="6">Cooperado</option>
+                <option value="7">Estrangeiro Imigrante</option>
+                <option value="8">Estágiario</option>
+            </select>
+            <label>Tipo de Contrato *</label>
+        </div>
+        <div class="col s1 input-field">
+            <label>
+                <input asp-for=Colaborador.Pcd type="checkbox" />
+                <span>PCD</span>
+            </label>
+        </div>
+        <div class="col s1 input-field">
+            <label>
+                <input asp-for=Colaborador.Pcd type="checkbox" />
+                <span>Estrangeiro</span>
+            </label>
+        </div>
+        <div class="input-field col s4">
+            <label asp-for="Colaborador.Observacao"></label>
+            <input asp-for="Colaborador.Observacao" id="observacao" autocomplete="off" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s2">
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Colaborador.Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+        </div>
+        @if (userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+        {
+            <div class="col s3">
+                <div class="switch">
+                    Integração: &nbsp;
+                    <label>
+                        Pendente
+                        <input type="checkbox" asp-for="Colaborador.Integrado" id="Integrado">
+                        <span class="lever"></span>
+                        Integrado
+                    </label>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
+        <div class="input-field">
+            <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                <i class="material-icons left">save</i>
+                @(Model?.Colaborador.Cd_Funcionario == 0 ? "Salvar" : "Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model?.Colaborador.Cd_Funcionario == 0 ? "" : "none");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                <i class="material-icons left">arrow_back</i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</form>
+<script src="~/js/funcionario/funcionario.js"></script>
+<style>
+    .image-upload > input {
+        display: none;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('#Status').prop('checked', @isChecked);
+    });
+</script>

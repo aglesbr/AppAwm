@@ -19,7 +19,6 @@ namespace AppAwm.Models
 
         [Display(Name = "Logradouro")]
         [Column("LOGRADOURO", TypeName = "VARCHAR(100)")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o nome da rua.")]
         public string? Logradouro { get; set; }
 
         [Display(Name = "Número")]

@@ -8,10 +8,10 @@ using System.Linq.Expressions;
 
 namespace AppAwm.Services
 {
-    public class EmpresaService  : IEmpresa<EmpresaAnswer>
+    public class EmpresaService : IEmpresa<EmpresaAnswer>
     {
-        public EmpresaService(){}
-        
+        public EmpresaService() { }
+
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
 
         public EmpresaAnswer Get(Expression<Func<Empresa, bool>> predicate, EnumAcao acao)
@@ -22,7 +22,7 @@ namespace AppAwm.Services
                 using var contexto = new RepositoryGeneric<Empresa>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    Empresa? empresa = contexto.GetAll(predicate).Include(f => f.Funcionarios).Include(f => f.Endereco).FirstOrDefault();
+                    Empresa? empresa = contexto.GetAll(predicate).Include(f => f.Funcionarios).FirstOrDefault();
 
                     return empresa is not null ? EmpresaAnswer.DeSucesso(empresa) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
                 }
@@ -44,7 +44,32 @@ namespace AppAwm.Services
                 using var contexto = new RepositoryGeneric<Empresa>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<Empresa> empresas = [.. contexto.GetAll(predicate).Include(f => f.Funcionarios).OrderBy(o => o.Nome).Include(o => o.Obras)];
+                    List<Empresa> empresas = [.. contexto.GetAll(predicate)
+                        .Include(f => f.Funcionarios)
+                        .Include(o => o.Obras)
+                        .OrderBy(o => o.Nome)];
+                    return empresas.Count > 0 ? EmpresaAnswer.DeSucesso(empresas) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
+                }
+
+                return EmpresaAnswer.DeFalha();
+            }
+            catch (Exception ex)
+            {
+                return EmpresaAnswer.DeFalha(ex.Message);
+            }
+        }
+
+        public EmpresaAnswer ListChart(Expression<Func<Empresa, bool>> predicate)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<Empresa>(db, out status);
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    List<Empresa> empresas = [.. contexto.GetAll(predicate)
+                        .Include(f => f.Funcionarios)
+                        .Include(f => f.Anexos)];
                     return empresas.Count > 0 ? EmpresaAnswer.DeSucesso(empresas) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
                 }
 
@@ -66,17 +91,10 @@ namespace AppAwm.Services
                 {
                     int ret = acao == EnumAcao.Criar ? contexto.Create(empresa) : contexto.Edit(empresa);
 
-                    if (acao == EnumAcao.Editar)
-                    {
-                        var contextoEndereco = new RepositoryGeneric<Endereco>(db, out status);
-                        contextoEndereco.Edit(empresa.Endereco);
-                    }
-                    
-
                     if (ret <= 0)
                         return EmpresaAnswer.DeFalha("Ocorreu um erro ao tentar registar a empresa");
 
-                    return ret > 0 ?  EmpresaAnswer.DeSucesso(acao) : EmpresaAnswer.DeErro();
+                    return ret > 0 ? EmpresaAnswer.DeSucesso(acao) : EmpresaAnswer.DeErro();
                 }
 
                 return EmpresaAnswer.DeFalha();
@@ -92,7 +110,7 @@ namespace AppAwm.Services
             try
             {
                 var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Get, string.Format(Util.Utility.UrlApi,cnpj));
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Format(Util.Utility.UrlApi, cnpj));
                 request.Headers.Add("Authorization", Util.Utility.KeyApi);
                 var response = await client.SendAsync(request);
                 var isSuccess = response.EnsureSuccessStatusCode();
@@ -114,10 +132,10 @@ namespace AppAwm.Services
             }
         }
 
-        public int Vincular(FuncionarioVinculoObra vinculoObra)
+        public int Vincular(ColaboradorVinculoObra vinculoObra)
         {
             using DbCon db = new();
-            using var contexto = new RepositoryGeneric<FuncionarioVinculoObra>(db, out status);
+            using var contexto = new RepositoryGeneric<ColaboradorVinculoObra>(db, out status);
             try
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
@@ -135,13 +153,34 @@ namespace AppAwm.Services
 
                     int ret = retorno == null ? contexto.Create(vinculoObra) : contexto.Edit(retorno);
 
-                    return ret ;
+                    return ret;
                 }
                 return 0;
             }
             catch (Exception ex)
             {
                 return 0;
+            }
+        }
+
+        public List<Cliente> GetClientes(Expression<Func<Cliente, bool>> predicate)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    List<Cliente> clientes = [.. contexto.GetAll(predicate)];
+
+                    return clientes;
+                }
+
+                return new();
+            }
+            catch (Exception ex)
+            {
+                return new();
             }
         }
 

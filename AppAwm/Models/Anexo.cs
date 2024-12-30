@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using AppAwm.Models.Enum;
 using System.ComponentModel.DataAnnotations;
-using AppAwm.Models.Enum;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
@@ -21,14 +21,14 @@ namespace AppAwm.Models
         public string? Nome { get; set; }
 
         [Display(Name = "Descrição")]
-        [Column("DESCRICAO", TypeName = "VARCHAR(300)")]
+        [Column("DESCRICAO", TypeName = "VARCHAR(100)")]
         public string? Descricao { get; set; }
 
         [Display(Name = "Anexo")]
         [Column("ANEXO", TypeName = "VARBINARY(MAX)")]
         public byte[]? Arquivo { get; set; }
 
-        [Column("DT_CRIACAO", TypeName = "DATE")]
+        [Column("DT_CRIACAO", TypeName = "DATETIME")]
         public DateTime Dt_Criacao { get; set; } = DateTime.Now;
 
         [Column("DT_VALIDADE_DOCUMENTO", TypeName = "DATE")]
@@ -47,31 +47,28 @@ namespace AppAwm.Models
         public string? Cd_UsuarioAnalista { get; set; }
 
         [Display(Name = "Motivo")]
-        [Column("MOTIVO_REJEICAO", TypeName = "VARCHAR(100)")]
+        [Column("MOTIVO_REJEICAO", TypeName = "VARCHAR(200)")]
         public string? MotivoRejeicao { get; set; }
 
         [Display(Name = "Resalva")]
-        [Column("MOTIVO_RESALVA", TypeName = "VARCHAR(100)")]
+        [Column("MOTIVO_RESALVA", TypeName = "VARCHAR(200)")]
         public string? MotivoResalva { get; set; }
 
         [Display(Name = "Tipo do documento")]
-        [Column("TIPO_ANEXO", TypeName = "VARCHAR(4)")]
-        public string? TipoAnexo { get; set; }
+        [Column("TIPO_ANEXO", TypeName = "INT")]
+        public int TipoAnexo { get; set; }
 
         [Display(Name = "Status")]
         [Column("STATUS", TypeName = "INT")]
         public EnumStatusDocs? Status { get; set; }
 
-        [Column("CD_CLIENTE", TypeName = "INT")]
-        public int Cd_Cliente { get; set; }
-
         [NotMapped]
         public string? CodigosDocumentos { get; set; }
 
         [NotMapped]
-        public virtual Funcionario? Funcionario  { get; set; }
+        public virtual Colaborador? Colaborador { get; set; }
 
         [NotMapped]
-        public virtual Empresa? Empresa { get;}
+        public virtual Empresa? Empresa { get; }
     }
 }

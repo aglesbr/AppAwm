@@ -42,25 +42,27 @@
                         @Html.DisplayFor(modelItem => item.Descricao)
                     </td>
                     <td class="dt-body-left">
-                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar.ToString() == item.TipoAnexo)!.Nome)
+                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo)!.Nome)
                     </td>
 
                     <td>
                         @{
                             var itemStatus = AppAwm.Util.Utility.TipoStatus.FirstOrDefault(f => f.Key == (int?)item.Status);
-
                             statusIcon = "error_outline";
+                            if(itemStatus.Value != null )
+                            {
 
-                            if ((int?)item.Status == 3)
-                                statusIcon = "done";
+                                if ((int?)item.Status == 3)
+                                    statusIcon = "done";
 
-                            if ((int?)item.Status == 5)
-                                statusIcon = "check_circle";
+                                if ((int?)item.Status == 5)
+                                    statusIcon = "check_circle";
 
-                            if ((int?)item.Status == 6)
-                                statusIcon = "report_problem";
-
+                                if ((int?)item.Status == 6)
+                                    statusIcon = "report_problem";
+                            }
                             <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped"> @statusIcon</i>
+
                         }
                     </td>
                     <td class="dt-body-left">

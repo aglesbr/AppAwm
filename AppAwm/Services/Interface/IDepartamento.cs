@@ -3,7 +3,7 @@ using AppAwm.Respostas;
 
 namespace AppAwm.Services.Interface
 {
-    public interface IDepartamento: IOperationBase<DepartamentoAnswer,Departamento>
+    public interface IDepartamento : IOperationBase<DepartamentoAnswer, Departamento>
     {
     }
 }

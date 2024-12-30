@@ -57,23 +57,33 @@ namespace AppAwm.Models
         [Column("CD_USUARIO_ATUALIZACAO", TypeName = "VARCHAR(30)", Order = 13)]
         [MaxLength(30)]
         public string? Cd_UsuarioAtualizacao { get; set; }
-        
+
         [Column("COMPLEMENTO", TypeName = "VARCHAR(5000)", Order = 14)]
         public string? Complemento { get; set; }
 
-        [Column("CD_CLIENTE", TypeName = "INT", Order = 95)]
-        public int Cd_Cliente { get; set; }
+        [Column("CD_CLIENTE_ID", TypeName = "INT", Order = 16)]
+        [Range(1, 100, ErrorMessage = "Selecione uma empresa contratante.")]
+        public int Cd_Cliente_Id { get; set; } = 0;
 
         [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
         public int Id_UsuarioCriacao { get; set; }
 
-        public virtual Endereco Endereco { get; set; } = new();
+        [Display(Name = "Documentação")]
+        [Column("DOCUMENTACAO_VALIDADA", TypeName = "BIT", Order = 17)]
+        public bool DocumentacaoValidada { get; set; } = false;
+
+        [NotMapped]
+        public virtual Usuario? Usuario { get; } = null;
+
+        [NotMapped]
+        public virtual Cliente? Cliente { get; } = null;
 
         public virtual ICollection<Anexo>? Anexos { get; set; }
 
-        public virtual ICollection<Funcionario> Funcionarios { get; } = [];
+        public virtual ICollection<Colaborador> Funcionarios { get; } = [];
 
         public virtual ICollection<Obra> Obras { get; } = [];
+
 
         [NotMapped]
         public int? StatusFilter { get; set; }

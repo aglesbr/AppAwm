@@ -1,28 +1,53 @@
 using AppAwm.Models;
-using AppAwm.Util;
+using AppAwm.Respostas;
+using AppAwm.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace AppAwm.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IChart<ChartAnswer> servico;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        public HomeController(IChart<ChartAnswer> _servico) => servico = _servico;
 
         public IActionResult Index()
         {
-            var jSonUsuario = HttpContext.Session.GetString("UserAuth");
-            var usuario = JsonSerializer.Deserialize<Usuario>(jSonUsuario!);
+            var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+            return View(userSession);
+        }
 
-            return View(usuario);
+
+        [HttpGet("getChart")]
+        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        public IActionResult GetChart(int origem)
+        {
+            // origem 1 :  Colaborador
+            // origem 2 :  Empresa
+
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Start");
+
+                var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
+                ChartAnswer chartAnswer = servico.Get(s =>
+                   (userSession!.Perfil != Models.Enum.EnumPerfil.Administrador ? s.Cd_Empresa_Id == userSession!.Cd_Empresa : s.Cd_Empresa_Id > 0)
+                   && (userSession.Perfil != Models.Enum.EnumPerfil.Administrador ? s.Id_UsuarioCriacao == userSession.Cd_Usuario : s.Id_UsuarioCriacao > 0)
+                   && (origem == 1 ? s.Cd_Funcionario_Id != null : s.Cd_Funcionario_Id == null)
+                   && (s.Status == Models.Enum.EnumStatusDocs.Aprovado || s.Status == Models.Enum.EnumStatusDocs.EmAnalise), userSession!, origem);
+
+                return chartAnswer.Success ? Ok(chartAnswer) : BadRequest(chartAnswer);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ChartAnswer.DeErro(ex.Message));
+            }
         }
 
         [AllowAnonymous]

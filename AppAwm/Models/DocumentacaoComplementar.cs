@@ -16,6 +16,9 @@ namespace AppAwm.Models
         [Column("NOME", TypeName = "VARCHAR(150)", Order = 10)]
         public string? Nome { get; set; }
 
+        [Column("ORIGEM", TypeName = "INT", Order = 11)]
+        public int Origem { get; set; }
+
         [Column("STATUS", Order = 15)]
         public bool Status { get; set; }
     }

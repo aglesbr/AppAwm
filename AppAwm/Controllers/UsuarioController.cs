@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using Windows.Networking.NetworkOperators;
 using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
@@ -58,14 +57,15 @@ namespace AppAwm.Controllers
 
                         usuario.Senha = Util.Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
-                        usuario.Cd_Cliente_Id = userSession!.Cd_Cliente_Id;
                         usuario.MudarSenha = true;
 
                         var retorno = servico.Save(usuario, EnumAcao.Criar);
 
                         if (retorno.Success)
                         {
-                            Utility.EnviarEmail(true, usuario);
+                            string url = Request.Scheme + "://" + Request.Host;
+
+                            Utility.EnviarEmail(true, usuario, url);
                             retorno.Usuario.Senha = usuario.Senha;
                             return Ok(retorno);
                         }
@@ -92,7 +92,7 @@ namespace AppAwm.Controllers
 
                         return BadRequest(obj);
                     }
-                    
+
                 }
                 string[] messages = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToArray();
                 return BadRequest(UsuarioAnswer.DeErro(messages));
@@ -109,15 +109,15 @@ namespace AppAwm.Controllers
         {
             try
             {
-                List<SelectListItem> selectListItems = [..servico.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+                List<SelectListItem> selectListItems = [.. servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
                 ViewData["selectCliente"] = selectListItems;
 
                 if (id > 0)
                 {
                     var _usuario = servico.Get(n => n.Cd_Usuario == id, EnumAcao.Nenhum);
-                    if (_usuario.Success) 
-                    { 
-                        return View(_usuario);    
+                    if (_usuario.Success)
+                    {
+                        return View(_usuario);
                     }
                     return View(UsuarioAnswer.DeErro("Usuário não localizado"));
                 }
@@ -138,13 +138,13 @@ namespace AppAwm.Controllers
             try
             {
                 Usuario? obj = JsonConvert.DeserializeObject<Usuario>(usuario);
-                
-                UsuarioAnswer resposta  = servico.List(
+
+                UsuarioAnswer resposta = servico.List(
                      x => (x.Nome!.ToUpper().StartsWith(obj.Nome.ToUpper()) && x.Login.ToLower().StartsWith(obj.Login.ToLower()) && x.Login.ToLower().StartsWith(obj.Login.ToLower()))
                              && (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status)
                     );
 
-                var query = resposta.Usuarios.ToPagedList(skip,12);
+                var query = resposta.Usuarios.ToPagedList(skip, 12);
                 return PartialView("ListRecord", query);
             }
             catch (Exception)

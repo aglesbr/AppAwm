@@ -28,7 +28,7 @@ namespace AppAwm.Services
 
                     if (departamento != null)
                     {
-                       return DepartamentoAnswer.DeSucesso(departamento);
+                        return DepartamentoAnswer.DeSucesso(departamento);
                     }
                 }
 

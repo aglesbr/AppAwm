@@ -15,16 +15,14 @@ namespace AppAwm.Controllers
                 IEmpresa<EmpresaAnswer> _servicoEmpresa,
                 IAnexo<AnexoAnswer> _servicoAnexo,
                 IUsuario<UsuarioAnswer> _servicoUsuario,
-                IFuncionario<FuncionarioAnswer> _servicoFuncionario,
-                ITreinamento<TreinamentoAnswer> _servicoTreinamento,
+                IColaborador<ColaboradorAnswer> _servicoFuncionario,
                 ICargo<CargoAnswer> _servicoCargo,
                 IDocumentacaoComplementar<DocumentacaoComplementarAnswer> _servicoDocumentacaoComplementar) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servicoEmpresa = _servicoEmpresa;
         private readonly IAnexo<AnexoAnswer> servicoAnexo = _servicoAnexo;
         private readonly IUsuario<UsuarioAnswer> servicoUsuario = _servicoUsuario;
-        private readonly IFuncionario<FuncionarioAnswer> servicoFuncionario = _servicoFuncionario;
-        private readonly ITreinamento<TreinamentoAnswer> servicoTreinamento = _servicoTreinamento;
+        private readonly IColaborador<ColaboradorAnswer> servicoFuncionario = _servicoFuncionario;
         private readonly ICargo<CargoAnswer> servicoCargo = _servicoCargo;
         private readonly IDocumentacaoComplementar<DocumentacaoComplementarAnswer> servicoDocumentacaoComplementar = _servicoDocumentacaoComplementar;
 
@@ -65,7 +63,7 @@ namespace AppAwm.Controllers
                 AnexoAnswer resposta = servicoAnexo.List(
                      x => (x.Cd_UsuarioAnalista == userSession.Nome || x.Cd_UsuarioAnalista == (userSession.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioAnalista : null))
                      && (x.Cd_Empresa_Id == (codigoEmpresa == 0 ? x.Cd_Empresa_Id : codigoEmpresa))
-                     && x.Status != null);
+                     && x.Status != EnumStatusDocs.None);
                 var query = resposta.Anexos.Select(s =>
                 new Anexo
                 {
@@ -88,16 +86,28 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Operacao/Search")]
-        public IActionResult? SearchMq(int id, EnumStatusDocs status = 0, string tipo = "0", int pageNumber = 0)
+        public IActionResult? SearchMq(int idAnexo, int idEmpresa, EnumStatusDocs status = 0, int tipoAnexo = 0, int origem = 0, int pageNumber = 0)
         {
-            int pageSize = 16;
+            int pageSize = 300;
 
             try
             {
-                AnexoAnswer resposta = servicoAnexo.List(
-                     x => x.Status != null && x.Status == (status == EnumStatusDocs.None ? x.Status : status)
-                   && (x.Cd_Empresa_Id == (id == 0 ? x.Cd_Empresa_Id : id))
-                   && (x.TipoAnexo == (tipo == "0" ? x.TipoAnexo : tipo)));
+                AnexoAnswer? resposta = null;
+
+                if (idAnexo > 0)
+                {
+                    resposta = servicoAnexo.List(x => x.TipoAnexo > 0 && x.Status > 0 && x.Cd_Anexo == idAnexo);
+                }
+                else
+                {
+                    resposta = servicoAnexo.List(
+                         x => x.TipoAnexo > 0 && x.Status > 0
+                        && x.Cd_Anexo == (idAnexo == 0 ? x.Cd_Anexo : idAnexo)
+                        && x.Status == (status == EnumStatusDocs.None ? x.Status : status)
+                        && x.TipoAnexo == (tipoAnexo == 0 ? x.TipoAnexo : tipoAnexo)
+                        && x.Cd_Empresa_Id == (idEmpresa == 0 ? x.Cd_Empresa_Id : idEmpresa)
+                        && (origem == 1 ? x.Cd_Funcionario_Id != null : x.Cd_Funcionario_Id == null));
+                }
 
                 int countRegistro = resposta.Anexos.Count;
 
@@ -113,10 +123,13 @@ namespace AppAwm.Controllers
                     s.Status,
                     s.Dt_Criacao,
                     s.Cd_UsuarioCriacao,
+                    s.MotivoResalva,
+                    s.MotivoRejeicao,
                     TotalRegistro = countRegistro,
                     TotalPaginas = ((int)Math.Ceiling(decimal.Parse(countRegistro.ToString()) / decimal.Parse(pageSize.ToString())))
                 })
-                .OrderBy(n => n.Nome)
+                .OrderByDescending(n => n.Dt_Criacao)
+                .GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault())
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -162,10 +175,10 @@ namespace AppAwm.Controllers
                     var obj = resposta.Anexos.FirstOrDefault()!;
                     obj.Status = obj.Status == EnumStatusDocs.Enviado ? EnumStatusDocs.EmAnalise : obj.Status;
 
-                    FuncionarioAnswer funcionarioAnswer = servicoFuncionario.Get(f => f.Cd_Funcionario == obj.Cd_Funcionario_Id, new Usuario { Perfil = EnumPerfil.Administrador });
+                    ColaboradorAnswer funcionarioAnswer = servicoFuncionario.Get(f => f.Cd_Funcionario == obj.Cd_Funcionario_Id, new Usuario { Perfil = EnumPerfil.Administrador });
 
                     if (resposta.Success)
-                        obj.Funcionario = new Funcionario { Nome = funcionarioAnswer.Funcionario.Nome };
+                        obj.Colaborador = new Colaborador { Nome = funcionarioAnswer.Colaborador.Nome };
 
                     return new JsonResult(resposta.Success ? obj : new Anexo { Arquivo = [] });
                 }
@@ -213,7 +226,7 @@ namespace AppAwm.Controllers
             try
             {
                 UsuarioAnswer usuarioAnswer = servicoUsuario.Get(s => s.Status && s.Nome == nameUser, EnumAcao.Nenhum);
-                Funcionario? funcionarioAnswer = servicoFuncionario.List(f => f.Status && f.Cd_Funcionario == idFunc).Funcionarios.FirstOrDefault() ?? new Funcionario();
+                Colaborador? funcionarioAnswer = servicoFuncionario.List(f => f.Status && f.Cd_Funcionario == idFunc).Colaboradore.FirstOrDefault() ?? new Colaborador();
                 EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Status && g.Cd_Empresa == idEmp, EnumAcao.Nenhum);
 
                 if (usuarioAnswer.Success)
@@ -221,7 +234,7 @@ namespace AppAwm.Controllers
                     return new JsonResult(
                         new
                         {
-                            Funcionario = new
+                            Colaborador = new
                             {
                                 funcionarioAnswer.Cd_Funcionario,
                                 funcionarioAnswer.Nome,
@@ -264,14 +277,14 @@ namespace AppAwm.Controllers
                 bool hasAnexo = false;
 
                 string mensagem = string.Empty;
-                mensagem += "<html><body><h3><center>HDdoc - AVISO DE VALIDADE DE DOCUMENTO</center><hr/></h3><br/><p>Olá {0}<br/></p>";
+                mensagem += "<html><body><h3><center>HDDOC - AVISO DE VALIDADE DE DOCUMENTO</center><hr/></h3><br/><p>Olá {0}<br/></p>";
                 mensagem += "<p>O sistema identificou documentos com o prazo de validade proximo do vencimento.</p>";
                 mensagem += "<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>DOCUMENTO:<br><ul>{1}</ul><br>FUNCIONARIO: {2}<br>EMPRESA: {3}";
                 mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
                 var execucao = servicoAnexo.GetLastHistoricoExecucao() ?? new HistoricoExecucao { Dt_Execucao = DateTime.Now.Date };
 
-                var date = (execucao?.Dt_Execucao.Month == DateTime.Now.Date.Month );
+                var date = (execucao?.Dt_Execucao.Month == DateTime.Now.Date.Month);
 
                 if (date)
                 {
@@ -284,9 +297,9 @@ namespace AppAwm.Controllers
 
                     if (lista.Success)
                     {
-                        lista.Funcionarios.ForEach(x => { x.Empresa!.Complemento = null; x.Foto = null; });
+                        lista.Colaboradore.ForEach(x => { x.Empresa!.Complemento = null; x.Foto = null; });
 
-                        foreach (var item in lista.Funcionarios)
+                        foreach (var item in lista.Colaboradore)
                         {
                             var vencimentos = item.Anexos!.Where(i => (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 && i.Status == EnumStatusDocs.Aprovado).ToList();
 
@@ -306,7 +319,7 @@ namespace AppAwm.Controllers
                     return new JsonResult(hasAnexo ? AnexoAnswer.DeSucesso("alerta de vencimento enviado") : AnexoAnswer.DeErro("Nenhum documento está proximo do vencimento"));
                 }
 
-                return new JsonResult(AnexoAnswer.DeErro("Execução fora da data prevista.")); 
+                return new JsonResult(AnexoAnswer.DeErro("Execução fora da data prevista."));
             }
             catch (Exception)
             {
@@ -333,7 +346,7 @@ namespace AppAwm.Controllers
 
                         if ((dateValidate - DateTime.Now.Date).TotalDays <= 0)
                         {
-                            anexoAnswer = await Task.Run(() => servicoAnexo.UpdateStatus(item.Cd_Anexo,item.Status == EnumStatusDocs.Aprovado ?  EnumStatusDocs.Expirado : EnumStatusDocs.Rejeitado , "Sistema HDdoc", item.Status == EnumStatusDocs.Resalva ? motivo : null));
+                            anexoAnswer = await Task.Run(() => servicoAnexo.UpdateStatus(item.Cd_Anexo, item.Status == EnumStatusDocs.Aprovado ? EnumStatusDocs.Expirado : EnumStatusDocs.Rejeitado, "Sistema HDDOC", item.Status == EnumStatusDocs.Resalva ? motivo : null));
                         }
                     }
                 }
@@ -341,45 +354,31 @@ namespace AppAwm.Controllers
                 return anexoAnswer;
 
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                return  AnexoAnswer.DeErro("Ocorreu um erro: " + ex.Message);
+                return AnexoAnswer.DeErro("Ocorreu um erro: " + ex.Message);
             }
         }
 
-        [HttpGet]
-        [Route("/Operacao/GetTreinamentos")]
-        public IActionResult GetTreeViewTreinamento()
-        {
-            try
-            {
-                TreinamentoAnswer treinamentoAnswer = servicoTreinamento.List(s => s.Status);
-                return treinamentoAnswer.Success ? Ok(treinamentoAnswer.Treinamentos) : BadRequest(TreinamentoAnswer.DeErro());
-            }
-            catch
-            {
-                return BadRequest(TreinamentoAnswer.DeErro());
-            }
-        }
 
         [HttpGet]
         [Route("/Operacao/GetColaborador/{id:int}")]
         public IActionResult GetFuncionario(int id = 0)
         {
-            FuncionarioAnswer funcionarioAnswer = servicoFuncionario.Get(p => p.Cd_Funcionario == id && p.Status, new Usuario { Perfil = EnumPerfil.None });
+            ColaboradorAnswer funcionarioAnswer = servicoFuncionario.Get(p => p.Cd_Funcionario == id && p.Status, new Usuario { Perfil = EnumPerfil.None });
 
             if (funcionarioAnswer.Success)
             {
-                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Cd_Empresa == funcionarioAnswer.Funcionario.Id_Empresa, EnumAcao.Nenhum);
+                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Cd_Empresa == funcionarioAnswer.Colaborador.Id_Empresa, EnumAcao.Nenhum);
 
                 if (empresaAnswer.Success)
-                { 
+                {
                     Empresa empresa = new Empresa { Cd_Empresa = empresaAnswer.Empresa.Cd_Empresa, Nome = empresaAnswer.Empresa.Nome };
-                    funcionarioAnswer.Funcionario.Empresa = empresa;
+                    funcionarioAnswer.Colaborador.Empresa = empresa;
                 }
 
                 if (funcionarioAnswer.Success && empresaAnswer.Success)
-                    return Ok(funcionarioAnswer.Funcionario);
+                    return Ok(funcionarioAnswer.Colaborador);
             }
 
             return BadRequest(funcionarioAnswer.Message);
@@ -397,7 +396,7 @@ namespace AppAwm.Controllers
         [HttpPut]
         [Route("/Operacao/UpdateStatusDocumentoCargo")]
         public IActionResult PutUpdateStatusDocumento(int id, string id_documento, bool isAtivo)
-        { 
+        {
             CargoAnswer cargoAnswer = servicoCargo.UpdateStatus(id, id_documento, isAtivo);
 
             return Ok(cargoAnswer);
@@ -407,16 +406,16 @@ namespace AppAwm.Controllers
         [Route("/Operacao/GetDocumentoVsCargo")]
         public IActionResult GetDocumentoVsCargo(int id)
         {
-           List<DocumentacaoCargo> lst = servicoCargo.GetDocumentoVsCargo(s => s.Cd_Cargo_Id == id);
-           return Ok(lst);
+            List<DocumentacaoCargo> lst = servicoCargo.GetDocumentoVsCargo(s => s.Cd_Cargo_Id == id);
+            return Ok(lst);
         }
 
         [HttpGet]
         [Route("/Operacao/GetDocumentoComplementar")]
-        public IActionResult DocumentoComplementar(int cd_documento)
+        public IActionResult DocumentoComplementar()
         {
-           DocumentacaoComplementarAnswer documentacao = servicoDocumentacaoComplementar.Get(s => cd_documento > 0 ? s.Cd_Documentaco_Complementar == cd_documento : s.Cd_Documentaco_Complementar > 0);
-           return Ok(documentacao);
+            DocumentacaoComplementarAnswer documentacao = servicoDocumentacaoComplementar.Get(s => s.Status);
+            return Ok(documentacao);
         }
     }
 }

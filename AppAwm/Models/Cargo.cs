@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
@@ -21,6 +21,6 @@ namespace AppAwm.Models
         public virtual ICollection<DocumentacaoCargo>? DocumentoComplementar { get; }
 
         [NotMapped]
-        public virtual Funcionario? Funcionario { get; set; }
+        public virtual Colaborador? Colaborador { get; set; }
     }
 }

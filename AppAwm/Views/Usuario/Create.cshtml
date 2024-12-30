@@ -12,10 +12,10 @@
     <input asp-for="Usuario.Cd_Usuario_Criacao" id="Cd_Usuario_Criacao" type="hidden" />
     <div class="row">
         <div class="input-field col s4">
-            <select id="Perfil" asp-for="Usuario.Cd_Cliente_Id" asp-items="selectLists">
-                <option value="0" disabled selected>Selecione um cliente para o usuário</option>
+            <select id="Perfil" asp-for="Usuario.Cd_Empresa" asp-items="selectLists">
+                <option value="0" disabled selected>Selecione empresa do usuário</option>
             </select>
-            <label>Cliente do Usuário</label>
+            <label>Empresa do Usuário</label>
         </div>
         <div class="input-field col s4">
             <label asp-for="Usuario.Nome"></label>
@@ -25,8 +25,8 @@
             <select id="Perfil" asp-for="Usuario.Perfil">
                 <option value="0" disabled selected>Selecione um pefil para o usuário</option>
                 <option value="1">Terceiro</option>
-                <option value="2">Funcionário</option>
-                <option value="3">Administrador</option>
+                <option value="4">Analista</option>
+                <option value="7">Administrador</option>
             </select>
             <label asp-for="Usuario.Perfil"></label>
         </div>

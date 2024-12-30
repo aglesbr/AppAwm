@@ -23,6 +23,9 @@ namespace AppAwm.Models
         [Column("HOSTMQ", TypeName = "VARCHAR(100)", Order = 20)]
         public string? HostMq { get; set; }
 
+        [Column("CANALMQ", TypeName = "VARCHAR(30)", Order = 21)]
+        public string? CanalMq { get; set; }
+
         [Column("STATUS", TypeName = "BIT", Order = 25)]
         public bool Status { get; set; }
 
@@ -36,6 +39,6 @@ namespace AppAwm.Models
         public int PlanoVidasAtivadas { get; set; }
 
         [NotMapped]
-        public ICollection<Usuario>? Usuarios { get; } = null;
+        public virtual ICollection<Empresa>? Empresas { get; } = null;
     }
 }
