@@ -58,7 +58,7 @@ namespace AppAwm.Controllers
                             if (empresaCliente is not null)
                             {
                                 Utility.DocumentacaoComplementares = [.. db.DocumentacoesComplementares];
-                                Utility.Cliente = _Usuario.Cliente = empresaCliente.Cliente;
+                                Utility.Cliente = _Usuario.Cliente =  empresaCliente.Cliente;
                                 _Usuario.Cliente!.Empresas!.Clear();
                             }
 
