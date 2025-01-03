@@ -8,11 +8,11 @@
     if (Model?.Count() > 0)
         tipoAnexoDocumento = Model.FirstOrDefault().CodigosDocumentos!;
 
-        if(tipoAnexoDocumento.Split(',').Count(zero => zero == "0") >= 1)
-        {
-               tipoAnexoDocumento = "0";
-        }
+    if(tipoAnexoDocumento.Split(',').Count(zero => zero == "0") >= 1)
+    {
+        tipoAnexoDocumento = "0";
     }
+}
 
 @if (Model?.Count() > 0)
 {
@@ -34,58 +34,58 @@
         <tbody>
             @foreach (var item in Model)
             {
-            <tr>
-                <td>@item.Nome</td>
-                <td>@item.Descricao</td>
-                @if(item.Status is not AppAwm.Models.Enum.EnumStatusDocs.None)
-                {
-                    <td>
-                        @{
-                            statusIcon = "error_outline";
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Descricao</td>
+                    @if(item.Status is not AppAwm.Models.Enum.EnumStatusDocs.None)
+                    {
+                        <td>
+                            @{
+                                statusIcon = "error_outline";
 
-                            var itemStatus = AppAwm.Util.Utility.TipoStatus.FirstOrDefault(f => f.Key == (int?)item.Status);
+                                var itemStatus = AppAwm.Util.Utility.TipoStatus.FirstOrDefault(f => f.Key == (int?)item.Status);
 
-                            if ((int?)item.Status == 3)
-                                statusIcon = "done";
+                                if ((int?)item.Status == 3)
+                                    statusIcon = "done";
 
-                            if ((int?)item.Status == 5)
-                                statusIcon = "check_circle";
+                                if ((int?)item.Status == 5)
+                                    statusIcon = "check_circle";
 
-                            if ((int?)item.Status == 6)
-                                statusIcon = "report_problem";
+                                if ((int?)item.Status == 6)
+                                    statusIcon = "report_problem";
 
-                            if (new int?[] { 4, 6 }.Contains((int?)item.Status))
-                                tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
+                                if (new int?[] { 4, 6 }.Contains((int?)item.Status))
+                                    tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
 
-                        }
-                        <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
+                            }
+                            <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
+                        </td>
+
+                        <td>@item.Dt_Criacao</td>
+                        <td>
+                            @{
+                                var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo, new DocumentacaoComplementar { Nome = "Documento Comum" });
+                            }
+                            <i data-position="left" data-tooltip="@itemTipo?.Nome" class="material-icons prefix blue-grey-text accent-3 tooltipped">description</i>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(item.MotivoRejeicao))
+                            {
+                                <i data-position="left" data-tooltip="@item.MotivoRejeicao <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i>
+                            }
+                            else
+                            {
+                                <i class="material-icons prefix grey-text">feedback</i>
+                            }
+                            <i class="material-icons prefix blue-grey-text accent-3" style="cursor:pointer" onclick="javascript:historicoDocumento({tipoAnexo:@item.TipoAnexo, codigoAnexo:@item.Cd_Anexo})" ;>insert_comment</i>
+                        </td>
+                    }
+
+                    <td class="dt-body-right">
+                        <a class="waves-effect waves-light btn-small downloadFile" title="Baixar Arquivo" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
+                        <a class="waves-effect waves-light btn-small red darken-4 removeFile" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="@(item.Cd_Empresa_Id == null ? "funcionario" :"empresa" )"
+                        title="Remover Arquivo" @(new int?[] { 2,3,6}.Contains((int?)item.Status) ? "disabled" : "")><i class="material-icons center">delete_forever</i></a>
                     </td>
-
-                    <td>@item.Dt_Criacao</td>
-                    <td>
-                        @{
-                            var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo, new DocumentacaoComplementar { Nome = "Documento Comum" });
-                        }
-                        <i data-position="left" data-tooltip="@itemTipo?.Nome" class="material-icons prefix blue-grey-text accent-3 tooltipped">description</i>
-                    </td>
-                    <td>
-                        @if (!string.IsNullOrWhiteSpace(item.MotivoRejeicao))
-                        {
-                            <i data-position="left" data-tooltip="@item.MotivoRejeicao <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i>
-                        }
-                        else
-                        {
-                            <i class="material-icons prefix grey-text">feedback</i>
-                        }
-                        <i class="material-icons prefix blue-grey-text accent-3" style="cursor:pointer" onclick="javascript:historicoDocumento({tipoAnexo:@item.TipoAnexo, codigoAnexo:@item.Cd_Anexo})" ;>insert_comment</i>
-                    </td>
-                }
-
-                <td class="dt-body-right">
-                    <a class="waves-effect waves-light btn-small downloadFile" title="Baixar Arquivo" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
-                    <a class="waves-effect waves-light btn-small red darken-4 removeFile" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="@(item.Cd_Empresa_Id == null ? "funcionario" :"empresa" )"
-                           title="Remover Arquivo" @((int?)item.Status == 3 ? "disabled" : "")><i class="material-icons center">delete_forever</i></a>
-                </td>
             </tr>
         }
     </tbody>
