@@ -65,9 +65,10 @@
                         <i data-position="left" data-tooltip="@itemTipo?.Nome" class="material-icons prefix blue-grey-text accent-3 tooltipped">description</i>
                     </td>
                     <td>
-                        @if(!string.IsNullOrWhiteSpace(item.MotivoRejeicao))
+                        @if (!string.IsNullOrWhiteSpace(item.MotivoRejeicao) || !string.IsNullOrWhiteSpace(item.MotivoResalva))
                         {
-                            <i data-position="left" data-tooltip="@item.MotivoRejeicao <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i> 
+                            var motivo = string.IsNullOrWhiteSpace(item.MotivoRejeicao) ? item.MotivoResalva : item.MotivoRejeicao;
+                            <i data-position="left" data-tooltip="@motivo <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i>
                         }
                         else
                         {

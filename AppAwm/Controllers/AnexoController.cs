@@ -178,13 +178,15 @@ namespace AppAwm.Controllers
                         Nome = s.Nome,
                         Descricao = s.Descricao,
                         Cd_Funcionario_Id = s.Cd_Funcionario_Id,
+                        Cd_UsuarioAnalista = s.Cd_UsuarioAnalista,
+                        Cd_Empresa_Id = s.Cd_Empresa_Id,
                         Status = s.Status,
                         MotivoRejeicao = s.MotivoRejeicao,
+                        MotivoResalva = s.MotivoResalva,
                         TipoAnexo = s.TipoAnexo,
                         Dt_Validade_Documento = s.Dt_Validade_Documento,
                         Dt_Criacao = s.Dt_Criacao,
-                        CodigosDocumentos = itemDocumento,
-                        Cd_UsuarioAnalista = s.Cd_UsuarioAnalista
+                        CodigosDocumentos = itemDocumento
                     }).ToList();
                     //  }
 
@@ -296,7 +298,7 @@ namespace AppAwm.Controllers
         {
             try
             {
-                AnexoAnswer anexoAnswer = servico.List(s => s.Cd_Anexo == id);
+                AnexoAnswer anexoAnswer = servico.List(s => s.Cd_Anexo == id, true);
 
                 if (anexoAnswer.Success)
                 {

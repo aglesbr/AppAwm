@@ -31,7 +31,7 @@ namespace AppAwm.DAL.Repository
                         Cd_Anexo = a.Cd_Anexo,
                         Cd_Empresa_Id = a.Cd_Empresa_Id,
                         Cd_Funcionario_Id = a.Cd_Funcionario_Id,
-                        Cd_UsuarioAnalista = a.Cd_UsuarioCriacao,
+                        Cd_UsuarioAnalista = a.Cd_UsuarioAnalista,
                         Cd_UsuarioCriacao = a.Cd_UsuarioCriacao,
                         Descricao = a.Descricao,
                         TipoAnexo = a.TipoAnexo,
