@@ -40,3 +40,8 @@ $('#Cpf').on('keyup', (event) => {
     $('#btnSolicitaPwd').prop('disabled', event.target.value.length != 14)
     
 });
+
+$('#btnLogin').on('click', () => {
+    $('#divControleLogin').css('display', 'none');
+    $('#divloginIntermitente').css('display', '');
+});

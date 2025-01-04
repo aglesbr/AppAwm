@@ -29,7 +29,7 @@ namespace AppAwm.Controllers
             if (sessao == null)
                 return RedirectToAction("Index", "Start");
 
-            var empresa = servico.Get(g => g.Cd_Empresa == sessao.Cd_Empresa, EnumAcao.Criar);
+            var empresa = servico.Get(g => g.Cd_Empresa == sessao.Cd_Empresa);
             return sessao.Perfil == EnumPerfil.Terceiro ? View(empresa) : View(empresa);
         }
 
@@ -43,7 +43,7 @@ namespace AppAwm.Controllers
             EmpresaAnswer? resposta = null;
 
             if (id > 0)
-                resposta = servico.Get(s => s.Cd_Empresa == id, EnumAcao.Editar);
+                resposta = servico.Get(s => s.Cd_Empresa == id);
 
             List<SelectListItem> selectListItems = [.. servico.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
             ViewData["selectCliente"] = selectListItems;
@@ -77,7 +77,7 @@ namespace AppAwm.Controllers
 
                         empresa.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
 
-                        var emp = servico.Get(s => s.Cnpj!.Equals(empresa.Cnpj), EnumAcao.Criar);
+                        var emp = servico.Get(s => s.Cnpj!.Equals(empresa.Cnpj));
 
                         if (emp.Success)
                             return BadRequest(EmpresaAnswer.DeFalha("CNPJ já cadastrado"));

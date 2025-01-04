@@ -69,6 +69,6 @@ namespace AppAwm.Models
         public virtual Colaborador? Colaborador { get; set; }
 
         [NotMapped]
-        public virtual Empresa? Empresa { get; }
+        public virtual Empresa? Empresa { get; set; }
     }
 }

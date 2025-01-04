@@ -9,7 +9,16 @@
         async: false
     })
         .done(function (data) {
-            setValueChart(data.chart, origem, perfil);
+
+            if (data.chart.totalDocAnalise != 0 || data.chart.totalDocAprovado != 0 || data.chart.totalSemDoc != 0) {
+                if (origem == 1)
+                    $("#charTituloColaborador").css('display', '');
+                else
+                    $("#charTituloEmpresa").css('display', '');
+
+                setValueChart(data.chart, origem, perfil);
+            }
+
         })
         .fail(function () {
             M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao tentar gerar o grafico', classes: 'red rounded' });
@@ -21,7 +30,6 @@ var setValueChart = (objData, origem, perfil) => {
     var rotulo = (origem == 1 ? 'Colaborador' : 'Empresa') + ' sem documentação';
 
     if (perfil == 'terceiro' && origem == 2) {
-
         rotulo = 'Documentos não enviado'
     }
 

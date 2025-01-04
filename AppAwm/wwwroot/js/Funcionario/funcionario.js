@@ -57,6 +57,17 @@ $('#Cpf').on('focusout', (event) => {
 
 $('#postButton').on('click', (event) => {
 
+    var dataNascimento = new Date($('#dtNacimento').val())
+    var dataAdmissao = new Date($('#dtAdmissao').val())
+
+    if (dataAdmissao <= dataNascimento) {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - A Data de admissão não pode ser menor que a data de nascimento. ', classes: 'red darken-2 rounded'
+        });
+
+        return;
+    }
+
     var frm = $('form').serialize();
 
     loading(true);
@@ -77,7 +88,7 @@ $('#postButton').on('click', (event) => {
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
 
-                setTimeout(() => location.href = location.origin + '/Colaborador', 3000);
+                setTimeout(() => location.href = location.origin + '/Colaborador', 2000);
             }
             else {
                 M.toast({

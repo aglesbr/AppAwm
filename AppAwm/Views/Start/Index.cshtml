@@ -8,6 +8,8 @@
     {
         <script>
             M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;Dados de usuário inválidos!', classes: 'orange darken-3 rounded' });
+            $('#divControleLogin').css('display', '');
+            $('#divloginIntermitente').css('display', 'none');
         </script>
     }
 }
@@ -44,7 +46,7 @@
                         <label asp-for="Password"></label>
                         <span asp-validation-for="Password" class="red-text"></span>
                     </div>
-                    <div class="row" style="padding-left:45px;">
+                    <div class="row" style="padding-left:45px;" id="divControleLogin">
                         <button class="btn waves-effect waves-light" type="submit" id="btnLogin">
                             <i class="material-icons left">check</i>
                             Enviar..
@@ -54,6 +56,7 @@
                             Limpar
                         </button>
                     </div>
+                    <div class="progress row" id="divloginIntermitente" style="display:none;"><div class="indeterminate"></div></div>
                     <div class="row" style="padding-left:45px;">
                         <a class="modal-trigger" href="#modalEsqueciMinhaSenha" onclick="document.getElementById('Cpf').value = ''">Esqueci minha senha.</a>
                     </div>

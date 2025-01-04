@@ -25,26 +25,24 @@
 
 @if (!Model.MudarSenha)
 {
-
-<div class="row">
-    <div class="col s5 offset-s1" id="charTituloColaborador" style="display:none;">
-            <h5>Cenário de documentação dos colaboradores </h5>
+    <div class="row">
+        <div class="col s5 offset-s1">
+            <h5 id="charTituloColaborador" style="display:none;">Cenário de documentação dos colaboradores </h5>
+        </div>
+            <div class="col s5 offset-s1">
+            <h5 id="charTituloEmpresa" style="display:none;"> @titulo </h5>
+            </div>
     </div>
-        <div class="col s5 offset-s1 " id="charTituloEmpresa" style="display:none;">
-            <h5> @titulo </h5>
-        </div>
-</div>
-<div class="row">
-        <div class="col s6 center">
-        <canvas id="homeChartColaborador" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
-        </div>
-        <div class="col s6 center">
-            <canvas id="homeChartEmpresa" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
-        </div>
-</div>
-
-
+    <div class="row">
+            <div class="col s6 center">
+            <canvas id="homeChartColaborador" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
+            </div>
+            <div class="col s6 center">
+                <canvas id="homeChartEmpresa" style="max-width:600px; max-height:600px; width:600px; height:450px;"></canvas>
+            </div>
+    </div>
 }
+
 <!-- Modal Structure -->
 <div id="modalMudarSenha" class="modal">
     <div class="modal-content">
@@ -57,12 +55,12 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <i class="material-icons prefix">https</i>
-                        <input asp-for="Senha" id="password" type="password">
+                        <input asp-for="Senha" id="password" type="password" placeholder=" ">
                         <label asp-for="Senha">Nova senha</label>
                     </div>
                     <div class="input-field col s6">
                         <i class="material-icons prefix">https</i>
-                        <input asp-for="ConfirmPassword" id="confirmPassword" type="password">
+                        <input asp-for="ConfirmPassword" id="confirmPassword" type="password" placeholder=" ">
                         <label asp-for="ConfirmPassword">Confirmar senha</label>
                     </div>
                 </div>
@@ -90,8 +88,7 @@
 
 <script>
     var isMudarSenha = Boolean(@(Convert.ToInt16(Model.MudarSenha)));
-
-    loading(true);
+    
     if (isMudarSenha)
         setTimeout(() => { $('#modalMudarSenha').modal({ dismissible: false }).modal('open'); }, 500);
 
@@ -141,17 +138,20 @@
 
     });
     
-    $('#btnLimpar').on('click', () => { $('#frmMudarSenha').trigger("reset");});
+    $('#btnLimpar').on('click', () => { 
+         $('#password').val('');
+         $('#confirmPassword').val('');
+         $('#password').trigger('focus')
+    });
 
-     setTimeout(() => { 
-         grafico(1,'@perfil');
-            $('#charTituloColaborador').css("display", "");
-        grafico(2, '@perfil');
-            $('#charTituloEmpresa').css("display", "");
-          loading(false);
-     },1000);
-
-    
-       
+    if(!isMudarSenha)
+    {
+         loading(true);
+         setTimeout(() => { 
+            grafico(1,'@perfil');
+            grafico(2, '@perfil');
+            loading(false);
+         },1000);
+    }
 
 </script>

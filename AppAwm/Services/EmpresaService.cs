@@ -14,7 +14,7 @@ namespace AppAwm.Services
 
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
 
-        public EmpresaAnswer Get(Expression<Func<Empresa, bool>> predicate, EnumAcao acao)
+        public EmpresaAnswer Get(Expression<Func<Empresa, bool>> predicate)
         {
             try
             {
@@ -65,11 +65,10 @@ namespace AppAwm.Services
             {
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<Empresa>(db, out status);
+
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<Empresa> empresas = [.. contexto.GetAll(predicate)
-                        .Include(f => f.Funcionarios)
-                        .Include(f => f.Anexos)];
+                    var empresas = contexto.GetAll(predicate).ToList().Select(s => new Empresa { Cd_Empresa = s.Cd_Empresa }).ToList();
                     return empresas.Count > 0 ? EmpresaAnswer.DeSucesso(empresas) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
                 }
 

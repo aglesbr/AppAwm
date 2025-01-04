@@ -151,13 +151,15 @@ namespace AppAwm.Controllers
                         anexoAnswer = servico.List(x => (obj.Scope.Equals("anexoComumColaborador")
                             ? x.Cd_Funcionario_Id == Convert.ToInt32(obj.Codigo)
                             : x.Cd_Funcionario_Id == null && x.Cd_Empresa_Id == Convert.ToInt32(obj.Codigo))
+                            && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
                             && x.Status == EnumStatusDocs.None);
                     }
                     else
                     {
-                        anexoAnswer = servico.List(x =>
+                        anexoAnswer = servico.List(x => 
                         (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Codigo)
                         && (obj.Scope == "empresa" ? x.TipoAnexo >= 28 : x.TipoAnexo < 28)
+                        && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
                         && x.Status != EnumStatusDocs.None);
                     }
 

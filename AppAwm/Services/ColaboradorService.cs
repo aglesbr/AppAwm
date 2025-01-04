@@ -71,16 +71,33 @@ namespace AppAwm.Services
                 {
                     List<Colaborador> funcionarios = [.. contexto.GetAll(predicate).Include(emp => emp.Empresa).OrderBy(o => o.Nome)
                         .Include(o => o.VinculoObras)
-                        .Include(a =>  a.Anexos)];
+                        .Include(a => a.Anexos)
+                        .Select(ss => new Colaborador 
+                        { 
+                             Anexos = (ICollection<Anexo>)ss.Anexos.Select(anx =>  
+                             new Anexo { 
+                                 Cd_Anexo = anx.Cd_Anexo, TipoAnexo = anx.TipoAnexo, Status = anx.Status, Cd_Empresa_Id = anx.Cd_Empresa_Id, Cd_Funcionario_Id = anx.Cd_Funcionario_Id,
+                                  MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome
+                             }),
+                             Cd_Funcionario = ss.Cd_Funcionario,
+                             Documento = ss.Documento,
+                             Integrado = ss.Integrado,
+                             Cd_UsuarioCriacao = ss.Cd_UsuarioCriacao,
+                             Status = ss.Status,
+                             Nascimento = ss.Nascimento,
+                             Escolaridade = ss.Escolaridade,
+                             Id_UsuarioCriacao = ss.Id_UsuarioCriacao,
+                             Foto = ss.Foto,
+                             Estrangeiro = ss.Estrangeiro,
+                             Pcd = ss.Pcd,
+                             Sexo = ss.Sexo,
+                             TipoContrato = ss.TipoContrato,
+                             Id_Empresa = ss.Id_Empresa,
+                             Cd_Cargo = ss.Cd_Cargo,
+                             Nome = ss.Nome
+                        })];
 
-                    funcionarios.ForEach(f =>
-                    {
-                        if (f.Anexos.Any())
-                        {
-                            f.Anexos.ToList().ForEach(a => { a.Arquivo = null; });
-                        }
 
-                    });
                     return funcionarios.Count > 0 ? ColaboradorAnswer.DeSucesso(funcionarios) : ColaboradorAnswer.DeErro("Nenhum registro fui localizado");
                 }
 

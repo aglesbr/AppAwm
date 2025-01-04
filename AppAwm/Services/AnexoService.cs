@@ -1,4 +1,5 @@
 ﻿using AppAwm.DAL;
+using AppAwm.DAL.Repository;
 using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
@@ -36,14 +37,14 @@ namespace AppAwm.Services
             }
         }
 
-        public AnexoAnswer List(Expression<Func<Anexo, bool>> predicate)
+        public AnexoAnswer List(Expression<Func<Anexo, bool>> predicate, bool hasDocumnt = false)
         {
             try
             {
                 using DbCon db = new();
-                using var contexto = new RepositoryGeneric<Anexo>(db, out status);
+                using var contexto = new RepositoryAnexo(db, out status);
 
-                List<Anexo> list = contexto.GetAll(predicate).ToList();
+                List<Anexo> list = [.. contexto.GetAll(predicate, hasDocumnt)];
 
                 return list.Count > 0 ? AnexoAnswer.DeSucesso(list) : AnexoAnswer.DeErro("Nenhum regisro encontrado");
             }

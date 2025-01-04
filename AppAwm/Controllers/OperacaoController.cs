@@ -129,7 +129,7 @@ namespace AppAwm.Controllers
                     TotalPaginas = ((int)Math.Ceiling(decimal.Parse(countRegistro.ToString()) / decimal.Parse(pageSize.ToString())))
                 })
                 .OrderByDescending(n => n.Dt_Criacao)
-                .GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault())
+                //.GroupBy(gb => gb.Status).Select(ss => ss.FirstOrDefault())
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -166,20 +166,26 @@ namespace AppAwm.Controllers
         {
             try
             {
-                AnexoAnswer resposta = servicoAnexo.List(
-                     x => x.Status > 0
-                   && (x.Cd_Anexo == (id == 0 ? x.Cd_Anexo : id)));
+                AnexoAnswer resposta = servicoAnexo.List(x => x.Status > 0 && (x.Cd_Anexo == (id == 0 ? x.Cd_Anexo : id)), true);
 
                 if (resposta.Success)
                 {
                     var obj = resposta.Anexos.FirstOrDefault()!;
                     obj.Status = obj.Status == EnumStatusDocs.Enviado ? EnumStatusDocs.EmAnalise : obj.Status;
 
-                    ColaboradorAnswer funcionarioAnswer = servicoFuncionario.Get(f => f.Cd_Funcionario == obj.Cd_Funcionario_Id, new Usuario { Perfil = EnumPerfil.Administrador });
+                    if (obj.Cd_Funcionario_Id != null)
+                    {
+                        ColaboradorAnswer funcionarioAnswer = servicoFuncionario.Get(f => f.Cd_Funcionario == obj.Cd_Funcionario_Id, new Usuario { Perfil = EnumPerfil.Administrador });
 
-                    if (resposta.Success)
-                        obj.Colaborador = new Colaborador { Nome = funcionarioAnswer.Colaborador.Nome };
-
+                        if (resposta.Success)
+                            obj.Colaborador = new Colaborador { Nome = funcionarioAnswer.Colaborador.Nome };
+                    }
+                    else
+                    {
+                        EmpresaAnswer empresaAnswer = servicoEmpresa.Get(emp => emp.Cd_Empresa == obj.Cd_Empresa_Id && emp.Status);
+                        if (empresaAnswer.Success)
+                            obj.Empresa = new Empresa { Nome = empresaAnswer.Empresa.Nome, NomeFantasia = empresaAnswer.Empresa.NomeFantasia };
+                    }
                     return new JsonResult(resposta.Success ? obj : new Anexo { Arquivo = [] });
                 }
 
@@ -227,7 +233,7 @@ namespace AppAwm.Controllers
             {
                 UsuarioAnswer usuarioAnswer = servicoUsuario.Get(s => s.Status && s.Nome == nameUser, EnumAcao.Nenhum);
                 Colaborador? funcionarioAnswer = servicoFuncionario.List(f => f.Status && f.Cd_Funcionario == idFunc).Colaboradore.FirstOrDefault() ?? new Colaborador();
-                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Status && g.Cd_Empresa == idEmp, EnumAcao.Nenhum);
+                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Status && g.Cd_Empresa == idEmp);
 
                 if (usuarioAnswer.Success)
                 {
@@ -297,7 +303,14 @@ namespace AppAwm.Controllers
 
                     if (lista.Success)
                     {
-                        lista.Colaboradore.ForEach(x => { x.Empresa!.Complemento = null; x.Foto = null; });
+                        lista.Colaboradore.ForEach(x => 
+                        {
+                            if (x.Empresa != null)
+                            {
+                                x.Empresa!.Complemento = null; 
+                                x.Foto = null;
+                            }
+                        });
 
                         foreach (var item in lista.Colaboradore)
                         {
@@ -369,7 +382,7 @@ namespace AppAwm.Controllers
 
             if (funcionarioAnswer.Success)
             {
-                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Cd_Empresa == funcionarioAnswer.Colaborador.Id_Empresa, EnumAcao.Nenhum);
+                EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Cd_Empresa == funcionarioAnswer.Colaborador.Id_Empresa);
 
                 if (empresaAnswer.Success)
                 {

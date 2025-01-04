@@ -9,7 +9,7 @@ namespace AppAwm.Services.Interface
         T Save(Empresa empresa, EnumAcao acao);
         T List(Expression<Func<Empresa, bool>> predicate);
         T ListChart(Expression<Func<Empresa, bool>> predicate);
-        T Get(Expression<Func<Empresa, bool>> predicate, EnumAcao acao);
+        T Get(Expression<Func<Empresa, bool>> predicate);
         ValueTask<T> GetCnpj(string cnpj);
         int Vincular(ColaboradorVinculoObra vinculoObra);
         List<Cliente> GetClientes(Expression<Func<Cliente, bool>> predicate);
