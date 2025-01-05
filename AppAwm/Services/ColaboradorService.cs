@@ -94,7 +94,8 @@ namespace AppAwm.Services
                              TipoContrato = ss.TipoContrato,
                              Id_Empresa = ss.Id_Empresa,
                              Cd_Cargo = ss.Cd_Cargo,
-                             Nome = ss.Nome
+                             Nome = ss.Nome,
+                             Telefone = ss.Telefone
                         })];
 
 

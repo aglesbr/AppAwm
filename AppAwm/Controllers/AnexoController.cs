@@ -163,15 +163,8 @@ namespace AppAwm.Controllers
                         && x.Status != EnumStatusDocs.None);
                     }
 
-                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString())]) ?? "0";
+                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Where(r => r.Status != EnumStatusDocs.Resalva) .Select(s => s.TipoAnexo.ToString())]) ?? "0";
 
-                    //if (anexoComum.Contains(obj.Scope))
-                    //{
-                    //    query = anexoAnswer.Anexos.Select(s => new Anexo { Cd_Anexo = s.Cd_Anexo, Nome = s.Nome, Descricao = s.Descricao, Cd_Funcionario_Id = s.Cd_Funcionario_Id, CodigosDocumentos = itemDocumento }).ToList();
-                    //}
-
-                    //if (obj.Scope == "empresa" || obj.Scope == "colaborador")
-                    //{
                     query = anexoAnswer.Anexos.Select(s => new Anexo
                     {
                         Cd_Anexo = s.Cd_Anexo,
@@ -188,8 +181,6 @@ namespace AppAwm.Controllers
                         Dt_Criacao = s.Dt_Criacao,
                         CodigosDocumentos = itemDocumento
                     }).ToList();
-                    //  }
-
 
                     var queryGroup = (obj.Scope == "colaborador" || obj.Scope == "empresa")
                         ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 10)
