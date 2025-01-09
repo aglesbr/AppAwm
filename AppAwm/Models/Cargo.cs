@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
-    [Table("AWM_CARGO", Schema = "dbo")]
+    [Table("AWM_CARGO")]
     public class Cargo
     {
         [Key]

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
-    [Table("AWM_ANEXO", Schema = "dbo")]
+    [Table("AWM_ANEXO")]
     public class Anexo
     {
         [Key]
@@ -25,7 +25,11 @@ namespace AppAwm.Models
         public string? Descricao { get; set; }
 
         [Display(Name = "Anexo")]
-        [Column("ANEXO", TypeName = "VARBINARY(MAX)")]
+
+        // configuração MS Sql
+         [Column("ANEXO", TypeName = "VARBINARY(MAX)")]
+        // configuração MySql
+        // [Column("ANEXO", TypeName = "MEDIUMBLOB")]  
         public byte[]? Arquivo { get; set; }
 
         [Column("DT_CRIACAO", TypeName = "DATETIME")]
@@ -33,7 +37,7 @@ namespace AppAwm.Models
 
         [Column("DT_VALIDADE_DOCUMENTO", TypeName = "DATE")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o prazo de validade.")]
-        public DateTime Dt_Validade_Documento { get; set; }
+        public DateTime Dt_Validade_Documento { get; set; } = DateTime.Now.Date;
 
         [Column("CD_USUARIO_CRIACAO", TypeName = "VARCHAR(50)")]
         [MaxLength(50)]

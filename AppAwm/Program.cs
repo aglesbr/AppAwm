@@ -4,7 +4,9 @@ using AppAwm.Services;
 using AppAwm.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
@@ -25,10 +27,13 @@ builder.Services.AddSession(s =>
 });
 
 
-builder.Services.AddDbContext<DbCon>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("WAConnection"), b => b.MigrationsHistoryTable("__EFMigrationsHistory"));
-});
+//builder.Services.AddDbContext<DbCon>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("WAConnectionMsSql"), b => b.MigrationsHistoryTable("__EFMigrationsHistory"));
+//    options.UseMySQL(builder.Configuration.GetConnectionString("WAConnectionMySql")!, b => b.MigrationsHistoryTable("__EFMigrationsHistory"));
+//});
+
+builder.Services.AddDbContext<DbCon>();
 
 builder.Services.Configure<IISServerOptions>(options =>
 {
@@ -84,6 +89,23 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+var migration = (IApplicationBuilder app) =>
+{
+    using var serviceScope = app.ApplicationServices
+        .GetRequiredService<IServiceScopeFactory>()
+        .CreateScope();
+
+    using var context = serviceScope.ServiceProvider.GetService<DbCon>();
+    if (context != null)
+    {
+        if (context.Database.GetPendingMigrations().Any())
+            context.Database.Migrate();
+    }
+};
+
+
+migration.Invoke(app);
 
 app.UseSession();
 

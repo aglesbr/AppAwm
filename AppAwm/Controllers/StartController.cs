@@ -28,7 +28,6 @@ namespace AppAwm.Controllers
             {
                 if (ModelState.IsValid)
                 {
-
                     using DbCon db = new();
                     using var contexto = new RepositoryGeneric<Usuario>(db, out status);
 

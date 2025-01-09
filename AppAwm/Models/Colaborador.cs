@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
-    [Table("AWM_FUNCIONARIO", Schema = "dbo")]
+    [Table("AWM_FUNCIONARIO")]
     public class Colaborador
     {
         [Key]

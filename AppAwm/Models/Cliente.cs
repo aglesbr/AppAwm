@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AppAwm.Models
 {
 
-    [Table("AWM_CLIENTE", Schema = "dbo")]
+    [Table("AWM_CLIENTE")]
     public class Cliente
     {
         [Key]

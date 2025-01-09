@@ -172,5 +172,13 @@ namespace AppAwm.Util
                 new(6, "Expirado, black-text"),
                 ];
         }
+
+        public static List<KeyValuePair<string, string>> Conexao
+        {
+            get => [
+                new("MySql", "WAConnectionMySql"),
+                new("MsSql", "WAConnectionMsSql"),
+                ];
+        }
     }
 }

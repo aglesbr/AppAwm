@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
-    [Table("AWM_HISTORICO_EXECUCAO", Schema = "dbo")]
+    [Table("AWM_HISTORICO_EXECUCAO")]
     public class HistoricoExecucao
     {
         [Key]
