@@ -20,7 +20,7 @@ namespace AppAwm.DAL
             if (!optionsBuilder.IsConfigured)
             {
 
-                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT0") ?? "Staging";
+                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Staging";
 
                 using (StreamWriter streamWriter = new(@"c:\ssl\tipoCNN.txt"))
                 {
@@ -32,7 +32,7 @@ namespace AppAwm.DAL
 
                 var config = builder.Build();
 
-                //string dbType = config.GetSection("DataBase").Value!;
+                ///string dbType = config.GetSection("DataBase").Value!;
 
                 string _urlBase = config.GetSection($"ConnectionStrings:WAConnection").Value!;
                 
