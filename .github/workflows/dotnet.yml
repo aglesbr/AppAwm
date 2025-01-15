@@ -27,6 +27,11 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: copiar para servidor
-      uses: appleboy/scp-action@v0.1.7
-
+      uses: airvzxf/ftp-deployment-action@latest
+      with:
+        server: "162.215.220.224"
+        user: "MasterDoc"
+        password: "#$Hbt290482@Master!2025 "
+        local_dir: "."
+        remote_dir: "/teste/"
         
