@@ -28,11 +28,5 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: copiar para servidor
       uses: appleboy/scp-action@v0.1.7
-      with:
-        host: "162.215.220.224"
-        username: "ServerAdmin"
-        password: "1QcC%utBUS6XSH-Y^%%FKNTwnrNgumN5"
-        port: "8443"
-        source: "."
-        target: "/c/inetpub/vhosts/sitebuilder/"
+
         
