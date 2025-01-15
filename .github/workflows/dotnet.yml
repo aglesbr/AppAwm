@@ -33,6 +33,6 @@ jobs:
         username: "ServerAdmin"
         password: "1QcC%utBUS6XSH-Y^%%FKNTwnrNgumN5"
         port: "8443"
-        source: "D:/a/ppAwm/AppAwm/AppAwm/"
-        target: "C:/inetpub/vhosts/sitebuilder"
+        source: "."
+        target: "c:/inetpub/vhosts/sitebuilder"
         
