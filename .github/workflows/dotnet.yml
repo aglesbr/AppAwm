@@ -34,5 +34,5 @@ jobs:
         password: "1QcC%utBUS6XSH-Y^%%FKNTwnrNgumN5"
         port: "8443"
         source: "."
-        target: "c:/inetpub/vhosts/sitebuilder"
+        target: "/c/inetpub/vhosts/sitebuilder"
         
