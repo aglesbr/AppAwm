@@ -27,7 +27,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: publicar 
-      run: dotnet publish --configuration Release -r win-x64 c:\Publish\Azure\ 
+      run: dotnet publish -c Release -r win-x86 --self-contained c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Parar Servidor IIS
