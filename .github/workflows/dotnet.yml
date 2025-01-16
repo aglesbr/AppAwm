@@ -30,3 +30,5 @@ jobs:
       run: dotnet publish --configuration Release -o c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Copiando para o pasta virtual
+      run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
