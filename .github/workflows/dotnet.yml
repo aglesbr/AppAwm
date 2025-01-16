@@ -24,7 +24,7 @@ jobs:
     - name: Limpar diretorio
       run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
     - run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
-    - name: Parar Servidor IIS
+    - name: Parar Servidor IIS.
       run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - name: Restore dependencies
