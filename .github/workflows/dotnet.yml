@@ -35,5 +35,7 @@ jobs:
     - run: Stop-WebSite 'hddoc.staging.net'
     - name: Copiando para o pasta virtual
       run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
-    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\Publish\HDDC_CLIENT\" -Recurse -Force
+    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\inetpub\wwwroot\hddoc_Staging\" -Recurse -Force
+    - name: Reiniciar Servidor IIS
+      run: Start-WebSite 'hddoc.staging.net'
     
