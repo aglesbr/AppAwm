@@ -21,9 +21,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Limpar diretorio
-      run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
-    - run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
-    - name: Parar Servidor IIS.
+      run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
+    - name: Parar Servidor IIS
       run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - name: Restore dependencies
@@ -47,9 +46,8 @@ jobs:
     
     steps:
     - name: Copiando para o pasta virtual
-    - run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
+      run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
-    - run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\app_offline.htm _app_offline.htm
     - name: Reiniciar Servidor IIS
       run: Import-Module WebAdministration
     - run: Start-WebSite ${{ vars.SITE_IIS }}
@@ -63,14 +61,10 @@ jobs:
 
     steps:
     - name: Movendo para Produção
-    - run: Import-Module WebAdministration
+      run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
-    - run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
     - run: dotnet test --no-build --verbosity normal  
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Reiniciar Servidor IIS
-      run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\app_offline.htm _app_offline.htm
-    - run: Import-Module WebAdministration
+      run: Import-Module WebAdministration
     - run: Start-WebSite ${{ vars.SITE_IIS }}
-    
-    
