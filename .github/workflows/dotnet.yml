@@ -51,7 +51,6 @@ jobs:
     steps:
     - name: Copiando para o pasta virtual
       with:
-        dotnet-version: 8.0.x
         max_attempts: 3 
         retry_wait_seconds: 10
         
@@ -72,7 +71,6 @@ jobs:
     steps:
     - name: Movendo para Produção
       with:
-        dotnet-version: 8.0.x
         max_attempts: 3 
         retry_wait_seconds: 10
         
