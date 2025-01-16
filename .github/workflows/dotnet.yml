@@ -39,6 +39,10 @@ jobs:
       run: dotnet publish -r win-x86 --sc -c Release -o c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
+   
+  publicar:
+    runs-on: self-hosted
+    steps:
     - name: Copiando para o pasta virtual
       run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
     - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\inetpub\wwwroot\hddoc_Staging\" -Recurse -Force
