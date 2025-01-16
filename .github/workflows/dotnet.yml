@@ -26,19 +26,15 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    
     - name: publicar Deploy
       run: dotnet publish --configuration Release -o c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    
     - name: Reiniciar Servidor IIS
       run: Import-Module WebAdministration
     - run: Stop-WebSite 'hddoc.staging.net'
-    
     - name: Mover deploy para o servidor
     - run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
     - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\inetpub\wwwroot\hddoc_Staging\" -Recurse -Force
-    
     - name: Reiniciar Servidor IIS
     - run: Start-WebSite 'hddoc.staging.net'
