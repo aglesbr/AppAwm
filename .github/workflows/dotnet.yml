@@ -1,0 +1,35 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Limpar diretorio
+      run: Remove-Item -Path "C:\Publish\Azure\*" -Confirm:$false -Recurse -Force
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: publicar 
+      run: dotnet publish --configuration Release -o c:\Publish\Azure\ 
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Copiando para o pasta virtual
+      run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
+    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\Publish\HDDC_CLIENT\" -Recurse -Force
