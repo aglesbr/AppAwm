@@ -64,7 +64,7 @@ jobs:
       run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - run: dotnet test --no-build --verbosity normal  
-    -  run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
+    - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Reiniciar Servidor IIS
     - run: Import-Module WebAdministration
     - run: Start-WebSite ${{ vars.SITE_IIS }}
