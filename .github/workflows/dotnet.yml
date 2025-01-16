@@ -12,7 +12,8 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-
+    environment: Staging
+    
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -31,6 +32,7 @@ jobs:
   
   deploy:
     runs-on: self-hosted
+    environment: Staging
     needs: build
     
     steps:  
@@ -39,6 +41,7 @@ jobs:
   
   publicar:
     runs-on: self-hosted
+    environment: Staging
     needs: deploy
     
     steps:
@@ -47,7 +50,21 @@ jobs:
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}} -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Reiniciar Servidor IIS
       run: Import-Module WebAdministration
-    - run: Start-WebSite 'hddoc.staging.net'
+    - run: Start-WebSite 'staging.hddoc.com.br'
     - name: Test
       run: dotnet test --no-build --verbosity normal  
-    
+
+  go-producao:
+    runs-on: self-hosted
+    environment: Protuction
+    needs: deploy  
+
+    steps:
+    - name: Copiando para o pasta virtual
+      run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
+    - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}} -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
+    - name: Reiniciar Servidor IIS
+      run: Import-Module WebAdministration
+    - run: Start-WebSite 'app.hddoc.com.br'
+    - name: Test
+      run: dotnet test --no-build --verbosity normal  
