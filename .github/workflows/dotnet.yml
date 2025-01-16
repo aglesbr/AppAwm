@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: HDDOC.NET
 
 on:
   push:
@@ -11,9 +11,9 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
-
+    environment: Staging
+    
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -21,15 +21,51 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Limpar diretorio
-      run: Remove-Item -Path "C:\Publish\Azure\*" -Confirm:$false -Recurse -Force
+      run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
+    - name: Parar Servidor IIS
+      run: Import-Module WebAdministration
+    - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: publicar 
-      run: dotnet publish --configuration Release -o c:\Publish\Azure\ 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+  
+  deploy:
+    runs-on: self-hosted
+    environment: Staging
+    needs: build
+    
+    steps:  
+    - name: publicar Deploy HDDOC
+      run: dotnet publish -r win-x86 --sc -c Release -o ${{ vars.PATH_DEPLOY_VALUE }} 
+  
+  publicar:
+    runs-on: self-hosted
+    environment: Staging
+    needs: deploy
+    
+    steps:
     - name: Copiando para o pasta virtual
-      run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
-    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\Publish\HDDC_CLIENT\" -Recurse -Force
+      run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
+    - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
+    - name: Reiniciar Servidor IIS
+      run: Import-Module WebAdministration
+    - run: Start-WebSite ${{ vars.SITE_IIS }}
+    - name: Test
+      run: dotnet test --no-build --verbosity normal  
+
+  go-producao:
+    runs-on: self-hosted
+    environment: Production
+    needs: publicar  
+
+    steps:
+    - name: Movendo para Produção
+      run: Import-Module WebAdministration
+    - run: Stop-WebSite ${{ vars.SITE_IIS }}
+    -  run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
+    - name: Reiniciar Servidor IIS
+      run: dotnet test --no-build --verbosity normal  
+    - run: Import-Module WebAdministration
+    - run: Start-WebSite ${{ vars.SITE_IIS }}
+    
