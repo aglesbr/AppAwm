@@ -1,5 +1,8 @@
 ﻿var grafico = (origem, perfil) => {
 
+    if (perfil == 'analista') {
+        return;
+    }
 
     $.ajax({
         type: 'Get',

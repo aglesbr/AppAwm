@@ -1,0 +1,96 @@
+﻿@model AppAwm.Respostas.ClienteAnswer
+
+@{
+    var isChecked = Model.Cliente.Status;
+    var isPeriodoTeste = Model.Cliente.Periodo_Teste;
+
+    var user = Context.Session.GetString("UserAuth");
+    Usuario? userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(user!);
+}
+
+<p class="flow-text"> @(Model.Cliente.Cd_Cliente== 0 ? "Cadastrar" : "Atualizar") Cliente</p>
+
+<form asp-action="Create">
+    <input asp-for="Cliente.Cd_Cliente" id="cd_cliente" type="hidden" />
+    <div class="row">
+        <div class="input-field col s4">
+            <label asp-for="Cliente.Nome"></label>
+            <input asp-for="Cliente.Nome" id="funcionario" autocomplete="off" />
+        </div>
+        <div class="input-field col s2" >
+            <label asp-for="Cliente.Cnpj"></label>
+            <input asp-for="Cliente.Cnpj" id="Cnpj" autocomplete="off" />
+        </div>
+
+        <div class="input-field col s3">
+            <select id="plaoPacoteVida" asp-for="Cliente.PlanoPacoteVidas">
+                <option value="" disabled selected>...</option>
+                <option value="100">PV-100</option>
+                <option value="200">PV-200</option>
+                <option value="300">PV-300</option>
+                <option value="500">Personalizado</option>
+            </select>
+            <label>Plano de Serviço</label>
+        </div>
+        <div class="input-field col s1">
+            <label asp-for="Cliente.PlanoVidas"></label>
+            <input type="number" asp-for="Cliente.PlanoVidas" id="planoVidas" placeholder=" " min="500" step="10" disabled/>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="input-field col s2" style="top:10px;">
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Cliente.Status" id="Status" checked="@isChecked">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+        </div>
+
+        <div class="input-field col s3" style="top:10px;">
+            <div class="switch">
+                Cliente em periodo de teste: &nbsp;
+                <label>
+                    Não
+                    <input type="checkbox" asp-for="Cliente.Periodo_Teste" id="isPeriodoTeste">
+                    <span class="lever"></span>
+                    Sim
+                </label>
+            </div>
+        </div>
+        <div class="input-field col s3">
+            <label asp-for="Cliente.Vencimento_Periodo_Teste"></label>
+            <input type="date" asp-for="Cliente.Vencimento_Periodo_Teste" id="dtVencimentoPeriodoTeste" placeholder=" " disabled/>
+            
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="input-field">
+            <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                <i class="material-icons left">save</i>
+                @(Model?.Cliente.Cd_Cliente == 0 ? "Salvar" : "Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model?.Cliente.Cd_Cliente == 0 ? "" : "none");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                <i class="material-icons left">arrow_back</i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</form>
+
+<script src="~/js/cliente/cliente.js"></script>
+
+<script>
+$(document).ready(function () {
+        $('#dtVencimentoPeriodoTeste').prop('disabled', '@isPeriodoTeste' == 'False');
+});
+</script>

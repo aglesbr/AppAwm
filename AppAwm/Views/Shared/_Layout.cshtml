@@ -20,18 +20,18 @@
     <header style="height:30px;">
         <nav class="z-depth-2" id="navHeader">
             <div class="row">
-                    <div class="col s1">
-                        @if (Context.User.Identity.IsAuthenticated)
-                        {
-                             <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">menu</i>
-                        }
-                    </div>
+                <div class="col s1">
+                    @if (Context.User.Identity.IsAuthenticated)
+                    {
+                        <i href="#" style="cursor:pointer;" data-target="slide-out" class="material-icons sidenav-trigger show-on-large">menu</i>
+                    }
+                </div>
 
                 <div class="center col s10">
                     SISTEMA DE CONFERÊNCIA E GESTÃO DOCUMENTAL <small>HDDOC - v1.0</small>
                 </div>
 
-               @*  @if (Context.User.Identity.IsAuthenticated)
+                @*  @if (Context.User.Identity.IsAuthenticated)
                 {
                     var clientSession = JsonConvert.DeserializeObject<Cliente>(Context.Session.GetString("ClientAuth")!);
 
@@ -79,7 +79,7 @@
             {
                 var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
 
-                if(userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+                if (userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
                 {
                     @* <li class='dropdown-trigger' href='#' data-target='dropdownSubMenu'>
                         <a class="waves-effect waves-red"><i class="material-icons red-text">subdirectory_arrow_right</i>Mais...</a>
@@ -87,21 +87,25 @@
                             <!-- Dropdown Structure -->
                             <ul id='dropdownSubMenu' class='dropdown-content'>
                                 <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Calendario" asp-action="Index"><i class="material-icons red-text">view_comfy</i>Calendário ajustavel</a></li>
-                        
+
                                 <li class="divider" tabindex="-1"></li>
                                 <li style="height:6%;"><a class="waves-effect"><i class="material-icons red-text">keyboard_return</i>Voltar</a></li>
                             </ul>
                         </div>
-                    
+
                     </li> *@
                     <li style="height:6%;"><a class="waves-effect sidenav-close" asp-controller="Operacao" asp-action="Index"><i class="material-icons red-text">assignment</i>Operação de Analise</a></li>
-                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Usuario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Usuários</a></li>
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Cliente" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">assignment</i>Clientes</a></li>
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Usuario" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">face</i>Usuários</a></li>
+                }
+
+                if (userSession?.Perfil is (AppAwm.Models.Enum.EnumPerfil.Administrador or AppAwm.Models.Enum.EnumPerfil.Terceiro))
+                {
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Colaborador" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
                 }
             }
-
-            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
-            <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Colaborador" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
-@*             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Contrato" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">assignment</i>Contratos</a></li>
+@*
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Documento" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">insert_drive_file</i>Documentos</a></li>
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Familia" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">grain</i>Família</a></li>
             <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Link" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">link</i>Links</a></li>

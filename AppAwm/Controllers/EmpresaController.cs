@@ -11,7 +11,6 @@ using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    [Authorize]
     public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IColaborador<ColaboradorAnswer> _servicoFuncionario) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;

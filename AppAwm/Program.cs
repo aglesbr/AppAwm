@@ -4,9 +4,7 @@ using AppAwm.Services;
 using AppAwm.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
@@ -48,6 +46,7 @@ builder.Services.AddScoped<IObra<ObraAnswer>, ObraService>();
 builder.Services.AddScoped<ICargo<CargoAnswer>, CargoService>();
 builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAnswer>, DocumentacaoComplementarService>();
 builder.Services.AddScoped<IChart<ChartAnswer>, ChartService>();
+builder.Services.AddScoped<ICliente<ClienteAnswer>, ClienteService>();
 builder.Services.AddScoped<DepartamentoService>();
 
 builder.Services.AddSession(s =>

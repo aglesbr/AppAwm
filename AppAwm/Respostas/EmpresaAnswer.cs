@@ -33,8 +33,6 @@ namespace AppAwm.Respostas
 
         public static EmpresaAnswer DeSucesso(Empresa empresa) => new(true, string.Format(messageOfSuccess, (empresa.Dt_Atualizacao == null ? "Cadastrada" : "Atualizada")), empresa);
 
-        public static EmpresaAnswer DeSucesso(string consumerCnpj) => new(true, messageOfConsulta, consumerCnpj);
-
         public static EmpresaAnswer DeSucesso(List<Empresa> list) => new(true, messageOfConsulta, list);
 
         public static EmpresaAnswer DeErro(string error) => new(false, error ?? messageOfError);
@@ -48,5 +46,7 @@ namespace AppAwm.Respostas
         public static EmpresaAnswer DeFalha() => new(false, messageOfFalha);
 
         public static EmpresaAnswer DeFalha(string falha) => new(false, falha ?? messageOfFalha);
+        
+        public static EmpresaAnswer DeSucesso(string consumerCnpj) => new(true, messageOfConsulta, consumerCnpj);
     }
 }

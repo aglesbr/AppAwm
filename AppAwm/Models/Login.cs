@@ -22,6 +22,17 @@ namespace AppAwm.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe uma senha.")]
         public string? Password { get; set; }
 
+        public MessageResposta Message { get; set; } = new();
+
         public bool Operacao { get; set; }
+
+
+    }
+
+    public class MessageResposta()
+    {
+        public bool Success { get; set; }
+
+        public string? Message { get; set; }
     }
 }

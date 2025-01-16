@@ -121,9 +121,9 @@ namespace AppAwm.Services
                 {
                     ConnectionFactory factory = new()
                     {
-                        UserName = Utility.Cliente!.UsuarioMq,
-                        Password = Utility.Cliente.PasswordMq,
-                        HostName = Utility.Cliente.HostMq,
+                        UserName = "guest",
+                        Password = "guest",
+                        HostName = "localhost",
                         Port = 5672,
                         RequestedChannelMax = 20
                     };

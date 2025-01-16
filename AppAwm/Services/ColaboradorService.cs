@@ -146,7 +146,7 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    return contexto.GetAll(g => g.Nome!.StartsWith(nome)).Take(50).ToList();
+                    return [.. contexto.GetAll(g => g.Nome!.ToLower().StartsWith(nome.ToLower())).Take(50)];
                 }
 
                 return [];

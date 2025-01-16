@@ -22,7 +22,11 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_CONNECT": "localhost;Initial Catalog=AppHddoc;Persist Security Info=True;User ID=sa;Password=Super@Root(1)Abnet;Pooling=False; MultipleActiveResultSets=true; TrustServerCertificate=true",
+        "ASPNETCORE_CONNECT1": "localhost; database=apphddoc; user=root; password=#$Hbt290482",
+        "ASPNETCORE_CONNECT3": "162.215.220.224;Initial Catalog=admin_AppHddoc;Persist Security Info=True;User ID=admin_prdHddoc;Password=#$Hbt290482@User?Hddoc!2025;Pooling=False; MultipleActiveResultSets=true; TrustServerCertificate=true",
+        "ASPNETCORE_CONNECT2": "162.215.220.224;Port=3306; database=admin_AppHddoc;user=admin_stgHddoc;password=#$Hbt290482@User?Hddoc!2025"
       }
     }
   },

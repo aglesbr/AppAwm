@@ -1,5 +1,6 @@
 ﻿using AppAwm.DAL;
 using AppAwm.Models;
+using AppAwm.Services.Interface;
 using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,10 @@ using System.Text.RegularExpressions;
 
 namespace AppAwm.Controllers
 {
-    public class StartController(IConfiguration section) : Controller
+    public class StartController() : Controller
     {
 
         private GenericRepositoryValidation.GenericRepositoryExceptionStatus status;
-        private IConfiguration configurationSection = section;
 
         [SupportedOSPlatform("linux")]
         [SupportedOSPlatform("Windows")]
@@ -40,13 +40,12 @@ namespace AppAwm.Controllers
                             if (login.Operacao)
                                 return new JsonResult(new { message = "Falha no login", success = false });
 
-                            ViewBag.invalido = true;
+                            login.Message = new() { Message = "Usuario não encontrado", Success = false };
                             return View(login);
                         }
 
                         if (_Usuario.Status)
                         {
-
                             var contextoCliente = new RepositoryGeneric<Empresa>(db, out status);
 
                             var empresaCliente = contextoCliente.GetAll(cli => cli.Cd_Empresa == _Usuario.Cd_Empresa).Include(cl => cl.Cliente).FirstOrDefault();
@@ -63,6 +62,20 @@ namespace AppAwm.Controllers
 
                             if (login.Operacao)
                                 return new JsonResult(_Usuario);
+
+
+                            if (!_Usuario.Cliente!.Status || !user.Empresa.Status)
+                            {
+                                login.Message = new() { Message = "A empresa deste usuário está inativado, contate o administrador", Success = false };
+                                return View(login);
+                            }
+
+                            if (_Usuario.Cliente!.Periodo_Teste && _Usuario.Cliente!.Vencimento_Periodo_Teste < DateTime.Now.Date)
+                            {
+                                login.Message = new() { Message = "O Periodo de teste da ferramenta terminou, Solicite ao administrador a renovação da licença!", Success = false };
+                                return View(login);
+                            }
+
 
                             var token = Utility.GenerateToken(new Usuario { Login = login.UserName, Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone });
                             HttpContext.Session.SetString("Token", token);
@@ -161,7 +174,7 @@ namespace AppAwm.Controllers
 
 
         [HttpPost("/Start/changePassword")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Funcionario, Analista, Terceiro, Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult ChangePwd(Usuario usuario)
         {

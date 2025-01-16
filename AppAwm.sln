@@ -9,12 +9,21 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		ReleaseOn|Any CPU = ReleaseOn|Any CPU
+		Staging|Any CPU = Staging|Any CPU
+		StagingOn|Any CPU = StagingOn|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.ReleaseOn|Any CPU.ActiveCfg = ReleaseOn|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.ReleaseOn|Any CPU.Build.0 = ReleaseOn|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Staging|Any CPU.ActiveCfg = Staging|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.Staging|Any CPU.Build.0 = Staging|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.StagingOn|Any CPU.ActiveCfg = StagingOn|Any CPU
+		{717B5B51-770E-4AE6-965D-8A3E0FB81321}.StagingOn|Any CPU.Build.0 = StagingOn|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

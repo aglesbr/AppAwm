@@ -20,21 +20,38 @@ namespace AppAwm.DAL
             if (!optionsBuilder.IsConfigured)
             {
 
-                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Staging";
 
-                using (StreamWriter streamWriter = new(@"c:\ssl\tipoCNN.txt"))
-                {
-                    streamWriter.WriteLine(appSeting);
-                }
+            #if DEBUG || RELEASE
+                //---- SQL Servre
+                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT");
+            #endif
+
+            #if RELEASEON
+                //---- SQL Servre online
+                var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT3");
+            #endif
+
+            #if STAGING
+                //---- MySql
+                var appSeting =  "Staging";
+                var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT1");
+            #endif
+
+            #if STAGINGON
+                //---- MariaDB online
+                var appSeting = "Staging";
+                var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT2");
+            #endif
 
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile($"appsettings.{appSeting}.json", true);
 
                 var config = builder.Build();
 
-                ///string dbType = config.GetSection("DataBase").Value!;
 
-                string _urlBase = config.GetSection($"ConnectionStrings:WAConnection").Value!;
+                string _urlBase = string.Format(config.GetSection($"ConnectionStrings:WAConnection").Value!, cnn);
                 
                 if(appSeting.Equals("Staging"))
                     optionsBuilder.UseMySQL(_urlBase, x => x.MigrationsHistoryTable("__EFMigrationsHistory"));

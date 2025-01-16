@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Clientes";
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+}
+
+@if (userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+{
+    <form>
+        <div class="row">
+            <h4>Pesquisar Clientes</h4>
+            <div class="input-field col s3">
+                <input id="cnpjCliente" type="text">
+                <label for="Cnpj">CNPJ</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="cliente" type="text">
+                <label for="cliente">Cliente</label>
+            </div>
+            <div class="input-field col s3">
+                <select id="StatusFilter">
+                    <option value="" selected>Todos</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                </select>
+                <label>Status</label>
+            </div>
+        </div>
+
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small " id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Cliente" asp-action="Create" class="waves-effect waves-light btn-small "><i class="material-icons left small">add</i>Novo Cliente</a>
+        </div>
+    </form>
+    <hr>
+    <footer id="DivRenderData" style="display:none;"></footer>
+
+}

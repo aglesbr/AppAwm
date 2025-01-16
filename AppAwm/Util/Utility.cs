@@ -32,12 +32,12 @@ namespace AppAwm.Util
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
+                    Subject = new ClaimsIdentity(
+                    [
                         new(ClaimTypes.Name, userCurrency.Nome!.ToString()),
                         new(ClaimTypes.Email, userCurrency.Email!.ToString()),
                         new(ClaimTypes.Role, userCurrency.Perfil!.ToString())
-                    }),
+                    ]),
                     Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
@@ -83,13 +83,11 @@ namespace AppAwm.Util
 
                 mensagem += $"</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
-                login = new NetworkCredential("agles.developer", "gfljmaxbyxtrnwdg");
-
                 login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
                 client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = login;
-                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDDOC", Encoding.Default), };
+                msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
                 msg.Subject = $"HDDOC - {(isNovoUsuario ? "Bem Vindo(a)" : "Nova Senha")}";
                 msg.Body = mensagem;
@@ -120,7 +118,7 @@ namespace AppAwm.Util
                 client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = login;
-                msg = new MailMessage { From = new MailAddress("agles.developer@gmail.com", "Sistema - HDDOC", Encoding.Default), };
+                msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
                 msg.Subject = $"HDDOC - Vencimento de Documento";
                 msg.Body = message;

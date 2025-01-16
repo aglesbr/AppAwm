@@ -4,10 +4,11 @@
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    if (ViewBag.invalido ?? false)
+    if (Model != null)
+    if (!Model.Message.Success)
     {
         <script>
-            M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;Dados de usuário inválidos!', classes: 'orange darken-3 rounded' });
+            M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;@Model.Message.Message', classes: 'orange darken-3 rounded' });
             $('#divControleLogin').css('display', '');
             $('#divloginIntermitente').css('display', 'none');
         </script>
@@ -28,6 +29,7 @@
                             <option value="0" disabled selected>Selecione...</option>
                             <option value="1">Terceiro</option>
                             @* <option value="2">Funcionário</option> *@
+                            <option value="4">Analista</option>
                             <option value="7">Administrador</option>
                         </select>
                         <label asp-for="Perfil"></label>
