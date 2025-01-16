@@ -60,8 +60,7 @@ jobs:
     needs: publicar  
 
     steps:
-    - name: Copiando para o pasta virtual
-      run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
+    - name: Movendo para Produção
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}} -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Reiniciar Servidor IIS
       run: Import-Module WebAdministration
