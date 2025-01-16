@@ -26,10 +26,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: publicar 
+    - name: publicar Deploy
       run: dotnet publish --configuration Release -o c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Copiando para o pasta virtual
+    - name: Mover deploy para o servidor
       run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
-    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\Publish\HDDC_CLIENT\" -Recurse -Force
+    - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\inetpub\wwwroot\hddoc_Staging\" -Recurse -Force
