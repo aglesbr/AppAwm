@@ -20,6 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        max_attempts: 3 
+        retry_wait_seconds: 10
+        
     - name: Limpar diretorio
       run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
     - run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
@@ -47,7 +50,13 @@ jobs:
     
     steps:
     - name: Copiando para o pasta virtual
-      run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        max_attempts: 3 
+        retry_wait_seconds: 10
+        
+    - run: Remove-Item -Path ${{ vars.FILE_CONFIG_SETTINGS }} -Confirm:$false -Force
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\app_offline.htm _app_offline.htm
     - name: Reiniciar Servidor IIS
@@ -63,7 +72,13 @@ jobs:
 
     steps:
     - name: Movendo para Produção
-      run: Import-Module WebAdministration
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        max_attempts: 3 
+        retry_wait_seconds: 10
+        
+    - run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
     - run: dotnet test --no-build --verbosity normal  
