@@ -22,17 +22,17 @@ jobs:
         dotnet-version: 8.0.x
     - name: Limpar diretorio
       run: Remove-Item -Path "C:\Publish\Azure\*" -Confirm:$false -Recurse -Force
+    - name: Parar Servidor IIS
+      run: Import-Module WebAdministration
+    - run: Stop-WebSite 'hddoc.staging.net'
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: publicar 
+    - name: publicar Deploy HDDOC
       run: dotnet publish -r win-x86 --sc -c Release -o c:\Publish\Azure\ 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Parar Servidor IIS
-      run: Import-Module WebAdministration
-    - run: Stop-WebSite 'hddoc.staging.net'
     - name: Copiando para o pasta virtual
       run: Remove-Item -Path "C:\Publish\Azure\appsettings.*", "C:\Publish\Azure\web.config" -Confirm:$false -Force
     - run: Copy-Item -Path "C:\Publish\Azure\*" -Destination "C:\inetpub\wwwroot\hddoc_Staging\" -Recurse -Force
