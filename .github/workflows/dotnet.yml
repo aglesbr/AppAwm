@@ -20,7 +20,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-
     - name: Limpar diretorio
       run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}\_app_offline.htm app_offline.htm
     - run: Remove-Item -Path ${{ vars.PATH_DEPLOY_VALUE }}* -Confirm:$false -Recurse -Force
