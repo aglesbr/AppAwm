@@ -11,5 +11,13 @@ jobs:
     environment: Staging
 
     steps:
-    - name: Restore dependencies
+    - name: Ambiente  Homolog
+      run: env
+      
+  Producion:
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+    - name: Ambiente Producao
       run: env
