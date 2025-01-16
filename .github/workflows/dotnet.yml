@@ -60,6 +60,8 @@ jobs:
     needs: publicar  
 
     steps:
+    - name: Matando processo .exe
+      run: Stop-Process ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}AppAwm.exe
     - name: Movendo para Produção
       run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
