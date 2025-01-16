@@ -36,8 +36,6 @@ jobs:
     steps:  
     - name: publicar Deploy HDDOC
       run: dotnet publish -r win-x86 --sc -c Release -o c:\Publish\Azure\ 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal   
   
   publicar:
     runs-on: self-hosted
@@ -50,4 +48,6 @@ jobs:
     - name: Reiniciar Servidor IIS
       run: Import-Module WebAdministration
     - run: Start-WebSite 'hddoc.staging.net'
+    - name: Test
+      run: dotnet test --no-build --verbosity normal  
     
