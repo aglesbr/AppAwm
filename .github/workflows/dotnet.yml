@@ -24,14 +24,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: publicar 
+      run: dotnet publish --configuration Release -o .\teste 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: copiar para servidor
-      uses: airvzxf/ftp-deployment-action@latest
-      with:
-        server: "162.215.220.224"
-        user: "MasterDoc"
-        password: "#$Hbt290482@Master!2025 "
-        local_dir: "."
-        remote_dir: "/teste/"
-        
