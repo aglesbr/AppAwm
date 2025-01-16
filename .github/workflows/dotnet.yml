@@ -28,7 +28,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --self-contained true --no-restore
+      run: dotnet build --no-restore
+  
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    steps:  
     - name: publicar Deploy HDDOC
       run: dotnet publish -r win-x86 --sc -c Release -o c:\Publish\Azure\ 
     - name: Test
