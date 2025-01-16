@@ -41,7 +41,7 @@ jobs:
     - name: publicar Deploy HDDOC
       run: dotnet publish -r win-x86 --sc -c Release -o ${{ vars.PATH_DEPLOY_VALUE }} 
   
-  publicar:
+  go-homologacao:
     runs-on: self-hosted
     environment: Staging
     needs: deploy
@@ -63,7 +63,7 @@ jobs:
   go-producao:
     runs-on: self-hosted
     environment: Production
-    needs: publicar  
+    needs: go-homologacao  
 
     steps:
     - name: Movendo para Produção
