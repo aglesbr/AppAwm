@@ -20,8 +20,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Limpar diretorio
-      shell: powershell
-      run: Remove-Item -Path %PATH_VALUE_DEPLOY% -Confirm:$false -Recurse -Force
+      shell: pwsh
+      run: Remove-Item -Path ${env:PATH_VALUE_DEPLOY} -Confirm:$false -Recurse -Force
     - name: Parar Servidor IIS
       run: Import-Module WebAdministration
     - run: Stop-WebSite 'hddoc.staging.net'
