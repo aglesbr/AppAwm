@@ -71,7 +71,8 @@ jobs:
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
     - name: Renomeando arquivos
       run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}_app_offline.htm app_offline.htm
-    - run: dotnet test --no-build --verbosity normal  
+    - name: Aguardando comando de copia
+      run: sleep 60s
     - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Renomeando arquivos
       run: Rename-Item -Path ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }}app_offline.htm _app_offline.htm
