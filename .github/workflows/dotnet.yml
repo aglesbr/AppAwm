@@ -63,9 +63,9 @@ jobs:
     - name: Movendo para Produção
       run: Import-Module WebAdministration
     - run: Stop-WebSite ${{ vars.SITE_IIS }}
-    -  run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
+    - run: dotnet test --no-build --verbosity normal  
+    - run: Copy-Item -Path ${{vars.PATH_DEPLOY_VALUE}}* -Destination ${{ vars.PATH_DEPLOY_VALUE_DESTINATION }} -Recurse -Force
     - name: Reiniciar Servidor IIS
-      run: dotnet test --no-build --verbosity normal  
-    - run: Import-Module WebAdministration
+      run: Import-Module WebAdministration
     - run: Start-WebSite ${{ vars.SITE_IIS }}
     
