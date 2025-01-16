@@ -50,7 +50,6 @@ jobs:
     
     steps:
     - name: Copiando para o pasta virtual
-      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
         max_attempts: 3 
@@ -72,7 +71,6 @@ jobs:
 
     steps:
     - name: Movendo para Produção
-    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
         max_attempts: 3 
