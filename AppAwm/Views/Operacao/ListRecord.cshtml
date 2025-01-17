@@ -19,7 +19,7 @@
                     @Html.DisplayNameFor(model => model[0].Descricao)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model[0].TipoAnexo)
+                    Tipo
                 </th>
 
                 <th class="dt-head-left">
@@ -34,6 +34,8 @@
         <tbody>
             @foreach (var item in Model)
             {
+                var tipoAnexo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo)!.Nome;
+                
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Nome)
@@ -42,7 +44,7 @@
                         @Html.DisplayFor(modelItem => item.Descricao)
                     </td>
                     <td class="dt-body-left">
-                        @Html.DisplayFor(modelItem => AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo)!.Nome)
+                        <i data-position="left" data-tooltip="@tipoAnexo" class="material-icons prefix blue-grey-text accent-3 tooltipped">description</i>
                     </td>
 
                     <td>

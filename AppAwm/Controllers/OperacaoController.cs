@@ -26,7 +26,7 @@ namespace AppAwm.Controllers
         private readonly ICargo<CargoAnswer> servicoCargo = _servicoCargo;
         private readonly IDocumentacaoComplementar<DocumentacaoComplementarAnswer> servicoDocumentacaoComplementar = _servicoDocumentacaoComplementar;
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador, Analista")]
         public ActionResult Index()
         {
             if (!User.Identity.IsAuthenticated)

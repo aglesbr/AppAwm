@@ -85,3 +85,33 @@ var updateStatus = (obj) => {
 
 }
 
+$('#openDownload').on('click', (event) => {
+
+    const divDownload = `<div class="row">
+        <div class="col s12" >
+            <div class="card horizontal card blue-grey z-depth-3">
+                <div class="card-image" style="margin-left:5px; margin-top:5px;">
+                    <img src="../images/Software.png" style="height:100px; width:100px">
+                </div>
+                <div class="card-stacked">
+                    <div class="card-content white-text">
+                        <p>O <b>AppDoc</b>, é o sistema de checagem e conferência documental.<br /> Todos os documentos enviados pelos nossos clientes, são vlidados pela equipe HDDOC.</p>
+                    </div>
+                    <div class="card-action">
+                        <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript: window.location.href = '/Anexo/downloadFile/0?isApp=true'">
+                            <i class="material-icons left" style="font-size:30px;">cloud_download</i>baixar o software
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </div >
+  </div > `
+
+    $.dialog({
+        title:'Download ',
+        boxWidth: '30%',
+        type: 'dark',
+        useBootstrap: false,
+        content: divDownload,
+    });
+});

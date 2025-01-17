@@ -3,32 +3,63 @@
 @{
     ViewData["Title"] = "Operação";
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
 }
 
 <h4>Analise de Documentação</h4>
 
-<form>
-    <div class="row">
-        <div class="input-field col s10">
-            <select id="cd_empresa" asp-items="selectLists">
-                <option value="0" selected>Todos</option>
-            </select>
+@if (userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+{
+    <form>
+        <div class="row">
+            <div class="input-field col s8">
+                <select id="cd_empresa" asp-items="selectLists">
+                    <option value="0" selected>Todos</option>
+                </select>
+            </div>
+            <div class="col s2 right-align" style="margin-top:25px;">
+                <a class="waves-effect waves-light btn" id="btnSearch"><i class="material-icons left">search</i>pesquisar empresa</a>
+            </div>
+            <div class="col s2" style="margin-top:25px;">
+                <a class="waves-effect waves-light btn purple" id="openDownload"><i class="material-icons left">search</i>App hddoc</a>
+            </div>
+
         </div>
-        <div class="input-field col s2" style="margin-top:25px;">
-            <a class="waves-effect waves-light btn" id="btnSearch"><i class="material-icons left">search</i>pesquisar empresa</a>
-        </div>
+    </form>
 
-    </div>
-</form>
+    <footer id="DivRenderData"></footer>
 
-<footer id="DivRenderData"></footer>
-
-<!-- Modal Abrir PDF -->
-<div id="modalOpenDocument" class="modal">
+    <!-- Modal Abrir PDF -->
+    <div id="modalOpenDocument" class="modal">
         <object id="objFile" type="application/pdf" style="width:100%; height:590px; display:none;"></object>
         <div id="DivError" style="display:none;"></div>
         <div class="right-align" style="margin:3px 3px 3px;">
             <a id="btnCloseModa" class="modal-close waves-effect waves-teal btn">fechar</a>
         </div>
-</div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col s4">
+            <div class="card horizontal card blue-grey z-depth-3">
+            <div class="card-image" style="margin-left:5px; margin-top:5px;">
+                <img src="~/images/Software.png" height="100" width="100">
+            </div>
+            <div class="card-stacked">
+                <div class="card-content white-text">
+                        <p>O <b>AppDoc</b>, é o sistema de checagem e conferência documental.<br/> Todos os documentos enviados pelos nossos clientes, são vlidados pela equipe HDDOC.</p>
+                </div>
+                <div class="card-action">
+                        <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript: window.location.href = '/Anexo/downloadFile/0?isApp=true'">
+                            <i class="material-icons left" style="font-size:30px;">cloud_download</i>baixar o software
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+}
 <script src="~/js/operacao/operacao.js"></script>

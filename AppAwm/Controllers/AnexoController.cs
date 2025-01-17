@@ -284,19 +284,20 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Anexo/downloadFile/{id:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
-        public IActionResult? DownloadFile(int id)
+        [Authorize(Roles = "Analista, Terceiro, Administrador")]
+        public IActionResult? DownloadFile(int id, bool isApp = false)
         {
             try
             {
-                AnexoAnswer anexoAnswer = servico.List(s => s.Cd_Anexo == id, true);
+                //TipoAnexo == 100 (esse anexo é do software do analista) NUNCA. JAMAIS EXLUIR ESSE REGISTRO
+                AnexoAnswer anexoAnswer = servico.List(s => isApp ? s.Status == 0 && s.TipoAnexo == 100 : s.Cd_Anexo == id, true);
 
                 if (anexoAnswer.Success)
                 {
                     return File(anexoAnswer.Anexos[0].Arquivo!, System.Net.Mime.MediaTypeNames.Application.Octet, anexoAnswer.Anexos[0].Nome);
                 }
 
-                return null;
+                return File([], "application/pdf");
             }
             catch
             {

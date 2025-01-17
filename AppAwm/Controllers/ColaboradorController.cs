@@ -18,7 +18,7 @@ namespace AppAwm.Controllers
         private readonly IColaborador<ColaboradorAnswer> servico = _servico;
 
 
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Analista, Terceiro, Administrador")]
         public ActionResult Index()
         {
             if (!User.Identity.IsAuthenticated)
