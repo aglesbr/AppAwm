@@ -1,12 +1,18 @@
 ﻿var openDocumentPdf = (obj) =>
 {
+    loading(true);
+
     let action = '../Anexo/loadFile';
+
+    $('#divFile').css('display', 'none');
+    $('#divObjPdfIntermitente').css('display', '');
+
     $.ajax({
         type: 'Get',
         url: action,
         contentType: "application/json; charset=utf-8",
         responseType: 'arraybuffer',
-        async: true,
+        async: false,
         data: { id: JSON.stringify(obj.codigo) }
     })
         .done(function (data) {
@@ -15,13 +21,16 @@
             const blob = b64toBlob(data, contentType);
             const blobUrl = URL.createObjectURL(blob);
 
-            $("#DivError").css("display", "none");
-            $("#objFile").css("display", "");
-            $("#btnSearch").trigger('click');
-            $("#objFile").prop('data', blobUrl);
+            $("#DivError").css('display', 'none');
+            //$("#objFile").css('display', '');
+            //$('#divObjPdfIntermitente').css('display', 'none');
+            // $("#btnSearch").trigger('click');
+
+            setTimeout(() => { $("#divFile").css('display', ''); $('#divObjPdfIntermitente').css('display', 'none'); $("#objFile").prop('data', blobUrl); loading(false); }, 1000);
 
         })
         .fail(function (data) {
+            loading(false);
             $("#DivError").css("display", "");
             $("#DivError").empty().html(data.responseText);
         });
@@ -31,9 +40,9 @@
 }
 
 
-const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
+var b64toBlob = (b64Data, contentType = '', sliceSize = 1024) => {
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
 
     for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
         const slice = byteCharacters.slice(offset, offset + sliceSize);
@@ -60,7 +69,7 @@ var updateStatus = (obj) => {
         type: 'PUT',
         url: '/Anexo/updateStatus',
         dataType: "json",
-        async: true,
+        async: false,
         data: { obj: JSON.stringify(obj) }
     })
         .done(function (data) {

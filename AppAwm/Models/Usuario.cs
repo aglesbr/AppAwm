@@ -27,10 +27,6 @@ namespace AppAwm.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o seu Cpf.")]
         public string? Documento { get; set; }
 
-        [Display(Name = "Usuário")]
-        [Column("LOGIN", TypeName = "VARCHAR(15)")]
-        public string? Login { get; set; }
-
         [Display(Name = "Senha")]
         [Column("SENHA", TypeName = "VARCHAR(100)")]
         [StringLength(15, ErrorMessage = "Deve conter pelo menos 6 caracteres.", MinimumLength = 6)]

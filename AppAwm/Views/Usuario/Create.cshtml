@@ -47,10 +47,6 @@
     </div>
     <div class="row">
         <div class="input-field col s3">
-            <label asp-for="Usuario.Login"></label>
-            <input asp-for="Usuario.Login" id="Login" autocomplete="off" readonly placeholder="login gerado automático" />
-        </div>
-        <div class="input-field col s3">
             <label asp-for="Usuario.Senha"></label>
             <input asp-for="Usuario.Senha" id="Senha" autocomplete="off" placeholder=" " value="@(Model?.Acao == AppAwm.Models.Enum.EnumAcao.Nenhum ? null : "$123Master")" />
         </div>

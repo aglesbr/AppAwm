@@ -11,7 +11,7 @@ namespace AppAwm.Models
         [Display(Name = "Perfil")]
         public EnumPerfil Perfil { get; set; }
 
-        [Display(Name = "Usuário")]
+        [Display(Name = "Cpf")]
         [Column("LOGIN", TypeName = "VARCHAR(15)")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe seu usuário.")]
         public string? UserName { get; set; }

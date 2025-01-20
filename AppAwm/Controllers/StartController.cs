@@ -33,7 +33,7 @@ namespace AppAwm.Controllers
 
                     if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                     {
-                        var _Usuario = contexto.GetAll(n => n.Login == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status).FirstOrDefault();
+                        var _Usuario = contexto.GetAll(n => n.Documento == login.UserName && n.Senha == Util.Utility.Criptografar(login.Password!) && n.Perfil == login.Perfil && n.Status).FirstOrDefault();
 
                         if (_Usuario is null)
                         {
@@ -77,7 +77,7 @@ namespace AppAwm.Controllers
                             }
 
 
-                            var token = Utility.GenerateToken(new Usuario { Login = login.UserName, Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone });
+                            var token = Utility.GenerateToken(new Usuario { Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone });
                             HttpContext.Session.SetString("Token", token);
                             HttpContext.Session.SetString("UserAuth", JsonSerializer.Serialize(user));
 

@@ -175,11 +175,11 @@ namespace AppAwm.Services
                     return clientes;
                 }
 
-                return new();
+                return [];
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new();
+                return [];
             }
         }
 

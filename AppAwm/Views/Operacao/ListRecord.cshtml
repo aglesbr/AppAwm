@@ -72,8 +72,9 @@
                     </td>
                     <td class="right-align">
                         <a data-position="left" data-tooltip="Abrir documento" class="waves-effect waves-light btn-small deep-purple darken-1 modal-trigger tooltipped" onclick="javascript:openDocumentPdf({codigo:@item.Cd_Anexo, status: 2})"><i class="material-icons center">description</i></a>
-                        <a data-position="top" data-tooltip="Aprovar" class="waves-effect waves-light btn-small tooltipped aprovarDocs @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='3' data-><i class="material-icons center">check</i></a>
-                        <a data-position="right" data-tooltip="Reprovar" class="waves-effect waves-light btn-small red darken-4 rejeitarDocs tooltipped @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='4' ><i class="material-icons center">close</i></a>
+                        <a class="waves-effect waves-light btn-small  revogarDoc" data-itemid="@item.Cd_Anexo" onclick="javascript:updateStatus({id:@item.Cd_Anexo, status: 1, message: '', isRevoga:'true'})"><i class="material-icons left">replay</i>Revogar</a>
+                        @* <a data-position="top" data-tooltip="Aprovar" class="waves-effect waves-light btn-small tooltipped aprovarDocs @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='3' data-><i class="material-icons center">check</i></a>
+                        <a data-position="right" data-tooltip="Reprovar" class="waves-effect waves-light btn-small red darken-4 rejeitarDocs tooltipped @(new int[]{1,3,4,5}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-status='4' ><i class="material-icons center">close</i></a>*@
                     </td>
                 </tr>
             }
@@ -127,9 +128,10 @@ else
             li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
         });
 
-        $('.btnSearch').click((event) => {
+        @* $('.btnSearch').click((event) => {
+            debugger
             $("#btnSearch").trigger("click", event.target.innerHTML);
-        });
+        }); *@
 
         $('#tableList').DataTable({
             language: {
@@ -142,69 +144,6 @@ else
                 bottomEnd: null,
                 topEnd: null,
             }
-        });
-
-
-        $('.aprovarDocs').on('click', (event) => {
-
-            $.confirm({
-                title: 'Você confirma a Aprovação deste documento?',
-                content: 'ATENÇÃO: essa ação não poderá ser desfeita!',
-                boxWidth: '30%',
-                type: 'dark',
-                useBootstrap: false,
-                buttons: {
-                    cancelar: function () { },
-                    confirmar: function () {
-                        updateStatus({ id: parseInt(event.currentTarget.dataset.itemid), status: parseInt(event.currentTarget.dataset.status)})
-                    },
-                    // somethingElse: {
-                    //     text: 'Something else',
-                    //     btnClass: 'btn-blue',
-                    //     keys: ['enter', 'shift'],
-                    //     action: function () {
-                    //         $.alert('Something else?');
-                    //     }
-                    // }
-                }
-            });
-        });
-
-        $('.rejeitarDocs').on('click', (event) => {
-
-            $.confirm({
-                title: 'Informe o motivo da reprovação deste documento!',
-                boxWidth: '40%',
-                type: 'dark',
-                useBootstrap: false,
-                content: '' +
-                    '<div class="row">' +
-                    '<div class="input-field col s12">'+
-                    '<label for="txtMotivo">ATENÇÃO: O responsavel será notificado por email informando o motivo da rejeição do documento</label>' +
-                    '<input type="text" id="txtMotivo" class="motivo" required/>' +
-                    '</div></div>',
-                buttons: {
-                    formSubmit: {
-                        text: 'REPROVAR',
-                        btnClass: 'btn-blue',
-                        action: function () {
-                            debugger
-                            var msgMotivo = this.$content.find('.motivo').val();
-                            if (!msgMotivo) {
-                                $.alert({
-                                    title: 'Motivo não informado!',
-                                    boxWidth: '20%',
-                                    useBootstrap: false,
-                                    content: 'Descreva texto simples de forma resumida',
-                                });
-                                return false;
-                            }
-                            updateStatus({ id: parseInt(event.currentTarget.dataset.itemid), status: parseInt(event.currentTarget.dataset.status), message: msgMotivo });
-                        }
-                    },
-                    cancelar: function () {},
-                }
-            });
         });
 
     });

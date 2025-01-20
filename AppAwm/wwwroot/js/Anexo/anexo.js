@@ -115,37 +115,20 @@ var bindAnexos = (obj) => {
                 return;
             }
 
-            for (var op of tipoAnexo.options) {
-
-                if (op.value != '0') {
-                    op.removeAttribute('disabled');
-                }
-            }
-
-            var tipo = $('#listAnexo').val();
+            var tipo = $('#listAnexo').val().split(',');
 
             var totalTipoAnexoDisabled = true;
 
-            if (tipo != undefined) {
-
-                tipo.split(',').forEach(f => {
-                    if (f != '') {
-                        $('#tipoAnexo option[value=' + f + ']').attr('disabled', 'disabled');
-                    }
-                });
-
-            }
-
             for (var op of tipoAnexo.options) {
 
-                if (op.value != '0') {
-                    if (!op.disabled) {
-                        totalTipoAnexoDisabled = false;
-                        break;
-                    }
+                if (tipo.some(s => s == op.value )) {
+                    op.removeAttribute('disabled');
+                    totalTipoAnexoDisabled = false;
+                }
+                else {
+                    $('#tipoAnexo option[value=' + op.value + ']').attr('disabled', 'disabled');
                 }
             }
-
 
             $('select').formSelect();
 
@@ -164,9 +147,10 @@ var bindAnexos = (obj) => {
                     }
                 }
             }
+            obj.documentacaoPendente = obj.documentacaoPendente == undefined
 
             if (obj.scope == 'empresa') {
-                if (obj.documentacaoPendente.toLowerCase() == 'false') {
+                if (obj.documentacaoPendente == false) {
                     if (totalTipoAnexoDisabled) {
                         $.alert({
                             title: 'Liberação de acesso a planta da obra!',

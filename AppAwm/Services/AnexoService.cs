@@ -73,7 +73,7 @@ namespace AppAwm.Services
 
 
 
-        public AnexoAnswer UpdateStatus(int id, EnumStatusDocs statusDocs, string usuario, string? message = null)
+        public AnexoAnswer UpdateStatus(int id, EnumStatusDocs statusDocs, string usuario, string? message = null, bool isRevoga = false)
         {
             try
             {
@@ -85,6 +85,20 @@ namespace AppAwm.Services
 
                 int resposta = 0;
 
+                if (isRevoga)
+                {
+                    resposta = db.Anexos.Where(w => w.Cd_Anexo == id)
+                    .ExecuteUpdate(ax
+                    => ax.SetProperty(sp
+                    => sp.Status, statusDocs).SetProperty(sp
+                    => sp.Cd_UsuarioAnalista, string.IsNullOrEmpty(usuario) ? null : usuario).SetProperty(sp
+                    => sp.Dt_Validade_Documento, DateTime.Now.AddDays(2)).SetProperty(sp
+                    => sp.MotivoRejeicao, message).SetProperty(sp
+                    => sp.MotivoResalva, message));
+
+                    return resposta > 0 ? AnexoAnswer.DeSucesso("Status Atualizado com sucesso!") : AnexoAnswer.DeErro("Ocorreu algum erro ao tentar alterar o status do documento.");
+                }
+
                 if (statusDocs is EnumStatusDocs.Rejeitado or EnumStatusDocs.Resalva)
                 {
                     resposta = db.Anexos.Where(w => w.Cd_Anexo == id)
@@ -93,11 +107,10 @@ namespace AppAwm.Services
                     => sp.Status, statusDocs).SetProperty(sp
                     => sp.Cd_UsuarioAnalista, string.IsNullOrEmpty(usuario) ? null : usuario).SetProperty(sp
                     => sp.Dt_Validade_Documento, DateTime.Now.AddDays(2)).SetProperty(sp
-                    => (statusDocs == EnumStatusDocs.Rejeitado ? sp.MotivoRejeicao : sp.MotivoResalva), message));
+                    => (statusDocs == EnumStatusDocs.Rejeitado ? sp.MotivoRejeicao : sp.MotivoResalva), isRevoga ? null : message));
                 }
                 else
                 {
-
                     resposta = db.Anexos.Where(w => w.Cd_Anexo == id)
                     .ExecuteUpdate(ax
                     => ax.SetProperty(sp

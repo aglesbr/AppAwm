@@ -32,7 +32,10 @@
 
     <!-- Modal Abrir PDF -->
     <div id="modalOpenDocument" class="modal">
-        <object id="objFile" type="application/pdf" style="width:100%; height:590px; display:none;"></object>
+        <div class="progress row" id="divObjPdfIntermitente" ><div class="indeterminate"></div></div>
+        <div id="divFile" style="display:none;">
+            <object id="objFile" type="application/pdf" style="width:100%; height:590px;"></object>
+        </div>
         <div id="DivError" style="display:none;"></div>
         <div class="right-align" style="margin:3px 3px 3px;">
             <a id="btnCloseModa" class="modal-close waves-effect waves-teal btn">fechar</a>
@@ -45,7 +48,7 @@ else
         <div class="col s4">
             <div class="card horizontal card blue-grey z-depth-3">
             <div class="card-image" style="margin-left:5px; margin-top:5px;">
-                <img src="~/images/Software.png" height="100" width="100">
+                <img src="~/images/Software.png" style="height:100px; width:100px">
             </div>
             <div class="card-stacked">
                 <div class="card-content white-text">

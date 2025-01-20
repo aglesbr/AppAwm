@@ -6,12 +6,12 @@
     string statusIcon = string.Empty, tipoAnexoDocumento = string.Empty;
 
     if (Model?.Count() > 0)
-        tipoAnexoDocumento = Model.FirstOrDefault().CodigosDocumentos!;
+        tipoAnexoDocumento = Model.FirstOrDefault()?.CodigosDocumentos!;
 
-    if(tipoAnexoDocumento.Split(',').Count(zero => zero == "0") >= 1)
-    {
-        tipoAnexoDocumento = "0";
-    }
+    // if(tipoAnexoDocumento.Split(',').Count(zero => zero == "0") >= 1)
+    // {
+    //     tipoAnexoDocumento = "0";
+    // }
 }
 
 @if (Model?.Count() > 0)
@@ -54,8 +54,8 @@
                                 if ((int?)item.Status == 6)
                                     statusIcon = "report_problem";
 
-                                if (new int?[] { 4, 6 }.Contains((int?)item.Status))
-                                    tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
+                                // if (new int?[] { 4, 6 }.Contains((int?)item.Status))
+                                //     tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
 
                             }
                             <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>

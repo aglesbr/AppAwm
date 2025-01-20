@@ -41,7 +41,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Operacao/Search/{skip:int}")]
-        //[Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador")]
         public PartialViewResult? Search(string cd_empresa, int skip = 1)
         {
             try
@@ -61,9 +61,9 @@ namespace AppAwm.Controllers
                 int codigoEmpresa = Convert.ToInt32(cd_empresa);
 
                 AnexoAnswer resposta = servicoAnexo.List(
-                     x => (x.Cd_UsuarioAnalista == userSession.Nome || x.Cd_UsuarioAnalista == (userSession.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioAnalista : null))
-                     && (x.Cd_Empresa_Id == (codigoEmpresa == 0 ? x.Cd_Empresa_Id : codigoEmpresa))
-                     && x.Status != EnumStatusDocs.None);
+                     x => (x.Cd_Empresa_Id == (codigoEmpresa == 0 ? x.Cd_Empresa_Id : codigoEmpresa))
+                     && (x.Status ==  EnumStatusDocs.Rejeitado || x.Status == EnumStatusDocs.Resalva));
+
                 var query = resposta.Anexos.Select(s =>
                 new Anexo
                 {
@@ -76,7 +76,9 @@ namespace AppAwm.Controllers
                     Cd_UsuarioAnalista = s.Cd_UsuarioAnalista
                 }).ToPagedList(skip, 12);
 
-                return PartialView("ListRecord", query);
+                var queryGroup = query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 12);
+
+                return PartialView("ListRecord", queryGroup);
             }
             catch
             {
@@ -122,6 +124,7 @@ namespace AppAwm.Controllers
                     s.TipoAnexo,
                     s.Status,
                     s.Dt_Criacao,
+                    s.Dt_Validade_Documento,
                     s.Cd_UsuarioCriacao,
                     s.MotivoResalva,
                     s.MotivoRejeicao,

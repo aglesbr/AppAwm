@@ -163,7 +163,7 @@ namespace AppAwm.Controllers
                         && x.Status != EnumStatusDocs.None);
                     }
 
-                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Where(r => r.Status != EnumStatusDocs.Resalva) .Select(s => s.TipoAnexo.ToString())]) ?? "0";
+                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Where(r => r.Status is EnumStatusDocs.Resalva or EnumStatusDocs.Rejeitado) .Select(s => s.TipoAnexo.ToString())]);
 
                     query = anexoAnswer.Anexos.Select(s => new Anexo
                     {
@@ -181,6 +181,8 @@ namespace AppAwm.Controllers
                         Dt_Criacao = s.Dt_Criacao,
                         CodigosDocumentos = itemDocumento
                     }).ToList();
+
+
 
                     var queryGroup = (obj.Scope == "colaborador" || obj.Scope == "empresa")
                         ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 10)
@@ -314,7 +316,7 @@ namespace AppAwm.Controllers
             if (!User.Identity.IsAuthenticated)
                 return BadRequest("Usuario não autenticado");
 
-            var file = servico.List(s => s.Cd_Anexo == id);
+            var file = servico.List(s => s.Cd_Anexo == id, true);
 
             if (file.Success)
             {
@@ -334,20 +336,18 @@ namespace AppAwm.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult ChangeStatusDocument(string obj)
         {
-            if (User.Identity.IsAuthenticated)
+            if (!User.Identity.IsAuthenticated)
                 return BadRequest("Usuario não está autenticadp");
 
-            var newStatus = JsonConvert.DeserializeAnonymousType(obj, new { id = 0, status = 0, message = string.Empty });
+            var newStatus = JsonConvert.DeserializeAnonymousType(obj, new { id = 0, status = 0, message = string.Empty, isRevoga = false });
 
-            if (!User.Identity.IsAuthenticated)
-                return BadRequest("Usuario não autenticado");
 
             var file = servico.List(s => s.Cd_Anexo == newStatus!.id);
 
             if (file.Success)
             {
 
-                file = servico.UpdateStatus(newStatus!.id, (EnumStatusDocs)newStatus.status, User.Identity.Name!, newStatus.message);
+                file = servico.UpdateStatus(newStatus!.id, (EnumStatusDocs)newStatus.status, User.Identity.Name!, newStatus.message, newStatus.isRevoga);
 
                 if (file.Success)
                     return Ok(file);

@@ -83,15 +83,12 @@ $('#Email').on('focusout',() => {
     if (!emailRegex.test($('#Email').val())) {
         M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;formato de email inválido', classes: 'red rounded' });
         document.getElementById('postButton').disabled = true;
-        $('#Login').val(null);
-        $('#Email').focus();
+        $('#Email').trigger('focus');
     }
     else {
 
         if ($('#cpf').val().length > 11) {
             document.getElementById('postButton').disabled = false;
-            var _login = 'wm' + parseInt(Math.random() * 100) + $('#Email').val().split('@')[0].substring(0,2) + $('#cpf').val().split('.')[1];
-            $('#Login').val(_login);
         }
     }
 

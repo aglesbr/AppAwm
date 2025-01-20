@@ -11,9 +11,6 @@
                     @Html.DisplayNameFor(model => model[0].Nome)
                 </th>
                 <th >
-                    @Html.DisplayNameFor(model => model[0].Login)
-                </th>
-                <th >
                     @Html.DisplayNameFor(model => model[0].Email)
                 </th>
                 <th>
@@ -34,9 +31,6 @@
                         @Html.DisplayFor(modelItem => item.Nome)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Login)
-                    </td>
-                    <td>
                         @Html.DisplayFor(modelItem => item.Email)
                     </td>
                     <td class="@(item.Status ? "green-text": "red-text" )">
@@ -53,7 +47,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" class="center">
+                <td colspan="4" class="center">
                     <input type="hidden" value="@Model.PageCount" id="pageCount" />
                     @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
                    {

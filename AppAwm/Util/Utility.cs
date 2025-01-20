@@ -77,14 +77,16 @@ namespace AppAwm.Util
                 string mensagem = string.Empty;
                 mensagem += $"<html><body><h3><center>HDDOC - {(isNovoUsuario ? "NOVO USUÁRIO" : " SOLICITAÇÃO DE SENHA")}</center><hr/></h3><br/><p>Olá {usuario.Nome}<br/></p>" +
                     $"<p>Foi gerada uma senha temporária de acesso!<br>Será solicitado a alteração da senha temporária para uma senha de sua preferência.</p>" +
-                    $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'>Perfil de acesso: <b>{perfil}</b><br/>Usuário:<b> {usuario.Login}</b><br/>Senha: <b>$123Master</b><br/>";
+                    $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'>Perfil de acesso: <b>{perfil}</b><br/>Usuário:<b> {usuario.Documento}</b><br/>Senha: <b>$123Master</b><br/>";
                 if (!string.IsNullOrWhiteSpace(linkGddoc))
                     mensagem += $"<br><b>Click no link para acessar o sistema HDDOC</b>: <a href='{linkGddoc}'>{linkGddoc}</a>";
 
                 mensagem += $"</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
-                login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
-                client = new SmtpClient("smtp.gmail.com", 587);
+                //login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
+                login = new NetworkCredential("conferencia@hddoc.com.br", "#$Hbt290482");
+
+                client = new SmtpClient("mail.hddoc.com.br", 465);
                 client.EnableSsl = true;
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
@@ -94,7 +96,7 @@ namespace AppAwm.Util
                 msg.BodyEncoding = Encoding.Default;
                 msg.IsBodyHtml = true;
                 msg.Priority = MailPriority.Normal;
-                msg.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+               // msg.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
 
                 client.Send(msg);

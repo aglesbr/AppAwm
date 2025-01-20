@@ -56,7 +56,7 @@
                                 transfer_within_a_station
                             </i>
                         </a>
-                        <a data-position="bottom" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Empresa, documento:@item.Cnpj, titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="bottom" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigo:@item.Cd_Empresa, documento:@item.Cnpj,documentacaoPendente:'@item.DocumentacaoValidada'  ,titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
                         <a data-position="right" data-tooltip="Editar" asp-controller="Empresa" asp-action="Create" asp-route-id="@item.Cd_Empresa" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
                     </td>
                 </tr>

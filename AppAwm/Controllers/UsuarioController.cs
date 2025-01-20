@@ -31,6 +31,8 @@ namespace AppAwm.Controllers
         {
             try
             {
+                Utility.EnviarEmail(true, new Usuario { Email = "agles.net@msn.com", Nome="agles silva" }, "http://hdsfasd.local.teste");
+
                 ModelState.Remove("usuario.Cd_Usuario");
 
                 if (string.IsNullOrEmpty(usuario.Senha))
@@ -140,9 +142,7 @@ namespace AppAwm.Controllers
                 Usuario? obj = JsonConvert.DeserializeObject<Usuario>(usuario);
 
                 UsuarioAnswer resposta = servico.List(
-                     x => (x.Nome!.ToUpper().StartsWith(obj.Nome.ToUpper()) && x.Login.ToLower().StartsWith(obj.Login.ToLower()) && x.Login.ToLower().StartsWith(obj.Login.ToLower()))
-                             && (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status)
-                    );
+                     x => x.Nome!.ToUpper().StartsWith(obj.Nome.ToUpper()) && (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status));
 
                 var query = resposta.Usuarios.ToPagedList(skip, 12);
                 return PartialView("ListRecord", query);
