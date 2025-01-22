@@ -86,7 +86,7 @@ namespace AppAwm.Util
                 //login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
                 login = new NetworkCredential("conferencia@hddoc.com.br", "#$Hbt290482");
 
-                client = new SmtpClient("mail.hddoc.com.br", 465);
+                client = new SmtpClient("hddoc.com.br", 465);
                 client.EnableSsl = true;
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
@@ -96,7 +96,7 @@ namespace AppAwm.Util
                 msg.BodyEncoding = Encoding.Default;
                 msg.IsBodyHtml = true;
                 msg.Priority = MailPriority.Normal;
-               // msg.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+                msg.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
 
                 client.Send(msg);

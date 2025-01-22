@@ -60,25 +60,35 @@ namespace AppAwm.Controllers
 
                 int codigoEmpresa = Convert.ToInt32(cd_empresa);
 
-                AnexoAnswer resposta = servicoAnexo.List(
+                AnexoAnswer anexoAnswer = servicoAnexo.List(
                      x => (x.Cd_Empresa_Id == (codigoEmpresa == 0 ? x.Cd_Empresa_Id : codigoEmpresa))
-                     && (x.Status ==  EnumStatusDocs.Rejeitado || x.Status == EnumStatusDocs.Resalva));
+                     && (x.Status !=  EnumStatusDocs.None)
+                     );
 
-                var query = resposta.Anexos.Select(s =>
-                new Anexo
-                {
-                    Cd_Anexo = s.Cd_Anexo,
-                    Nome = s.Nome,
-                    Descricao = s.Descricao,
-                    TipoAnexo = s.TipoAnexo,
-                    Status = s.Status,
-                    Dt_Criacao = s.Dt_Criacao,
-                    Cd_UsuarioAnalista = s.Cd_UsuarioAnalista
-                }).ToPagedList(skip, 12);
 
-                var queryGroup = query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 12);
+                var query = anexoAnswer.Anexos
+                    .OrderByDescending(ob => ob.Dt_Criacao )
+                    .DistinctBy(d => d.TipoAnexo)
+                    .Select(s =>
+                    new Anexo
+                    {
+                        Cd_Anexo = s.Cd_Anexo,
+                        Nome = s.Nome,
+                        Descricao = s.Descricao,
+                        TipoAnexo = s.TipoAnexo,
+                        Status = s.Status,
+                        Dt_Criacao = s.Dt_Criacao,
+                        Cd_UsuarioAnalista = s.Cd_UsuarioAnalista
+                    })
 
-                return PartialView("ListRecord", queryGroup);
+                    .Where(w => w!.Status is EnumStatusDocs.Rejeitado or EnumStatusDocs.Resalva)
+                    .ToList();
+
+                var queryGroup = query.GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault())
+                   
+                    .ToPagedList(skip, 12);
+
+                return PartialView("ListRecord",  queryGroup);
             }
             catch
             {

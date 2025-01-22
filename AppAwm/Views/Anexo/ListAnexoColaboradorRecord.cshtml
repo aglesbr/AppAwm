@@ -45,7 +45,7 @@
                             if ((int?)item.Status == 6)
                                 statusIcon = "report_problem";
 
-                            if (new int?[] { 4, 6 }.Contains((int?)item.Status))
+                            if (new int?[] { 4, 5 ,6 }.Contains((int?)item.Status))
                                 tipoAnexoDocumento = tipoAnexoDocumento.Replace(item.TipoAnexo.ToString(), string.Empty);
 
                         }
@@ -68,13 +68,23 @@
                         @if (!string.IsNullOrWhiteSpace(item.MotivoRejeicao) || !string.IsNullOrWhiteSpace(item.MotivoResalva))
                         {
                             var motivo = string.IsNullOrWhiteSpace(item.MotivoRejeicao) ? item.MotivoResalva : item.MotivoRejeicao;
-                            <i data-position="left" data-tooltip="@motivo <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped red-text">feedback</i>
+                            var colorText = item.Status == AppAwm.Models.Enum.EnumStatusDocs.Rejeitado ? "red-text" : "green-text";
+
+                            <i data-position="left" data-tooltip="@motivo <br/>Analista: @item.Cd_UsuarioAnalista - Contato: (11) 98541-6524" class="material-icons prefix tooltipped @colorText">feedback</i>
                         }
                         else
                         {
                             <i class="material-icons prefix grey-text">feedback</i>
                         }
-                        <i  class="material-icons prefix blue-grey-text accent-3" style="cursor:pointer" onclick="javascript:historicoDocumento({tipoAnexo:@item.TipoAnexo, codigoAnexo:@item.Cd_Anexo})" ;>insert_comment</i>
+
+                        @if (item.TemHistorico)
+                        {
+                            <i class="material-icons prefix blue-grey-text accent-3" title="Histório" style="cursor:pointer;" onclick="javascript:historicoDocumento({tipoAnexo:@item.TipoAnexo, codigoAnexo:@item.Cd_Anexo})" ;>insert_comment</i>
+                        }
+                        else
+                        {
+                            <i class="material-icons prefix grey-text darken-3">insert_comment</i>
+                        }
                     </td>
                     <td class="dt-body-right">
                         <a data-position="left" data-tooltip="Baixar arquivo" class="waves-effect waves-light tooltipped btn-small downloadFile" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>

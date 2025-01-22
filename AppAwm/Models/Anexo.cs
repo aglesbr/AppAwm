@@ -70,6 +70,9 @@ namespace AppAwm.Models
         public string? CodigosDocumentos { get; set; }
 
         [NotMapped]
+        public bool TemHistorico { get; set; }
+
+        [NotMapped]
         public virtual Colaborador? Colaborador { get; set; }
 
         [NotMapped]

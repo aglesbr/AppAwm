@@ -48,7 +48,14 @@ window.onload = () => {
         let body = {};
         var tipo = location.pathname.replace(/[^\w\s]/gi, '')
 
-        body = getObejt(tipo);
+        body = getObejct(tipo);
+
+        if (tipo == 'Operacao') {
+            if (body.cd_empresa == null) {
+                M.toast({ html: '<i class="material-icons white-text">report</i>&ensp;-  Selecione uma empresa.</p>', classes: 'red darken-3 rounded' });
+                return;
+            }
+        }
 
         if (param == "&gt;&gt;") // >>
             param = parseInt($('#pageCount').val());
@@ -123,7 +130,7 @@ window.onload = () => {
 };
 
 
-var getObejt = function (patname) {
+var getObejct = function (patname) {
 
     let obj = {};
     switch (patname) {

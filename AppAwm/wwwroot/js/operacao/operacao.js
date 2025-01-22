@@ -7,6 +7,8 @@
     $('#divFile').css('display', 'none');
     $('#divObjPdfIntermitente').css('display', '');
 
+    $('#modalOpenDocument').modal({ dismissible: false }).modal('open');
+
     $.ajax({
         type: 'Get',
         url: action,
@@ -22,9 +24,6 @@
             const blobUrl = URL.createObjectURL(blob);
 
             $("#DivError").css('display', 'none');
-            //$("#objFile").css('display', '');
-            //$('#divObjPdfIntermitente').css('display', 'none');
-            // $("#btnSearch").trigger('click');
 
             setTimeout(() => { $("#divFile").css('display', ''); $('#divObjPdfIntermitente').css('display', 'none'); $("#objFile").prop('data', blobUrl); loading(false); }, 1000);
 
@@ -36,7 +35,6 @@
         });
 
 
-    $('#modalOpenDocument').modal({ dismissible: false }).modal('open');
 }
 
 

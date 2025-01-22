@@ -163,7 +163,7 @@ namespace AppAwm.Controllers
                         && x.Status != EnumStatusDocs.None);
                     }
 
-                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Where(r => r.Status is EnumStatusDocs.Resalva or EnumStatusDocs.Rejeitado) .Select(s => s.TipoAnexo.ToString())]);
+                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString())]);
 
                     query = anexoAnswer.Anexos.Select(s => new Anexo
                     {
@@ -179,13 +179,14 @@ namespace AppAwm.Controllers
                         TipoAnexo = s.TipoAnexo,
                         Dt_Validade_Documento = s.Dt_Validade_Documento,
                         Dt_Criacao = s.Dt_Criacao,
-                        CodigosDocumentos = itemDocumento
+                        CodigosDocumentos = itemDocumento,
+                        TemHistorico = itemDocumento.Split(',').Count(c => c == s.TipoAnexo.ToString()) > 1
                     }).ToList();
 
 
 
                     var queryGroup = (obj.Scope == "colaborador" || obj.Scope == "empresa")
-                        ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 10)
+                        ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss =>  ss.FirstOrDefault()).ToPagedList(skip, 10)
                         : query.ToPagedList(skip, 10);
 
                     if (obj.Scope == "colaborador")

@@ -117,16 +117,27 @@ var bindAnexos = (obj) => {
 
             var tipo = $('#listAnexo').val().split(',');
 
-            var totalTipoAnexoDisabled = true;
+            if (tipo.filter(t => t != '').length > 0) {
 
-            for (var op of tipoAnexo.options) {
+                var totalTipoAnexoDisabled = true;
+                const resalvaRejeito = [4,5,6];
 
-                if (tipo.some(s => s == op.value )) {
-                    op.removeAttribute('disabled');
-                    totalTipoAnexoDisabled = false;
-                }
-                else {
-                    $('#tipoAnexo option[value=' + op.value + ']').attr('disabled', 'disabled');
+                for (var op of tipoAnexo.options) {
+
+                    if (!tipo.some(s => s == op.value)) {
+                        op.removeAttribute('disabled');
+                        totalTipoAnexoDisabled = false;
+                    }
+                    else {
+
+                        if (tipo.some(s => resalvaRejeito.find(f => f == s)))
+                        {
+                            op.removeAttribute('disabled');
+                            return;
+                        }
+
+                        $('#tipoAnexo option[value=' + op.value + ']').attr('disabled', 'disabled');
+                    }
                 }
             }
 
