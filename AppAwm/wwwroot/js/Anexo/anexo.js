@@ -1,6 +1,9 @@
 ﻿
 M.AutoInit();
 const tipoDocAnexo = document.querySelector('#tipoAnexo');
+var tipoAnexoIncremento = [];
+
+$('#btnCloseModaEmpresa').on('click', () => { tipoAnexoIncremento = []; });
 
 $('#enviarAnexo').on('click', () => {
 
@@ -115,25 +118,29 @@ var bindAnexos = (obj) => {
                 return;
             }
 
-            var tipo = $('#listAnexo').val().split(',');
+            var tipo = $('#listAnexo').val().split(',').filter(t => t != '');
 
             if (tipo.filter(t => t != '').length > 0) {
 
                 var totalTipoAnexoDisabled = true;
-                const resalvaRejeito = [4,5,6];
 
                 for (var op of tipoAnexo.options) {
+
+                    if (op.value == '0') continue;
 
                     if (!tipo.some(s => s == op.value)) {
                         op.removeAttribute('disabled');
                         totalTipoAnexoDisabled = false;
+
+                        if (!tipoAnexoIncremento.some(s => s == op.value))
+                            tipoAnexoIncremento.push(op.value);
                     }
                     else {
 
-                        if (tipo.some(s => resalvaRejeito.find(f => f == s)))
+                        if (tipoAnexoIncremento.some(s => s == op.value))
                         {
                             op.removeAttribute('disabled');
-                            return;
+                            continue;
                         }
 
                         $('#tipoAnexo option[value=' + op.value + ']').attr('disabled', 'disabled');
