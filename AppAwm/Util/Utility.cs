@@ -118,8 +118,11 @@ namespace AppAwm.Util
                 SmtpClient client;
                 MailMessage msg;
 
-                login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
-                client = new SmtpClient("smtp.gmail.com", 587);
+                //login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
+                //client = new SmtpClient("smtp.gmail.com", 587);
+
+                login = new NetworkCredential("842bbe001@smtp-brevo.com", "S5tF0jdYDT8Kq4Lm");
+                client = new SmtpClient("smtp-relay.brevo.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
