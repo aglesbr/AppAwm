@@ -84,10 +84,11 @@ namespace AppAwm.Util
                 mensagem += $"</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
                 //login = new NetworkCredential("agles.developer", "hoswoqxeghfohswj");
-                login = new NetworkCredential("conferencia@hddoc.com.br", "#$Hbt290482");
+                login = new NetworkCredential("842bbe001@smtp-brevo.com", "S5tF0jdYDT8Kq4Lm");
 
-                client = new SmtpClient("hddoc.com.br", 465);
+                client = new SmtpClient("smtp-relay.brevo.com", 587);
                 client.EnableSsl = true;
+               
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
@@ -99,6 +100,7 @@ namespace AppAwm.Util
                 msg.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
 
+                //client.SendMailAsync(msg);
                 client.Send(msg);
 
             }
