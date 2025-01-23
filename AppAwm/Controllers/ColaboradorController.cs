@@ -75,11 +75,13 @@ namespace AppAwm.Controllers
                         colaborador.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         colaborador.Dt_Atualizacao = DateTime.Now;
                         colaborador.Cd_UsuarioCriacao = colaborador.Cd_UsuarioCriacao;
+                        colaborador.Cd_UsuarioAtualizacao = colaborador.Cd_UsuarioAtualizacao.PadRight(30, '*')[..30].Replace("*", string.Empty).Trim();
                     }
                     else
                     {
                         colaborador.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
                         colaborador.Id_UsuarioCriacao = userSession!.Cd_Usuario;
+                        colaborador.Cd_UsuarioCriacao = colaborador.Cd_UsuarioCriacao.PadRight(30, '*')[..30].Replace("*", string.Empty).Trim();
 
                         string doc = Regex.Replace(colaborador.Documento!, @"[^\d]", string.Empty);
 

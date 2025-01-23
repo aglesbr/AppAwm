@@ -57,7 +57,7 @@ namespace AppAwm.Controllers
                             return BadRequest(exists);
                         }
 
-                        usuario.Senha = Util.Utility.Criptografar(usuario.Senha!);
+                        usuario.Senha = Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
                         usuario.MudarSenha = true;
 
@@ -82,7 +82,8 @@ namespace AppAwm.Controllers
                         obj.Usuario.Email = usuario.Email;
                         obj.Usuario.Nome = usuario.Nome;
                         obj.Usuario.Telefone = usuario.Telefone;
-                        obj.Usuario.Senha = string.IsNullOrWhiteSpace(usuario.Senha) ? obj.Usuario.Senha : usuario.Senha;
+                        obj.Usuario.Cd_Empresa = usuario.Cd_Empresa;
+                        obj.Usuario.Senha = string.IsNullOrWhiteSpace(usuario.Senha) ? obj.Usuario.Senha : Utility.Criptografar(usuario.Senha!);
 
                         obj = servico.Save(obj.Usuario, EnumAcao.Editar);
 
