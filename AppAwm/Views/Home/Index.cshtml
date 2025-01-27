@@ -9,15 +9,14 @@
 
     if (userSession != null)
     {
-        titulo = userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? " Cenário de documentação de Empresas" : userSession.Empresa.Nome;
+        titulo = userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? " Cenário de documentação de empresas" : userSession.Empresa!.Nome!;
         perfil = userSession.Perfil.ToString().ToLower();
     }
 
 }
 <div class="row">
     <div class="col s11 blue-grey-text accent-4" style="font-size:18px;">
-            O HDDoc disponbiliza alguns vídes curtos para lhe guiar durante o processo de operação
-            você també poderá acessar o menu de posicionado no campo superior ao lado esquerdo da tela
+        O HDDoc disponibiliza alguns vídeos para orientar-lhe durante o processo de operação, você também poderá acessar o menu posicionado no campo superior ao lado esquerdo da tela;
     </div>
 </div>
 <hr />

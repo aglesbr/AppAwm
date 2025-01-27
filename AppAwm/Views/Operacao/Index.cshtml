@@ -7,7 +7,7 @@
     var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
 }
 
-<h4>Analise de Documentação</h4>
+<h4>Análise de Documentação</h4>
 
 @if (userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
 {
@@ -52,7 +52,7 @@ else
             </div>
             <div class="card-stacked">
                 <div class="card-content white-text">
-                        <p>O <b>AppDoc</b>, é o sistema de checagem e conferência documental.<br/> Todos os documentos enviados pelos nossos clientes, são vlidados pela equipe HDDOC.</p>
+                        <p>O <b>AppDoc</b>, é o sistema de checagem e conferência documental.<br/> Todos os documentos enviados pelos nossos clientes, são validados pela equipe HDDOC.</p>
                 </div>
                 <div class="card-action">
                         <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript: window.location.href = '/Anexo/downloadFile/0?isApp=true'">

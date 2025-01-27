@@ -40,7 +40,7 @@ var setValueChart = (objData, origem, perfil) => {
         labels: [
             rotulo,
             'Aprovados',
-            'Em Analise',
+            'Em Análise',
         ],
         datasets: [{
             label: 'Total',

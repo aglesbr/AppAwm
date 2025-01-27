@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col s6">
         <div style="margin-top:20%">
-            <p>Usuário não tem autorização para essa funcionalidade!<br /></p>
+            <p style="color:red;">Usuário não tem autorização para essa funcionalidade!<br /></p>
             @if (Context.User.Identity.IsAuthenticated)
             {
                 <button class="btn waves-effect waves-light" type="button" onclick="location.href='../Start/Index';">

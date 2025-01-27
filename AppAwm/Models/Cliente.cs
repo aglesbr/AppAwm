@@ -64,11 +64,11 @@ namespace AppAwm.Models
         [MaxLength(30)]
         public string? Cd_UsuarioAtualizacao { get; set; }
 
-        [Display(Name = "Periodo de Teste")]
+        [Display(Name = "Período de Teste")]
         [Column("PERIODO_TESTE", TypeName = "BIT", Order = 60)]
         public bool Periodo_Teste { get; set; }
 
-        [Display(Name = "Vencimento do Periodo")]
+        [Display(Name = "Vencimento do Período")]
         [Column("VENCIMENTO_PERIODO_TESTE", TypeName = "DATE", Order = 65)]
         public DateTime? Vencimento_Periodo_Teste { get; set; }
 

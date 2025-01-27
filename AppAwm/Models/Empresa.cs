@@ -22,11 +22,6 @@ namespace AppAwm.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o nome da empresa")]
         public string? Nome { get; set; }
 
-        [Display(Name = "Equity")]
-        [Column("EQUITY", TypeName = "INT", Order = 4)]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o nome da empresa")]
-        public int Equity { get; set; } = 0;
-
         [Display(Name = "Nome Fantasia")]
         [Column("NOMEFANTASIA", TypeName = "VARCHAR(100)", Order = 5)]
         public string? NomeFantasia { get; set; }
