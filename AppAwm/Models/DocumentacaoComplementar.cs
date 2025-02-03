@@ -21,5 +21,8 @@ namespace AppAwm.Models
 
         [Column("STATUS", Order = 15)]
         public bool Status { get; set; }
+
+        [NotMapped]
+        public bool Vinculado { get; set; }
     }
 }

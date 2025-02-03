@@ -53,9 +53,6 @@ namespace AppAwm.Models
         [MaxLength(30)]
         public string? Cd_UsuarioAtualizacao { get; set; }
 
-        [Column("COMPLEMENTO", TypeName = "VARCHAR(5000)", Order = 14)]
-        public string? Complemento { get; set; }
-
         [Column("CD_CLIENTE_ID", TypeName = "INT", Order = 16)]
         [Range(1, 100, ErrorMessage = "Selecione uma empresa contratante.")]
         public int Cd_Cliente_Id { get; set; } = 0;

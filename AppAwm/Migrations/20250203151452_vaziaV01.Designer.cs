@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20250127214901_inicialV01")]
-    partial class inicialV01
+    [Migration("20250203151452_vaziaV01")]
+    partial class vaziaV01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -439,6 +439,11 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_DOCUMENTO_ID")
                         .HasColumnOrder(10);
 
+                    b.Property<int?>("Cd_Empresa_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_EMPRESA_ID")
+                        .HasColumnOrder(11);
+
                     b.Property<bool>("Status")
                         .HasColumnType("BIT")
                         .HasColumnName("STATUS")
@@ -518,11 +523,6 @@ namespace AppAwm.Migrations
                         .HasColumnType("VARCHAR(14)")
                         .HasColumnName("CNPJ")
                         .HasColumnOrder(2);
-
-                    b.Property<string>("Complemento")
-                        .HasColumnType("VARCHAR(5000)")
-                        .HasColumnName("COMPLEMENTO")
-                        .HasColumnOrder(14);
 
                     b.Property<bool>("DocumentacaoValidada")
                         .HasColumnType("BIT")

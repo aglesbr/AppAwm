@@ -190,12 +190,15 @@ namespace AppAwm.Services
             return contexto.Create(historicoExecucao);
         }
 
-        public List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo)
+        public List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo, int? cd_empresa)
         {
             using DbCon db = new();
             using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
 
-            List<int> list = [.. db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).Select(ss => ss.Cd_Documento_Id)];
+            var filter =db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).ToList();
+            filter.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
+
+            List<int> list = filter.Select(ss => ss.Cd_Documento_Id).ToList();
 
             if (list.Count == 0)
                 return [];

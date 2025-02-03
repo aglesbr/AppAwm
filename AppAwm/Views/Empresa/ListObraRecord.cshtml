@@ -70,7 +70,6 @@ else
         });
 
         $('#tableObraRecord .btnSearch').click((event) => {
-            debugger
             var obj = { pagina: event.target.innerHTML, cd_empresa_id: $('#cd_empresa_id').val() };
             bindObras(obj);
         });

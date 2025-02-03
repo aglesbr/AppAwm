@@ -31,5 +31,33 @@ namespace AppAwm.Services
                 return DocumentacaoComplementarAnswer.DeErro(ex.Message);
             }
         }
+
+        public DocumentacaoComplementarAnswer GetDocumentoCargo(int cd_codigo_id, int? cd_empresa, int origem = 1)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
+
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    List<DocumentacaoCargo> documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => 
+                        p.Cd_Cargo_Id == cd_codigo_id 
+                        && p.Cd_Empresa_Id == (cd_empresa == null ? p.Cd_Empresa_Id : cd_empresa))];
+
+                    DocumentacaoComplementarAnswer resposa = Get(s => s.Origem == origem);
+
+                    resposa.DocumentacaoComplementares.ForEach(f => f.Vinculado = documentacaoCargo.Any(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id));
+
+                   return resposa;
+                }
+
+                return DocumentacaoComplementarAnswer.DeErro("não foi possivel conectar com o banco de dados");
+            }
+            catch (Exception ex)
+            {
+                return DocumentacaoComplementarAnswer.DeErro(ex.Message);
+            }
+        }
     }
 }

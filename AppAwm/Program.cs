@@ -47,6 +47,7 @@ builder.Services.AddScoped<ICargo<CargoAnswer>, CargoService>();
 builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAnswer>, DocumentacaoComplementarService>();
 builder.Services.AddScoped<IChart<ChartAnswer>, ChartService>();
 builder.Services.AddScoped<ICliente<ClienteAnswer>, ClienteService>();
+builder.Services.AddScoped<IDocumentoCargo<DocumentoCargoAnswer>, DocumentoCargoService>();
 builder.Services.AddScoped<DepartamentoService>();
 
 builder.Services.AddSession(s =>

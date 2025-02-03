@@ -51,7 +51,6 @@ namespace AppAwm.Controllers
                             var empresaCliente = contextoCliente.GetAll(cli => cli.Cd_Empresa == _Usuario.Cd_Empresa).Include(cl => cl.Cliente).FirstOrDefault();
                             Usuario user = _Usuario;
                             user.Empresa = empresaCliente;
-                            user.Empresa!.Complemento = null;
 
                             if (empresaCliente is not null)
                             {

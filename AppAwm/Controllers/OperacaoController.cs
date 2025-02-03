@@ -320,7 +320,6 @@ namespace AppAwm.Controllers
                         {
                             if (x.Empresa != null)
                             {
-                                x.Empresa!.Complemento = null; 
                                 x.Foto = null;
                             }
                         });

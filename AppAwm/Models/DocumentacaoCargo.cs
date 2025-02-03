@@ -16,6 +16,9 @@ namespace AppAwm.Models
         [Column("CD_DOCUMENTO_ID", TypeName = "INT", Order = 10)]
         public int Cd_Documento_Id { get; set; }
 
+        [Column("CD_EMPRESA_ID", TypeName = "INT", Order = 11)]
+        public int? Cd_Empresa_Id { get; set; }
+
         [Column("STATUS", TypeName = "BIT", Order = 15)]
         public bool Status { get; set; } = true;
 

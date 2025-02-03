@@ -129,6 +129,7 @@ namespace AppAwm.Controllers
                 return BadRequest(AnexoAnswer.DeErro(ex.Message));
             }
         }
+        
         [HttpGet]
         [Route("/Anexo/Search/{skip:int}")]
         [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
@@ -394,11 +395,11 @@ namespace AppAwm.Controllers
         [HttpGet]
         [Route("/Anexo/listDocuments/{Id:int}")]
         [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
-        public JsonResult GetDocumentoComplementar(int id, bool tipoAnexoEmpresa = false)
+        public JsonResult GetDocumentoComplementar(int id, bool tipoAnexoEmpresa = false, int? cd_empresa =  null)
         {
             try
             {
-                var documentos = !tipoAnexoEmpresa ? servico.DocumentacaoComplementar(id) : servico.DocumentacaoComplementar(dc => dc.Cd_DocumentoComplementar_Id == id.ToString());
+                var documentos = !tipoAnexoEmpresa ? servico.DocumentacaoComplementar(id, cd_empresa) : servico.DocumentacaoComplementar(dc => dc.Cd_DocumentoComplementar_Id == id.ToString());
 
                 return documentos.Count > 0 ? Json(new { documentos, success = true }) : Json(new { erro = "nenhum item encontrado", success = false });
             }

@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Funções/Cargos";
+    List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
+}
+
+<h4>Pesquisar Funções/Cargos</h4>
+<input type="hidden" id="cd_documentoComplementar_id" />
+<form>
+    <div class="row">
+        <div class="input-field col s9">
+            <input id="nome" type="text">
+            <label>Cargo</label>
+        </div>
+
+        <div class="input-field col s3">
+            <select id="StatusFilter">
+                <option value="" selected>Todos</option>
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <label>Status</label>
+        </div>
+    </div>
+    <div>
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+        </div>
+    </div>
+</form>
+<hr>
+<footer id="DivRenderData" style="display:none;"></footer>
+
+<!-- Modal Abrir documento vs Cargo -->
+<div id="modalDocumentoCargo" class="modal modal-fixed-footer">
+    <input type="hidden" id="codigoCargo" name="codigo" />
+        <div class="modal-content">
+            <div class="right-align" id="titulo"></div>
+            <div class="row" style="margin-bottom:2px;">
+                <div class="input-field col s10">
+                    <select id="cd_empresa" asp-items="selectLists">
+                        <option value="" selected>Todos</option>
+                    </select>
+                        <label>Empresa</label>
+                </div>
+            <div class="input-field col s2">
+                <select id="cd_Origem">
+                    <option value="1">Colaborador</option>
+                    <option value="2">Empresa</option>
+                </select>
+                <label>Origem do documento</label>
+            </div>
+            </div>
+            <div class="row">
+                <div id="nomeCargo" class="col s12 left-align"></div>
+            </div>
+            <div id="DivRecordDocumentoComplementar"></div>
+        </div>
+        <div class="modal-footer alert-info">
+            <span class="new badge left" data-badge-caption="Requerimento de documentação ténica de empresa">Formulário:</span>
+            <a id="btnCloseModaEmpresa" class="modal-close waves-effect waves-teal btn-flat">fechar</a>
+            <button type="button" id="enviarAnexo" class="btn waves-effect waves-light">salvar</button>
+        </div>
+</div>
+
+<script src="~/js/funcoes/funcoes.js"></script>

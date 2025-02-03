@@ -174,6 +174,13 @@ var getObejct = function (patname) {
             }
             return { cliente: JSON.stringify(obj) };
 
+        case 'Funcoes':
+            obj = {
+                nome: $("#nome").val().toUpperCase(),
+                statusfilter: $("#StatusFilter").val()
+            }
+            return { funcoes: JSON.stringify(obj) };
+
         default:
             return { id: 100, error: 'caminho desconhecido' };
     }

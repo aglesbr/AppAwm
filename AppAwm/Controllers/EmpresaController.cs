@@ -75,6 +75,7 @@ namespace AppAwm.Controllers
                         empresa.Cnpj = Regex.Replace(empresa.Cnpj!, @"[^\d]", string.Empty);
 
                         empresa.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
+                        empresa.Id_UsuarioCriacao = sessao.Cd_Usuario;
 
                         var emp = servico.Get(s => s.Cnpj!.Equals(empresa.Cnpj));
 

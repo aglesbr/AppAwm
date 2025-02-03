@@ -13,7 +13,7 @@ namespace AppAwm.Services.Interface
         HistoricoExecucao? GetLastHistoricoExecucao();
         int InsereProximaExecucao(HistoricoExecucao historicoExecucao);
         void Notify();
-        List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo);
+        List<DocumentacaoComplementar> DocumentacaoComplementar(int cd_Cargo, int? cd_empresa);
         List<DocumentacaoComplementar> DocumentacaoComplementar(Expression<Func<DocumentacaoComplementar, bool>> predicate);
     }
 }

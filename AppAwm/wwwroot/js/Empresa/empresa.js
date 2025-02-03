@@ -169,7 +169,7 @@ var setFileds = (objeto) => {
     $('#cidade').val(objeto.address.city).trigger('focus');
     $('#estado').val(objeto.address.state).trigger('focus');
     $('#email').val(objeto.emails[0].address).trigger('focus');
-    $('#complemento').val(JSON.stringify(objeto));
+   // $('#complemento').val(JSON.stringify(objeto));
     $("#status").prop("checked", objeto.status.text == 'Ativa');
 }
 

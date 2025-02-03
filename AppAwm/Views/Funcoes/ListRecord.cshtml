@@ -1,0 +1,101 @@
+﻿@model X.PagedList.IPagedList<Cargo>
+@using X.PagedList
+@using X.Web.PagedList
+
+@if (Model?.Count() > 0)
+{
+    <table class="striped highlight">
+        <thead>
+            <tr>
+                <th >
+                    @Html.DisplayNameFor(model => model[0].Nome)
+                </th>
+                <th >
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+
+                <th><span class="badge text-accent-3 blue-text right"> Total de Registros: @Model.TotalItemCount</span> </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    
+                    <td class="@(item.Status ? "green-text": "red-text" )">
+                        @(item.Status ? "Ativo" : "Inativo")
+                    </td>
+                    <td class="right-align">
+                        <a class="waves-effect waves-light btn-small" href="javascript:editFuncao({id:@item.Cd_Cargo, nomeCargo:'@item.Nome', origem:1});"><i class="material-icons left">edit</i>Editar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                            @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                           {
+                               DisplayLinkToIndividualPages = true,
+                               DisplayPageCountAndCurrentLocation = false,
+                               MaximumPageNumbersToDisplay = 25,
+                               LiElementClasses = new string[] { "waves-effect" },
+                               PageClasses = new string[] { "btnSearch" },
+                               DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                               DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                               DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                           })
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('.pagination').attr('id', 'pageItem');
+
+        var paren = $('.pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('.btnSearch').click((event) => {
+            $("#btnSearch").trigger("click", event.target.innerHTML);
+        });
+
+        // $('#tableList').DataTable({
+        //     language: {
+        //         url: 'js/pt-br.json',
+        //     },
+        //     "iDisplayLength": 12,
+        //     layout: {
+        //         topStart: null,
+        //         bottom: null,
+        //         bottomStart: null,
+        //         bottomEnd: null,
+        //         topEnd: null,
+        //     }
+        // });
+    });
+</script>

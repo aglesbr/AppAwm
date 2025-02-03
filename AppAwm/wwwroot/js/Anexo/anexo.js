@@ -105,11 +105,11 @@ var bindAnexos = (obj) => {
 
             if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
-                var documentos = populaTipoDocumento(2020);// pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
+                 populaTipoDocumento(2020);// pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
 
             if (obj.scope == 'colaborador') {
-                var documentos = populaTipoDocumento($('#codigoCargo').val());
+                populaTipoDocumento(obj);
                 $("#DivRecordAnexoColaborador").empty().html(data);
             }
 
@@ -478,16 +478,16 @@ var historicoDocumento = (item) => {
     });
 }
 
-var populaTipoDocumento = (id) => {
+var populaTipoDocumento = (obj) => {
     var list;
 
     $.ajax({
         type: 'Get',
-        url: '/Anexo/listDocuments/' + id,
+        url: '/Anexo/listDocuments/' + obj.codigoCargo,
         contentType: "application/json; charset=utf-8",
         dataType: "html",
         async: false,
-        data: { tipoAnexoEmpresa: id == 2020 }
+        data: { tipoAnexoEmpresa: obj.codigoCargo == 2020, cd_empresa: obj.codigoEmpresa }
     })
         .done(function (data) {
 
