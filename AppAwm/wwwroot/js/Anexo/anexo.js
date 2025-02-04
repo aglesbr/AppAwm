@@ -1,9 +1,6 @@
 ﻿
 M.AutoInit();
 const tipoDocAnexo = document.querySelector('#tipoAnexo');
-var tipoAnexoIncremento = [];
-
-$('#btnCloseModaEmpresa').on('click', () => { tipoAnexoIncremento = []; });
 
 $('#enviarAnexo').on('click', () => {
 
@@ -36,8 +33,17 @@ $('#enviarAnexo').on('click', () => {
 
     var escopo = $('#scope').val();
 
-    let obj = {
-        codigo: $('#codigo').val(),
+    let obj = escopo == 'colaborador' ?
+    {
+        codigoColaborador: $('#codigoColaborador').val(),
+        descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
+        scope: escopo,
+        documento: $('#documento').val(),
+        tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
+    }
+        :
+    {
+        codigoEmpresa: $('#codigoEmpresa').val(),
         descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
         scope: escopo,
         documento: $('#documento').val(),
@@ -74,15 +80,14 @@ $('#enviarAnexo').on('click', () => {
             loading(false);
 
             M.toast({
-                html: '<i class="material-icons white-text">cancel</i>&nbsp - Não foi possivel anexar o arquivo' , classes: 'red darken-2 rounded'
+                html: '<i class="material-icons white-text">cancel</i>&nbsp - Não foi possivel anexar o arquivo', classes: 'red darken-2 rounded'
             });
         });
 });
 
 var bindAnexos = (obj) => {
 
-    
-    const divRecord = obj.scope == 'colaborador' ? '#DivRecordAnexoColaborador' :'#DivRecordAnexo'
+    const divRecord = obj.scope == 'colaborador' ? '#DivRecordAnexoColaborador' : '#DivRecordAnexo'
 
     $(divRecord).css('display', '');
 
@@ -105,7 +110,8 @@ var bindAnexos = (obj) => {
 
             if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
-                 populaTipoDocumento(2020);// pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
+
+                populaTipoDocumento(2020);  // pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
 
             if (obj.scope == 'colaborador') {
@@ -113,16 +119,17 @@ var bindAnexos = (obj) => {
                 $("#DivRecordAnexoColaborador").empty().html(data);
             }
 
-            if (obj.scope == 'anexoComumColaborador' || obj.scope == 'anexoComumEmpresa' ) {
+            if (obj.scope == 'anexoComumColaborador' || obj.scope == 'anexoComumEmpresa') {
                 $("#DivRecordAnexo").empty().html(data);
                 return;
             }
 
-            var tipo = $('#listAnexo').val().split(',').filter(t => t != '');
+            var tipo = $('#listAnexo').val().split(',');
 
             if (tipo.filter(t => t != '').length > 0) {
 
                 var totalTipoAnexoDisabled = true;
+                const resalvaRejeito = [4, 5, 6];
 
                 for (var op of tipoAnexo.options) {
 
@@ -131,16 +138,12 @@ var bindAnexos = (obj) => {
                     if (!tipo.some(s => s == op.value)) {
                         op.removeAttribute('disabled');
                         totalTipoAnexoDisabled = false;
-
-                        if (!tipoAnexoIncremento.some(s => s == op.value))
-                            tipoAnexoIncremento.push(op.value);
                     }
                     else {
 
-                        if (tipoAnexoIncremento.some(s => s == op.value))
-                        {
+                        if (tipo.some(s => resalvaRejeito.find(f => f == s))) {
                             op.removeAttribute('disabled');
-                            continue;
+                            return;
                         }
 
                         $('#tipoAnexo option[value=' + op.value + ']').attr('disabled', 'disabled');
@@ -150,11 +153,11 @@ var bindAnexos = (obj) => {
 
             $('select').formSelect();
 
-            var msgContent = `<p>Após a validação carreta de todos os documentos enviados, solicite a administração da HDDOC a liberação da
-                              ${(obj.scope == 'colaborador' ? ' integração do colaborador' : ' empresa para o acesso a planta da obra')}.<br><br><b>Contato: (11) 98539-9315<br>E-mail:documentacao@hddoc.com.br</b></p>`
+            var msgContent = `<p>Após a validação carreta de todos os documentos enviados, solicite a administração do HDDOC a liberação da
+                              ${(obj.scope == 'colaborador' ? ' integração do colaborador' : ' empresa para o acesso a planta da obra')}.<br><br><b>Contato: (11) 98539-9315<br>E-mail:conferencia@hddoc.com.br</b></p>`
 
             if (obj.scope == 'colaborador') {
-                if (obj.integrado.toLowerCase() == 'false') {
+                if (Boolean(obj.integrado)) {
                     if (totalTipoAnexoDisabled) {
                         $.alert({
                             title: 'Alerta de Integração!',
@@ -165,10 +168,9 @@ var bindAnexos = (obj) => {
                     }
                 }
             }
-            obj.documentacaoPendente = obj.documentacaoPendente == undefined
 
             if (obj.scope == 'empresa') {
-                if (obj.documentacaoPendente == false) {
+                if (Boolean(obj.documentacaoPendente)) {
                     if (totalTipoAnexoDisabled) {
                         $.alert({
                             title: 'Liberação de acesso a planta da obra!',
@@ -208,7 +210,17 @@ var removeFile = (objeto) => {
                 M.toast({
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
-                bindAnexos(objeto);
+
+                var obj = {
+                    scope: $('#scope').val(),
+                    codigoColaborador: $('#codigoColaborador').val(),
+                    documento: $('#documento').val(),
+                    codigoEmpresa: $('#codigoEmpresa').val(),
+                    codigoCargo: $('#codigoCargo').val(),
+                    integrado: $('#isIntegrado').val()
+                }
+
+                bindAnexos(obj);
             }
         })
         .fail(function (data) {
@@ -224,11 +236,11 @@ var removeFile = (objeto) => {
 var modalParams = (objeto) => {
 
     var scopes = ['empresa', 'anexoComumColaborador', 'anexoComumEmpresa'];
-    
+
     if (objeto.pagina == undefined) {
 
         $('#scope').val(objeto.scope);
-        $('#codigo').val(objeto.codigo);
+        $('#codigoColaborador').val(objeto.codigoColaborador);
         $('#documento').val(objeto.documento);
         $('#codigoEmpresa').val(objeto.codigoEmpresa);
         $('#codigoCargo').val(objeto.codigoCargo);
@@ -327,13 +339,14 @@ $('#enviarAnexoColaborador').on('click', () => {
     }
 
     let obj = {
-        codigo: $('#codigo').val(),
+        codigoColaborador: $('#codigoColaborador').val(),
         descricao: $('#descricaoColaborador').val(),
         scope: $('#scope').val(),
         documento: $('#documento').val(),
         dataValidade: $('#dataValidade').val(),
         tipoAnexo: $('#tipoAnexo').val(),
         codigoEmpresa: $('#codigoEmpresa').val(),
+        codigoCargo: $('#codigoCargo').val(),
     }
 
     formData.append('comandoAnexoInformacao', JSON.stringify(obj));
@@ -374,7 +387,7 @@ $('#enviarAnexoColaborador').on('click', () => {
 //var pesquisarAnexo = () => {
 
 //    let obj = {
-//        codigo: $('#codigo').val(),
+//        codigo: $('#codigoColaborador').val(),
 //        descricao: $('#descricaoColaborador').val(),
 //        scope: $('#scope').val(),
 //        documento: $('#documento').val(),
@@ -420,7 +433,7 @@ var abreCracha = (id) => {
             },
             Fechar: {
                 btnClass: 'btn-red any-other-class', // multiple classes.
-                }
+            }
         },
         content: function () {
             var self = this;
@@ -442,7 +455,7 @@ var abreCracha = (id) => {
 var historicoDocumento = (item) => {
 
     let obj = {
-        codigo: $('#codigo').val(),
+        codigoColaborador: $('#codigoColaborador').val(),
         descricao: $('#descricaoColaborador').val(),
         scope: $('#scope').val(),
         documento: $('#documento').val(),
@@ -480,14 +493,15 @@ var historicoDocumento = (item) => {
 
 var populaTipoDocumento = (obj) => {
     var list;
+    var codidoCargoOuEmpresa = obj.codigoCargo == undefined ? obj : obj.codigoCargo 
 
     $.ajax({
         type: 'Get',
-        url: '/Anexo/listDocuments/' + obj.codigoCargo,
+        url: '/Anexo/listDocuments/' + codidoCargoOuEmpresa,
         contentType: "application/json; charset=utf-8",
         dataType: "html",
         async: false,
-        data: { tipoAnexoEmpresa: obj.codigoCargo == 2020, cd_empresa: obj.codigoEmpresa }
+        data: { tipoAnexoEmpresa: codidoCargoOuEmpresa == 2020, cd_empresa: obj.codigoEmpresa }
     })
         .done(function (data) {
 
@@ -504,11 +518,9 @@ var populaTipoDocumento = (obj) => {
 
                 M.FormSelect.init(tipoDocAnexo);
             }
-            
+
         })
         .fail(function (data) {
             list = JSON.parse(data)
         });
-
-    return list;
 }

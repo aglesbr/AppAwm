@@ -70,7 +70,7 @@ namespace AppAwm.Controllers
 
                     if (colaborador.Cd_Funcionario > 0)
                     {
-                        colaborador = servico.Get(g => g.Cd_Funcionario == colaborador.Cd_Funcionario, userSession).Colaborador;
+                        //var _colaborador = servico.Get(g => g.Cd_Funcionario == colaborador.Cd_Funcionario, userSession).Colaborador;
 
                         colaborador.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         colaborador.Dt_Atualizacao = DateTime.Now;

@@ -66,21 +66,32 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
+                   
                     DocumentacaoCargo? checkDocumentoCargo = contexto.GetItem(g =>
-                    g.Cd_Documento_Id == documentacaoCargo.Cd_Documento_Id 
-                    && g.Cd_Cargo_Id == documentacaoCargo.Cd_Cargo_Id
-                    && g.Cd_Empresa_Id == (documentacaoCargo.Cd_Empresa_Id > 0 ? documentacaoCargo.Cd_Empresa_Id : g.Cd_Empresa_Id)
+                        g.Cd_Documento_Id == documentacaoCargo.Cd_Documento_Id
+                        && g.Cd_Cargo_Id == documentacaoCargo.Cd_Cargo_Id
+                        && g.Cd_Empresa_Id == (documentacaoCargo.Cd_Empresa_Id > 0 ? documentacaoCargo.Cd_Empresa_Id : g.Cd_Empresa_Id)
                     );
 
                     if (vincular)
                     {
-                        ret = contexto.Create(documentacaoCargo);
-                        resposta =  ret > 0 ? DocumentoCargoAnswer.DeSucesso(documentacaoCargo) : DocumentoCargoAnswer.DeErro("Ocorreu um erro ao tentar vincular função com o tipo dedocumento");
+                        if(checkDocumentoCargo is null)
+                        {
+                            ret = contexto.Create(documentacaoCargo);
+                        }
+                        else if (documentacaoCargo.Cd_Empresa_Id == null && checkDocumentoCargo!.Cd_Empresa_Id != null)
+                        {
+                            checkDocumentoCargo.Cd_Empresa_Id = null;
+                            ret = contexto.Edit(checkDocumentoCargo);
+                        }
+
+                        resposta = ret > 0 ? DocumentoCargoAnswer.DeSucesso(documentacaoCargo) : DocumentoCargoAnswer.DeErro("Ocorreu um erro ao tentar vincular função com o tipo dedocumento");
                     }
                     else
-                    { 
-                        ret =  contexto.Delete(documentacaoCargo);
-                        resposta = ret > 0 ? DocumentoCargoAnswer.DeSucesso(documentacaoCargo) : DocumentoCargoAnswer.DeErro("Ocorreu um erro ao tentar desvincular função com o tipo dedocumento");
+                    {
+
+                        ret =  contexto.Delete(checkDocumentoCargo!);
+                        resposta = ret > 0 ? DocumentoCargoAnswer.DeSucesso(checkDocumentoCargo!) : DocumentoCargoAnswer.DeErro("Ocorreu um erro ao tentar desvincular função com o tipo dedocumento");
                     }
 
                     return resposta;

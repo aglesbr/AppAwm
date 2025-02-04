@@ -41,9 +41,15 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<DocumentacaoCargo> documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => 
-                        p.Cd_Cargo_Id == cd_codigo_id 
-                        && p.Cd_Empresa_Id == (cd_empresa == null ? p.Cd_Empresa_Id : cd_empresa))];
+                    List<DocumentacaoCargo> documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id)];
+
+                    documentacaoCargo.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
+
+                    //var filter = db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_codigo_id).ToList();
+                    //filter.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
+
+                    //List<int> list = filter.Select(ss => ss.Cd_Documento_Id).ToList();
+
 
                     DocumentacaoComplementarAnswer resposa = Get(s => s.Origem == origem);
 

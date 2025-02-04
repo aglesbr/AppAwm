@@ -37,18 +37,6 @@ namespace AppAwm.Controllers
             return View();
         }
 
-        // GET: FuncoesController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: FuncoesController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
         // POST: FuncoesController/Create
         [HttpPost]
         [Route("Funcoes/vincular-documento-cargo")]
@@ -57,11 +45,11 @@ namespace AppAwm.Controllers
         {
             try
             {
-                DocumentacaoCargo documentacaoCargo = new() 
+                DocumentacaoCargo documentacaoCargo = new()
                 {
                     Cd_Cargo_Id = comandoDocumentoCargo.Cd_Cargo_Id,
                     Cd_Documento_Id = comandoDocumentoCargo.Cd_Documento_Id,
-                    Cd_Empresa_Id = comandoDocumentoCargo.Cd_Empresa
+                    Cd_Empresa_Id = comandoDocumentoCargo.Cd_Empresa == 0 ? null : comandoDocumentoCargo.Cd_Empresa
                 };
 
                 DocumentoCargoAnswer resposa = documentoCargoServico.Save(documentacaoCargo, comandoDocumentoCargo.Vinculado);
@@ -119,27 +107,6 @@ namespace AppAwm.Controllers
                 return PartialView("ListRecordTypeDocument", BadRequest(DocumentacaoComplementarAnswer.DeErro(ex.Message)));
             }
 
-        }
-
-        // GET: FuncoesController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: FuncoesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

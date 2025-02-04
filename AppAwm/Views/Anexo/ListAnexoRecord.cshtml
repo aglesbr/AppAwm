@@ -141,7 +141,8 @@ else
         });
 
         $('#tableAnexoRecord .btnSearch').click((event) => {
-            var obj = { pagina: event.target.innerHTML, codigo: $('#codigo').val(), scope: $('#scope').val() };
+
+            var obj = { pagina: event.target.innerHTML, codigoEmpresa: $('#codigoEmpresa').val(), scope: $('#scope').val() };
             bindAnexos(obj);
             
         });

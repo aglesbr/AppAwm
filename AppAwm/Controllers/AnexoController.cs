@@ -59,23 +59,23 @@ namespace AppAwm.Controllers
                         if (anexoComum.Contains(obj.Scope))
                         {
                             if (obj.Scope == "anexoComumColaborador")
-                                anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.Codigo);
+                                anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.CodigoColaborador);
                             else
-                                anexo.Cd_Empresa_Id = Convert.ToInt32(obj.Codigo);
+                                anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoColaborador);
 
                             anexo.Status = EnumStatusDocs.None;
                         }
 
                         if (obj.Scope == "empresa")
                         {
-                            anexo.Cd_Empresa_Id = Convert.ToInt32(obj.Codigo);
+                            anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
                             anexo.TipoAnexo = obj.TipoAnexo;
                             anexo.Status = EnumStatusDocs.Enviado;
                         }
 
                         if (obj.Scope == "colaborador")
                         {
-                            anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.Codigo);
+                            anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.CodigoColaborador);
                             anexo.TipoAnexo = obj.TipoAnexo;
                             anexo.Dt_Validade_Documento = Convert.ToDateTime(obj.DataValidade);
                             anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
@@ -112,10 +112,10 @@ namespace AppAwm.Controllers
                         anexo = new() { Cd_UsuarioCriacao = User.Identity.Name, Dt_Criacao = DateTime.Now, Arquivo = archiveFile, Nome = $"Arquivos de {obj.Scope} - {obj.Documento}.zip", Descricao = obj.Descricao };
 
                         if (obj.Scope == "colaborador")
-                            anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.Codigo);
+                            anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.CodigoColaborador);
 
                         if (obj.Scope == "empresa")
-                            anexo.Cd_Empresa_Id = Convert.ToInt32(obj.Codigo);
+                            anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoColaborador);
 
                         AnexoAnswer anexoAnswer = servico.Save(anexo);
 
@@ -150,15 +150,15 @@ namespace AppAwm.Controllers
                     if (anexoComum.Contains(obj.Scope))
                     {
                         anexoAnswer = servico.List(x => (obj.Scope.Equals("anexoComumColaborador")
-                            ? x.Cd_Funcionario_Id == Convert.ToInt32(obj.Codigo)
-                            : x.Cd_Funcionario_Id == null && x.Cd_Empresa_Id == Convert.ToInt32(obj.Codigo))
+                            ? x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador)
+                            : x.Cd_Funcionario_Id == null && x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoColaborador))
                             && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
                             && x.Status == EnumStatusDocs.None);
                     }
                     else
                     {
                         anexoAnswer = servico.List(x => 
-                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Codigo)
+                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa) : x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador))
                         && (obj.Scope == "empresa" ? x.TipoAnexo >= 28 : x.TipoAnexo < 28)
                         && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
                         && x.Status != EnumStatusDocs.None);
@@ -219,7 +219,7 @@ namespace AppAwm.Controllers
                     List<EnumStatusDocs> statusDocs = [EnumStatusDocs.Expirado, EnumStatusDocs.Rejeitado];
 
                     AnexoAnswer anexoAnswer = servico.List(x =>
-                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Codigo)
+                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.CodigoColaborador)
                         // && (obj.Scope == "colaborador" ? statusDocs.Contains((EnumStatusDocs)x.Status!) : x.Status == null)
                         && statusDocs.Contains((EnumStatusDocs)x.Status!)
                         && x.TipoAnexo == obj.TipoAnexo);

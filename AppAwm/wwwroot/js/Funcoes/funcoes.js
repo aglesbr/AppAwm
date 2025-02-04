@@ -24,8 +24,8 @@ var getDocumentCargo = (obj) => {
         contentType: "application/json; charset=utf-8",
         dataType: "html",
         async: true,
-        method: 'get',
-        data: { id: obj.id, origem: obj.origem }
+         method: 'get',
+         data: { id: obj.id, origem: obj.origem, cd_empresa: $('#cd_empresa').val() }
     }).done(function (response) {
         $("#DivRecordDocumentoComplementar").empty().html(response);
         
@@ -66,7 +66,17 @@ var vincularFuncaoAoDocumento = (obj) => {
 
 }
 
+$('#btnCloseModaDdocumentCargo').on('click', () => {
+    $('#cd_empresa').prop('selectedIndex', 0);
+    $('select').formSelect();
+})
+
 $('#cd_Origem').on('change',(event) => {
     var obj = { id: $('#cd_documentoComplementar_id').val(), origem: event.currentTarget.value };
+    getDocumentCargo(obj);
+})
+
+$('#cd_empresa').on('change', (event) => {
+    var obj = { id: $('#cd_documentoComplementar_id').val(), origem: $('#cd_Origem').val() };
     getDocumentCargo(obj);
 })

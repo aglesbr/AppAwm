@@ -9,9 +9,9 @@ namespace AppAwm.Comando
         [JsonPropertyName("codigoAnexo")]
         public int CodigoAnexo { get; set; }
 
-        [JsonProperty("codigo")]
-        [JsonPropertyName("codigo")]
-        public string? Codigo { get; set; }
+        [JsonProperty("codigoColaborador")]
+        [JsonPropertyName("codigoColaborador")]
+        public string? CodigoColaborador { get; set; }
 
         [JsonProperty("descricao")]
         [JsonPropertyName("descricao")]
