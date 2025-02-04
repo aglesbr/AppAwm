@@ -55,10 +55,10 @@ else
                     </p>
                 </div>
                 <div class="card-action orange-text accent-3">
-                    <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigo:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
+                    <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
                         <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos obrigatórios
                     </a>
-                    <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" onclick="javascript:modalParams({codigo:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">
+                    <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">
                         <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos Opcionais
                     </a>
                 </div>

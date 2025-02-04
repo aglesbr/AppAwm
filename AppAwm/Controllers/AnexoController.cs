@@ -61,7 +61,7 @@ namespace AppAwm.Controllers
                             if (obj.Scope == "anexoComumColaborador")
                                 anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.CodigoColaborador);
                             else
-                                anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoColaborador);
+                                anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
 
                             anexo.Status = EnumStatusDocs.None;
                         }
@@ -144,6 +144,7 @@ namespace AppAwm.Controllers
 
                     IEnumerable<Anexo> query = [];
                     AnexoAnswer anexoAnswer;
+                    string itemDocumento = "0";
 
                     string[] anexoComum = { "anexoComumEmpresa", "anexoComumColaborador" };
 
@@ -151,7 +152,7 @@ namespace AppAwm.Controllers
                     {
                         anexoAnswer = servico.List(x => (obj.Scope.Equals("anexoComumColaborador")
                             ? x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador)
-                            : x.Cd_Funcionario_Id == null && x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoColaborador))
+                            : x.Cd_Funcionario_Id == null && x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa))
                             && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
                             && x.Status == EnumStatusDocs.None);
                     }
@@ -164,7 +165,8 @@ namespace AppAwm.Controllers
                         && x.Status != EnumStatusDocs.None);
                     }
 
-                    var itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString())]);
+                    if (!anexoComum.Contains(obj.Scope))
+                        itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString())]);
 
                     query = anexoAnswer.Anexos.Select(s => new Anexo
                     {

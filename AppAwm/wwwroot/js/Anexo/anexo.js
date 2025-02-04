@@ -2,6 +2,12 @@
 M.AutoInit();
 const tipoDocAnexo = document.querySelector('#tipoAnexo');
 
+
+$('#btnCloseModaAnexoComum').on('click', () => {
+    $('#DivRecordAnexo').empty();
+});
+
+
 $('#enviarAnexo').on('click', () => {
 
     loading(true);
@@ -34,21 +40,30 @@ $('#enviarAnexo').on('click', () => {
     var escopo = $('#scope').val();
 
     let obj = escopo == 'colaborador' ?
-    {
-        codigoColaborador: $('#codigoColaborador').val(),
-        descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
-        scope: escopo,
-        documento: $('#documento').val(),
-        tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
-    }
+        {
+            codigoColaborador: $('#codigoColaborador').val(),
+            descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
+            scope: escopo,
+            documento: $('#documento').val(),
+            tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
+        }
+        : escopo == 'empresa' ?
+        {
+            codigoEmpresa: $('#codigoEmpresa').val(),
+            descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
+            scope: escopo,
+            documento: $('#documento').val(),
+            tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
+        }
         :
-    {
-        codigoEmpresa: $('#codigoEmpresa').val(),
-        descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
-        scope: escopo,
-        documento: $('#documento').val(),
-        tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
-    }
+        {
+            codigoEmpresa: $('#codigoEmpresa').val(),
+            codigoColaborador: $('#codigoColaborador').val(),
+            descricao: $('#descricao').val() == '' ? null : $('#descricao').val(),
+            scope: escopo,
+            documento: $('#documento').val(),
+            tipoAnexo: escopo == 'anexoComumColaborador' || escopo == 'anexoComumEmpresa' ? 0 : $('#tipoAnexo').val()
+        }
 
     formData.append('comandoAnexoInformacao', JSON.stringify(obj));
 
@@ -73,6 +88,104 @@ $('#enviarAnexo').on('click', () => {
 
                 bindAnexos(obj);
                 $('#frmAnexo').trigger("reset");
+            }
+        })
+        .fail(function (data) {
+
+            loading(false);
+
+            M.toast({
+                html: '<i class="material-icons white-text">cancel</i>&nbsp - Não foi possivel anexar o arquivo', classes: 'red darken-2 rounded'
+            });
+        });
+});
+
+// enviar anexo do colaborador para analise do documento
+$('#enviarAnexoColaborador').on('click', () => {
+
+    loading(true);
+
+    var files = $('#filesColaborador')[0].files;
+
+    if (files.length == 0) {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Selecione um arquivo para enviar.', classes: 'red darken-2 rounded'
+        });
+
+        loading(false);
+        return;
+    }
+
+    if (files[0].name.length > 50) {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - O nome do arquivo não pode conter mais que 50 caractéres.', classes: 'red darken-2 rounded'
+        });
+
+        loading(false);
+        return;
+    }
+
+    var dataValid = $('#dataValidade').val();
+    var dataAtual = new Date();
+
+    if (dataValid.trim() == '' || new Date(dataValid) <= new Date(dataAtual.toDateString())) {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Informe o prazo de validade do documento e que seja maior que a data atual', classes: 'red darken-2 rounded'
+        });
+
+        loading(false);
+        return;
+    }
+
+    if ($('#tipoAnexo').val() == null || $('#tipoAnexo').val() == '0') {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Selecione o tipo do documento.', classes: 'red darken-2 rounded'
+        });
+
+        loading(false);
+        return;
+    }
+
+    var formData = new FormData();
+
+    for (var i = 0; i != files.length; i++) {
+        formData.append("files", files[i]);
+    }
+
+    let obj = {
+        codigoColaborador: $('#codigoColaborador').val(),
+        descricao: $('#descricaoColaborador').val(),
+        scope: $('#scope').val(),
+        documento: $('#documento').val(),
+        dataValidade: $('#dataValidade').val(),
+        tipoAnexo: $('#tipoAnexo').val(),
+        codigoEmpresa: $('#codigoEmpresa').val(),
+        codigoCargo: $('#codigoCargo').val(),
+    }
+
+    formData.append('comandoAnexoInformacao', JSON.stringify(obj));
+
+    $.ajax({
+        type: 'POST',
+        url: '/Anexo/AddFiles',
+        processData: false,
+        contentType: false,
+        data: formData
+    })
+        .done(function (data) {
+
+            loading(false);
+
+            if (data.success == true) {
+                M.toast({
+                    html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
+                });
+
+                obj.descricao = null;
+                obj.tipoAnexo = 0;
+
+                bindAnexos(obj);
+                $('#frmDocumentoColaborador').trigger("reset");
             }
         })
         .fail(function (data) {
@@ -285,104 +398,6 @@ var modalParams = (objeto) => {
     }
 
 }
-
-// enviar anexo do colaborador para analise do documento
-$('#enviarAnexoColaborador').on('click', () => {
-
-    loading(true);
-
-    var files = $('#filesColaborador')[0].files;
-
-    if (files.length == 0) {
-        M.toast({
-            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Selecione um arquivo para enviar.', classes: 'red darken-2 rounded'
-        });
-
-        loading(false);
-        return;
-    }
-
-    if (files[0].name.length > 50) {
-        M.toast({
-            html: '<i class="material-icons white-text">check_circle</i>&nbsp - O nome do arquivo não pode conter mais que 50 caractéres.', classes: 'red darken-2 rounded'
-        });
-
-        loading(false);
-        return;
-    }
-
-    var dataValid = $('#dataValidade').val();
-    var dataAtual = new Date();
-
-    if (dataValid.trim() == '' || new Date(dataValid) <= new Date(dataAtual.toDateString())) {
-        M.toast({
-            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Informe o prazo de validade do documento e que seja maior que a data atual', classes: 'red darken-2 rounded'
-        });
-
-        loading(false);
-        return;
-    }
-
-    if ($('#tipoAnexo').val() == null || $('#tipoAnexo').val() == '0') {
-        M.toast({
-            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Selecione o tipo do documento.', classes: 'red darken-2 rounded'
-        });
-
-        loading(false);
-        return;
-    }
-
-    var formData = new FormData();
-
-    for (var i = 0; i != files.length; i++) {
-        formData.append("files", files[i]);
-    }
-
-    let obj = {
-        codigoColaborador: $('#codigoColaborador').val(),
-        descricao: $('#descricaoColaborador').val(),
-        scope: $('#scope').val(),
-        documento: $('#documento').val(),
-        dataValidade: $('#dataValidade').val(),
-        tipoAnexo: $('#tipoAnexo').val(),
-        codigoEmpresa: $('#codigoEmpresa').val(),
-        codigoCargo: $('#codigoCargo').val(),
-    }
-
-    formData.append('comandoAnexoInformacao', JSON.stringify(obj));
-
-    $.ajax({
-        type: 'POST',
-        url: '/Anexo/AddFiles',
-        processData: false,
-        contentType: false,
-        data: formData
-    })
-        .done(function (data) {
-
-            loading(false);
-
-            if (data.success == true) {
-                M.toast({
-                    html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
-                });
-
-                obj.descricao = null;
-                obj.tipoAnexo = 0;
-
-                bindAnexos(obj);
-                $('#frmDocumentoColaborador').trigger("reset");
-            }
-        })
-        .fail(function (data) {
-
-            loading(false);
-
-            M.toast({
-                html: '<i class="material-icons white-text">cancel</i>&nbsp - Não foi possivel anexar o arquivo', classes: 'red darken-2 rounded'
-            });
-        });
-});
 
 //var pesquisarAnexo = () => {
 
