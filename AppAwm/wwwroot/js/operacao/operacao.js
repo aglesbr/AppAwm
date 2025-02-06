@@ -105,7 +105,7 @@ $('#openDownload').on('click', (event) => {
                         <p>O <b>AppDoc</b>, é o sistema de checagem e conferência documental.<br /> Todos os documentos enviados pelos nossos clientes, são vlidados pela equipe HDDOC.</p>
                     </div>
                     <div class="card-action">
-                        <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript: window.location.href = '/Anexo/downloadFile/0?isApp=true'">
+                        <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript: window.location.href = '/Anexo/downloadFile/100?isApp=true'">
                             <i class="material-icons left" style="font-size:30px;">cloud_download</i>baixar o software
                         </a>
                     </div>

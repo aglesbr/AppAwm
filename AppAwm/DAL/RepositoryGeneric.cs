@@ -123,5 +123,20 @@ namespace AppAwm.DAL
                 throw;
             }
         }
+
+        public int BulkInsert(List<TEntity> entities)
+        {
+            try
+            {
+                if(entities.Count == 0) return 0;
+
+                dbSet.AddRange(entities);
+                return dbContext.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

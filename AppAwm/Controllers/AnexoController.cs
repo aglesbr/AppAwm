@@ -296,14 +296,14 @@ namespace AppAwm.Controllers
             try
             {
                 //TipoAnexo == 100 (esse anexo é do software do analista) NUNCA. JAMAIS EXLUIR ESSE REGISTRO
-                AnexoAnswer anexoAnswer = servico.List(s => isApp ? s.Status == 0 && s.TipoAnexo == 100 : s.Cd_Anexo == id, true);
+                AnexoAnswer anexoAnswer = servico.List(s => isApp ? s.Status == 0 && s.TipoAnexo == id : s.Cd_Anexo == id, true);
 
                 if (anexoAnswer.Success)
                 {
                     return File(anexoAnswer.Anexos[0].Arquivo!, System.Net.Mime.MediaTypeNames.Application.Octet, anexoAnswer.Anexos[0].Nome);
                 }
 
-                return File([], "application/pdf");
+                return File([], "application/text");
             }
             catch
             {

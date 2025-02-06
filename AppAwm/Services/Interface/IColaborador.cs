@@ -15,5 +15,8 @@ namespace AppAwm.Services.Interface
         List<Empresa> GetEmpresas(Expression<Func<Empresa, bool>> predicate);
         Cracha? GetCracha(int? id = 0);
         int UpdateCliente(bool isAdd);
+        bool CheckClienteVidasDisponivel();
+        T ImportarColaboradore(MemoryStream stream, Usuario? usuario, int cd_empresa);
     }
+
 }

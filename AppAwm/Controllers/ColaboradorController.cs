@@ -62,15 +62,20 @@ namespace AppAwm.Controllers
 
                 ModelState.Remove("Cd_Funcionario");
 
+                Colaborador? checkColaborador =  null;
+
                 if (ModelState.IsValid)
                 {
                     var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                    bool isNovosuario = false;
+                    bool isNovosuario = colaborador.Cd_Funcionario == 0;
+
+                    if (!servico.CheckClienteVidasDisponivel())
+                        return BadRequest(ColaboradorAnswer.DeErro("Não é possivel cadastrar esse colaborador, pois excede o total de vidas dispnivel no pacote do cliente."));
 
                     if (colaborador.Cd_Funcionario > 0)
                     {
-                        //var _colaborador = servico.Get(g => g.Cd_Funcionario == colaborador.Cd_Funcionario, userSession).Colaborador;
+                        checkColaborador = servico.Get(g => g.Cd_Funcionario == colaborador.Cd_Funcionario, userSession).Colaborador;
 
                         colaborador.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         colaborador.Dt_Atualizacao = DateTime.Now;
@@ -89,8 +94,6 @@ namespace AppAwm.Controllers
 
                         if (check)
                             return BadRequest(EmpresaAnswer.DeFalha("CPF já cadastrado"));
-
-                        isNovosuario = true;
                     }
 
                     colaborador.Documento = Regex.Replace(colaborador.Documento!, @"[^\d]", string.Empty);
@@ -105,7 +108,7 @@ namespace AppAwm.Controllers
                             resposta = servico.UpdateCliente(true);
                         else
                         {
-                            if (colaborador.Status != colaborador.Status)
+                            if (colaborador.Status != checkColaborador!.Status)
                                 resposta = servico.UpdateCliente(colaborador.Status);
                         }
                     }
@@ -232,5 +235,41 @@ namespace AppAwm.Controllers
             img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
             return stream.ToArray();
         }
+
+
+        [HttpPost]
+        [Route("/Colaborador/importar")]
+        [Authorize(Roles = "Terceiro, Administrador")]
+        public async Task<IActionResult> ImportarColaborador(List<IFormFile> files, string cd_empresa)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Start");
+
+                Empresa? empresa = null;
+                var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
+                var formFile = files[0];
+
+                if(!formFile.FileName.Split('.').Any(a => a == "xlsx" ))
+                    return Json(ColaboradorAnswer.DeErro("O tipo do arquivo informado, não é compativel para realizar a importação<br/>somente arquivos com a extensão .xlsx"));
+
+                using var stream = new MemoryStream();
+                await formFile.CopyToAsync(stream);
+
+                ColaboradorAnswer resposta = servico.ImportarColaboradore(stream, userSession, Convert.ToInt32(cd_empresa));
+                
+                //if(resposta.Success)
+                //    empresa = servico.GetEmpresas(p => p.Cd_Empresa == Convert.ToInt32(cd_empresa)).FirstOrDefault();
+
+                return Json(resposta.Success ? resposta : ColaboradorAnswer.DeErro(resposta.Message));
+            }
+            catch(Exception ex)
+            {
+                return Json(ColaboradorAnswer.DeErro($"Ocorreu um erro na importação de colaboradores {ex.Message}"));
+            }
+        }
+
     }
 }

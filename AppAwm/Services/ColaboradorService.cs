@@ -4,6 +4,7 @@ using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
 using AppAwm.Util;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -136,7 +137,6 @@ namespace AppAwm.Services
             }
         }
 
-
         public List<Cargo> GetCargos(string nome)
         {
             try
@@ -249,6 +249,148 @@ namespace AppAwm.Services
             {
                 return 0;
             }
+        }
+
+        public ColaboradorAnswer ImportarColaboradore(MemoryStream stream, Usuario? usuario, int cd_empresa)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
+
+                Colaborador? colaborador = null;
+                List<Colaborador> list = [];
+
+                string[] header = ["Colaborador", "Sexo", "Função", "CPF", "Telefone", "Data_nascimento", "Data_admissão"];
+                bool validaArquivo = true;
+                int linha = 0, fimLista = 0;
+                object campo;
+
+                List<Colaborador> checkList = db.Funcionarios.Where(w => w.Id_Empresa == cd_empresa).ToList();
+
+                Empresa? empresa = GetEmpresas(emp => emp.Status && emp.Cd_Empresa == cd_empresa).FirstOrDefault();
+
+                if (empresa == null)
+                    return ColaboradorAnswer.DeErro($"A empresa com o cnpj: {empresa!.Cnpj}, ainda não está cadastrada no sistema.");
+
+                using var reader = ExcelReaderFactory.CreateReader(stream);
+                
+                do
+                {
+                    while (reader.Read())
+                    {
+
+                        if (linha++ == 0)
+                        {
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                campo = reader.GetValue(i);
+
+                                if (campo != null)
+                                {
+                                    if (!header.Contains(campo.ToString()))
+                                    {
+                                        validaArquivo = false;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    validaArquivo = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (linha > 1) break;
+                    }
+
+                    if (!validaArquivo)
+                        return ColaboradorAnswer.DeErro("O arquivo enviado para importação não é válido");
+                    else
+                        break;
+                } while (reader.Read());
+
+                linha = 0;
+
+                using var readerData = ExcelReaderFactory.CreateReader(stream);
+
+                do
+                {
+                    while (readerData.Read())
+                    {
+                        if (linha++ == 0) continue;
+
+                        if (!validaArquivo) break;
+
+                        colaborador = new()
+                        {
+                            Id_Empresa = cd_empresa,
+                            Id_UsuarioCriacao = usuario.Cd_Usuario,
+                            Escolaridade = 2,
+                            Status = true,
+                            Cd_Cargo = 1,
+                            Cd_UsuarioCriacao = usuario.Nome,
+                            Integrado = false,
+                            TipoContrato = 1,
+                            Dt_Criacao = DateTime.Now.Date
+                        };
+
+                        for (int coluna = 0; coluna < readerData.FieldCount; coluna++)
+                        {
+                            campo = readerData.GetValue(coluna);
+
+                            if (fimLista > 3)
+                                break;
+
+                            if (campo == null) { fimLista++; continue; }
+
+                            if (coluna == 0)
+                                colaborador.Nome = campo.ToString();
+                            if (coluna == 1)
+                                colaborador.Sexo = campo.ToString();
+                            if (coluna == 2)
+                                colaborador.Cd_Cargo = Convert.ToInt32(campo);
+                            if (coluna == 3)
+                                colaborador.Documento = campo.ToString();
+                            if (coluna == 4)
+                                colaborador.Telefone = campo.ToString();
+                            if (coluna == 5)
+                                colaborador.Nascimento = Convert.ToDateTime(campo.ToString().Replace('.', '/'));
+                            if (coluna == 6)
+                                colaborador.Dt_Admissao = Convert.ToDateTime(campo.ToString().Replace('.', '/'));
+                        }
+
+                        if (fimLista < 3)
+                        {
+                            if (checkList.Any(n => n.Documento == colaborador.Documento)) continue;
+
+                            list.Add(colaborador);
+                        }
+                        else
+                            break;
+                    }
+                    
+                } while (readerData.NextResult());
+
+                int retorno = contexto.BulkInsert(list);
+
+                return retorno > 0 ? ColaboradorAnswer.DeSucesso(EnumAcao.Criar) : ColaboradorAnswer.DeErro("Todos os colaboradores da planilha<br/>já foram cadastrados anteriormente.");
+            }
+            catch (Exception ex)
+            {
+                return ColaboradorAnswer.DeErro("Ocorreu um erro na importação,<br/> verifique se dos os campos estão preenchido conforme o modelo da planilha fornecida<br/>ERRO " +ex.Message);
+            }
+        }
+      
+        public bool CheckClienteVidasDisponivel()
+        {
+            using DbCon db = new();
+            using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+
+            var cliente = contexto.GetItem(c => c.Cd_Cliente == Utility.Cliente!.Cd_Cliente);
+
+            return Utility.Cliente!.PlanoVidasAtivadas < cliente!.PlanoVidas;
         }
     }
 }
