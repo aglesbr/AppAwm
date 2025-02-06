@@ -1,8 +1,90 @@
 ﻿$('#remuneracao').mask('#.##0,00', { reverse: true });
-$('#pisPasep').mask('999.99999.99.9', { reverse: true });
+$('#cnpjEmpresa').mask('999.99999.99.9', { reverse: true });
 
-$('#remuneracao').on('focusout', (event) => {
-    $('#postButton').attr("disabled",  event.currentTarget.value.length == 0)
+$('#btnImportaColaboradores').on('click', (event) => {
+
+    var cd_empresa = event.currentTarget.dataset.cd_empresa
+    $('#cd_empresa').prop('value', cd_empresa);
+    var nomeEmpresa = $('#cd_empresa option:selected').text()
+    $('select').formSelect();
+
+    $.confirm({
+        title: 'Importar Planilha de Colaboradores',
+        boxWidth: '30%',
+        useBootstrap: false,
+        type: 'purple',
+        content: '' +
+            '<form method="post" enctype="multipart/form-data id="formImportarColaborador">' +
+            '<div class="input-field">' +
+            '<input type="file" name="filePlan" id="filePlan" required />' +
+            '</div>' +
+            '<div class="input-field">' +
+            '<input type="text" maxlength="100" id="nomeEmpresa", name="nomeEmpresa" value="'+nomeEmpresa+'"/> ' +
+            '</form>',
+
+        buttons: {
+            formSubmit: {
+                text: 'importar',
+                btnClass: 'btn-blue',
+                action: function () {
+
+                    if (this.$content.find('#filePlan').val() == '') {
+                        $.dialog({
+                            title: 'Aviso!',
+                            useBootstrap: false,
+                            boxWidth: '25%',
+                            content: 'Selecione a planilha Excel de colaboradores para iniciar a importação.',
+                        });
+
+                        return false;
+                    }
+                        var files = $('#filePlan')[0].files;
+
+                        var formData = new FormData();
+
+                        for (var i = 0; i != files.length; i++) {
+                            formData.append("files", files[i]);
+                    }
+                        formData.append('cd_empresa', cd_empresa);
+
+                        loading(true);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: 'Colaborador/importar',
+                            processData: false,
+                            contentType: false,
+                            async: false,
+                            data: formData
+                        })
+                            .done(function (data) {
+
+                                debugger
+
+                                if (data.success) {
+
+                                    $('#btnSearch').trigger('click',);
+                                    M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp; Importação concluida com sucesso.', classes: 'blue rounded' });
+                                }
+                                else {
+
+                                    M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;' + data.message, classes: 'red rounded' });
+                                }
+                                loading(false);
+                        })
+                        .fail(function (data) {
+                            M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao tentar localiar o endereço pelo Cep', classes: 'red rounded' });
+                            loading(false);
+                        });
+                }
+            },
+            cancelar: function () {
+                //close
+            },
+        }
+    });
+    $('#nomeEmpresa').trigger('focus');
+
 });
 
 $('#cep').on({
@@ -185,3 +267,6 @@ $('#file-input').on('input', () => {
         });
 });
 
+$('#baixarModeloexcel').on('click', () => {
+    window.location.href = '/Anexo/downloadFile/101?isApp=true';
+})

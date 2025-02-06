@@ -1,6 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Colaborador";
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+    
 }
 
 <h4>Pesquisar Colaborador</h4>
@@ -49,6 +52,13 @@
             <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
             <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
             <a asp-controller="Colaborador" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Novo Colaborador</a>
+            <a class="right tooltipped waves-effect waves-light btn-small dropdown-trigger purple darken-3" data-position="top" data-tooltip="Importação de colaboradores em lote para o sistema" href='#' data-target='dropdown1' data-position="left" data-tooltip="Baixar arquivo"><i class="material-icons left">cloud_upload</i>Importação de dados</a>
+
+            <ul id='dropdown1' class='dropdown-content'>
+                <li><a id="baixarModeloexcel"><i class="material-icons">vertical_align_bottom</i>Baixar modelo de planilha</a></li>
+                <li><a href="#!" id="btnImportaColaboradores" data-cd_empresa="@userSession.Cd_Empresa"><i class="material-icons">settings</i>Importar colaboradores</a></li>
+                <li><a><i class="material-icons">keyboard_return</i>Voltar</a></li>
+            </ul>
         </div>
     </div>
 </form>
@@ -137,11 +147,39 @@
         </div>
     </form>
 </div>
+
+
+<!-- Modal importar excel Colaborador -->
+<div id="modalImportarColaborador" class="modal" style="height:350px; width:100px !important;">
+    <form method="post" enctype="multipart/form-data" id="frmImportarColaborador">
+        <div class="modal-content">
+            <div class="row" id="titulo"></div>
+            <div class="row">
+                <div class="file-field input-field col s8">
+                    <div class="btn">
+                        <span>Localizar</span>
+                        <input type="file"  class="btn-small" accept="application/xls" name="files" id="files" multiple>
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Adicionar arquivos">
+                    </div>
+                </div>
+                <div class="input-field col s4">
+                    <button type="button" id="enviarAnexo" class="btn waves-effect waves-light">Iniciar importação</button>
+                    <a id="btnCloseModa" class="modal-close waves-effect waves-teal btn-flat">fechar</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
 <footer id="DivRenderData" style="display:none;">
     <partial name="ListRecord" />
 </footer>
 
 <script src="~/js/anexo/anexo.js"></script>
+<script src="~/js/funcionario/funcionario.js"></script>
 
 <script>
   $('input[id="cpf"]').mask('000.000.000-00');

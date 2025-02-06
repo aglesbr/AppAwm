@@ -10,5 +10,6 @@ namespace AppAwm.DAL
         int Create(TEntity entity);
         int Edit(TEntity entity);
         int Delete(TEntity Entity);
+        int BulkInsert(List<TEntity> entities);
     }
 }
