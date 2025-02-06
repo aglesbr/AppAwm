@@ -7,6 +7,7 @@ using AppAwm.Util;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq.Expressions;
 
 namespace AppAwm.Services
@@ -356,9 +357,9 @@ namespace AppAwm.Services
                             if (coluna == 4)
                                 colaborador.Telefone = campo.ToString();
                             if (coluna == 5)
-                                colaborador.Nascimento = Convert.ToDateTime(campo.ToString().Replace('.', '/'));
+                                colaborador.Nascimento = DateTime.ParseExact(campo.ToString().Replace('.', '/'),"dd/MM/yyyy", CultureInfo.InvariantCulture);
                             if (coluna == 6)
-                                colaborador.Dt_Admissao = Convert.ToDateTime(campo.ToString().Replace('.', '/'));
+                                colaborador.Dt_Admissao = DateTime.ParseExact(campo.ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture);
                         }
 
                         if (fimLista < 3)

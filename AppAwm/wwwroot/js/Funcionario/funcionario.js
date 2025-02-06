@@ -59,8 +59,6 @@ $('#btnImportaColaboradores').on('click', (event) => {
                         })
                             .done(function (data) {
 
-                                debugger
-
                                 if (data.success) {
 
                                     $('#btnSearch').trigger('click',);
