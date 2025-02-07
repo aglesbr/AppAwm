@@ -3,6 +3,7 @@ using System;
 using AppAwm.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -17,7 +18,9 @@ namespace AppAwm.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("AppAwm.Models.Anexo", b =>
                 {
@@ -26,8 +29,10 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CD_ANEXO");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Anexo"));
+
                     b.Property<byte[]>("Arquivo")
-                        .HasColumnType("longblob")
+                        .HasColumnType("varbinary(max)")
                         .HasColumnName("ANEXO");
 
                     b.Property<int?>("Cd_Empresa_Id")
@@ -101,13 +106,15 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_CARGO")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Cargo"));
+
                     b.Property<string>("Nome")
                         .HasColumnType("VARCHAR(150)")
                         .HasColumnName("NOME")
                         .HasColumnOrder(5);
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(10);
 
@@ -123,6 +130,8 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CD_CLIENTE")
                         .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Cliente"));
 
                     b.Property<string>("CanalMq")
                         .IsRequired()
@@ -171,7 +180,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("PASSWORDMQ")
                         .HasColumnOrder(15);
 
-                    b.Property<ulong>("Periodo_Teste")
+                    b.Property<bool>("Periodo_Teste")
                         .HasColumnType("BIT")
                         .HasColumnName("PERIODO_TESTE")
                         .HasColumnOrder(60);
@@ -191,7 +200,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("PLANO_VIDAS_ATIVADAS")
                         .HasColumnOrder(28);
 
-                    b.Property<ulong>("Status")
+                    b.Property<bool>("Status")
                         .HasColumnType("BIT")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(25);
@@ -218,6 +227,8 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CD_FUNCIONARIO")
                         .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Funcionario"));
 
                     b.Property<int>("Cd_Cargo")
                         .HasColumnType("INT")
@@ -262,13 +273,13 @@ namespace AppAwm.Migrations
                         .HasColumnName("ESCOLARIDADE")
                         .HasColumnOrder(30);
 
-                    b.Property<ulong>("Estrangeiro")
+                    b.Property<bool>("Estrangeiro")
                         .HasColumnType("BIT")
                         .HasColumnName("ESTRANGEIRO")
                         .HasColumnOrder(16);
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("longblob")
+                        .HasColumnType("varbinary(max)")
                         .HasColumnName("FOTO")
                         .HasColumnOrder(90);
 
@@ -283,7 +294,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(100);
 
                     b.Property<bool>("Integrado")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("INTEGRADO")
                         .HasColumnOrder(81);
 
@@ -304,7 +315,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(85);
 
                     b.Property<bool>("Pcd")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("PCD")
                         .HasColumnOrder(46);
 
@@ -315,7 +326,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(15);
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(80);
 
@@ -343,6 +354,8 @@ namespace AppAwm.Migrations
                         .HasColumnType("int")
                         .HasColumnName("ID")
                         .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Cd_Cliente")
                         .HasColumnType("INT")
@@ -392,7 +405,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(100);
 
                     b.Property<bool>("Vinculado")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("VINCULADO")
                         .HasColumnOrder(20);
 
@@ -411,6 +424,8 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd"));
+
                     b.Property<int>("Cd_Cargo_Id")
                         .HasColumnType("INT")
                         .HasColumnName("CD_CARGO_ID")
@@ -426,7 +441,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_EMPRESA_ID")
                         .HasColumnOrder(11);
 
-                    b.Property<ulong>("Status")
+                    b.Property<bool>("Status")
                         .HasColumnType("BIT")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(15);
@@ -446,6 +461,8 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_DOCUMENTACO_COMPLEMENTAR")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Documentaco_Complementar"));
+
                     b.Property<string>("Cd_DocumentoComplementar_Id")
                         .HasColumnType("VARCHAR(6)")
                         .HasColumnName("CD_DOCUMENTOCOMPLEMENTAR_ID")
@@ -462,7 +479,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(11);
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(15);
 
@@ -479,9 +496,11 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_DOWNLOAD")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Download"));
+
                     b.Property<byte[]>("Anexo")
                         .IsRequired()
-                        .HasColumnType("longblob")
+                        .HasColumnType("varbinary(max)")
                         .HasColumnName("ANEXO")
                         .HasColumnOrder(15);
 
@@ -490,6 +509,11 @@ namespace AppAwm.Migrations
                         .HasColumnType("VARCHAR(50)")
                         .HasColumnName("CD_USUARIO_CRIACAO")
                         .HasColumnOrder(25);
+
+                    b.Property<int?>("Codigo")
+                        .HasColumnType("INT")
+                        .HasColumnName("CODIGO")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Descricao")
                         .HasColumnType("VARCHAR(150)")
@@ -520,6 +544,8 @@ namespace AppAwm.Migrations
                         .HasColumnName("CD_EMPRESA")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Empresa"));
+
                     b.Property<int>("Cd_Cliente_Id")
                         .HasColumnType("INT")
                         .HasColumnName("CD_CLIENTE_ID")
@@ -543,7 +569,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("CNPJ")
                         .HasColumnOrder(2);
 
-                    b.Property<ulong>("DocumentacaoValidada")
+                    b.Property<bool>("DocumentacaoValidada")
                         .HasColumnType("BIT")
                         .HasColumnName("DOCUMENTACAO_VALIDADA")
                         .HasColumnOrder(17);
@@ -581,7 +607,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(5);
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(9);
 
@@ -606,6 +632,8 @@ namespace AppAwm.Migrations
                         .HasColumnName("ID")
                         .HasColumnOrder(1);
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("Dt_Execucao")
                         .HasColumnType("DATE")
                         .HasColumnName("DT_EXECUCAO")
@@ -623,6 +651,8 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CD_OBRA")
                         .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Obra"));
 
                     b.Property<int>("Cd_Cliente")
                         .HasColumnType("INT")
@@ -673,7 +703,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(10);
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS")
                         .HasColumnOrder(20);
 
@@ -690,6 +720,8 @@ namespace AppAwm.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INT")
                         .HasColumnName("CD_USUARIO");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Usuario"));
 
                     b.Property<int>("Cd_Empresa")
                         .HasColumnType("INT")
@@ -724,7 +756,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("EMAIL");
 
                     b.Property<bool>("MudarSenha")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("MUDARSENHA");
 
                     b.Property<string>("Nome")
@@ -743,7 +775,7 @@ namespace AppAwm.Migrations
                         .HasColumnName("SENHA");
 
                     b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("STATUS");
 
                     b.Property<string>("Telefone")

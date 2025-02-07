@@ -10,6 +10,9 @@ namespace AppAwm.Models
         [Column("CD_DOWNLOAD", TypeName = "INT", Order = 1)]
         public int Cd_Download { get; set; }
 
+        [Column("CODIGO", TypeName = "INT", Order = 2)]
+        public int? Codigo { get; set; }
+
         [Column("NOME", TypeName = "VARCHAR(50)", Order = 5)]
         public required string  Nome { get; set; }
 

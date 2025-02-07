@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20250206182845_newTable_Download")]
-    partial class newTable_Download
+    [Migration("20250207170945_addCampo_codigo_tabela_download")]
+    partial class addCampo_codigo_tabela_download
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -512,6 +512,11 @@ namespace AppAwm.Migrations
                         .HasColumnType("VARCHAR(50)")
                         .HasColumnName("CD_USUARIO_CRIACAO")
                         .HasColumnOrder(25);
+
+                    b.Property<int?>("Codigo")
+                        .HasColumnType("INT")
+                        .HasColumnName("CODIGO")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Descricao")
                         .HasColumnType("VARCHAR(150)")

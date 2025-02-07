@@ -18,7 +18,7 @@ namespace AppAwm.Services
                 using var contexto = new RepositoryGeneric<Download>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    Download? download= contexto.GetItem(g => g.Cd_Download.Equals(id));
+                    Download? download= contexto.GetItem(g => g.Codigo.Equals(id));
 
                     return download is not null ? DownloadAnswer.DeSucesso(download) : DownloadAnswer.DeErroOuVazio("Nenhum registro fui localizado");
                 }
@@ -80,6 +80,7 @@ namespace AppAwm.Services
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
+                    download.Codigo = db.Downloads.Count() + 1;
                     int ret = contexto.Create(download);
                     return ret > 0 ? DownloadAnswer.DeSucesso() : DownloadAnswer.DeErroOuVazio("Ocorreu um erro ao tentar registar o anexo"); ;
                 }

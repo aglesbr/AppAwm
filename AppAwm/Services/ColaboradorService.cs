@@ -7,6 +7,7 @@ using AppAwm.Util;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -263,9 +264,6 @@ namespace AppAwm.Services
                 List<Colaborador> list = [];
 
                 string[] header = ["COLABORADOR", "SEXO", "CODIGO_CARGO", "CPF", "TELEFONE", "DATA_NASCIMENTO", "DATA_ADMISSAO"];
-                bool validaArquivo = true;
-                int linha = 0, fimLista = 0;
-                object campo;
 
                 List<Colaborador> checkList = db.Funcionarios.Where(w => w.Id_Empresa == cd_empresa).ToList();
 
@@ -274,105 +272,46 @@ namespace AppAwm.Services
                 if (empresa == null)
                     return ColaboradorAnswer.DeErro($"A empresa com o cnpj: {empresa!.Cnpj}, ainda não está cadastrada no sistema.");
 
-                using var reader = ExcelReaderFactory.CreateReader(stream);
+                IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream);
                 
-                do
+                DataTable ds = reader.AsDataSet().Tables["ListaColaborador"]!;
+
+                if(ds == null)
+                    return ColaboradorAnswer.DeErro("O arquivo enviado para importação não é válido");
+
+                var t = ds.Rows[0];
+                foreach (var coluna in t.ItemArray)
                 {
-                    while (reader.Read())
-                    {
-
-                        if (linha++ == 0)
-                        {
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                campo = reader.GetValue(i);
-
-                                if (campo != null)
-                                {
-                                    if (!header.Contains(campo.ToString()))
-                                    {
-                                        validaArquivo = false;
-                                        break;
-                                    }
-                                }
-                                else
-                                {
-                                    validaArquivo = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (linha > 1) break;
-                    }
-
-                    if (!validaArquivo)
+                       if(!header.Contains(coluna.ToString()))
                         return ColaboradorAnswer.DeErro("O arquivo enviado para importação não é válido");
-                    else
-                        break;
-                } while (reader.Read());
-
-                linha = 0;
-
-                using var readerData = ExcelReaderFactory.CreateReader(stream);
-
-                do
+                }
+                
+                ds.Rows.RemoveAt(0);
+                foreach (DataRow dr in ds.Rows)
                 {
-                    while (readerData.Read())
+                    colaborador = new()
                     {
-                        if (linha++ == 0) continue;
+                        Id_Empresa = cd_empresa,
+                        Id_UsuarioCriacao = usuario.Cd_Usuario,
+                        Escolaridade = 2,
+                        Status = true,
+                        Cd_UsuarioCriacao = usuario.Nome,
+                        Integrado = false,
+                        TipoContrato = 1,
+                        Dt_Criacao = DateTime.Now.Date,
+                        Nome = dr[0].ToString(),
+                        Sexo = dr[1].ToString(),
+                        Cd_Cargo = Convert.ToInt32(dr[2]),
+                        Documento = dr[3].ToString(),
+                        Telefone = dr[4].ToString(),
+                        Nascimento = DateTime.ParseExact(dr[5].ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        Dt_Admissao = DateTime.ParseExact(dr[6].ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    };
 
-                        if (!validaArquivo) break;
+                    if (checkList.Any(n => n.Documento == colaborador.Documento)) continue;
 
-                        colaborador = new()
-                        {
-                            Id_Empresa = cd_empresa,
-                            Id_UsuarioCriacao = usuario.Cd_Usuario,
-                            Escolaridade = 2,
-                            Status = true,
-                            Cd_Cargo = 1,
-                            Cd_UsuarioCriacao = usuario.Nome,
-                            Integrado = false,
-                            TipoContrato = 1,
-                            Dt_Criacao = DateTime.Now.Date
-                        };
-
-                        for (int coluna = 0; coluna < readerData.FieldCount; coluna++)
-                        {
-                            campo = readerData.GetValue(coluna);
-
-                            if (fimLista > 3)
-                                break;
-
-                            if (campo == null) { fimLista++; continue; }
-
-                            if (coluna == 0)
-                                colaborador.Nome = campo.ToString();
-                            if (coluna == 1)
-                                colaborador.Sexo = campo.ToString();
-                            if (coluna == 2)
-                                colaborador.Cd_Cargo = Convert.ToInt32(campo);
-                            if (coluna == 3)
-                                colaborador.Documento = campo.ToString();
-                            if (coluna == 4)
-                                colaborador.Telefone = campo.ToString();
-                            if (coluna == 5)
-                                colaborador.Nascimento = DateTime.ParseExact(campo.ToString().Replace('.', '/'),"dd/MM/yyyy", CultureInfo.InvariantCulture);
-                            if (coluna == 6)
-                                colaborador.Dt_Admissao = DateTime.ParseExact(campo.ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        }
-
-                        if (fimLista < 3)
-                        {
-                            if (checkList.Any(n => n.Documento == colaborador.Documento)) continue;
-
-                            list.Add(colaborador);
-                        }
-                        else
-                            break;
-                    }
-                    
-                } while (readerData.NextResult());
+                    list.Add(colaborador);
+                }
 
                 int retorno = contexto.BulkInsert(list);
 

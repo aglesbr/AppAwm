@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20250203151452_vaziaV01")]
-    partial class vaziaV01
+    [Migration("20250207170211_novoInicialV01")]
+    partial class novoInicialV01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -282,7 +282,7 @@ namespace AppAwm.Migrations
                         .HasColumnOrder(16);
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("BINARY")
+                        .HasColumnType("varbinary(max)")
                         .HasColumnName("FOTO")
                         .HasColumnOrder(90);
 
@@ -489,6 +489,49 @@ namespace AppAwm.Migrations
                     b.HasKey("Cd_Documentaco_Complementar");
 
                     b.ToTable("AWM_DOCUMENTO_COMPLEMENTAR");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Download", b =>
+                {
+                    b.Property<int>("Cd_Download")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_DOWNLOAD")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Download"));
+
+                    b.Property<byte[]>("Anexo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)")
+                        .HasColumnName("ANEXO")
+                        .HasColumnOrder(15);
+
+                    b.Property<string>("Cd_UsuarioCriacao")
+                        .HasMaxLength(50)
+                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnName("CD_USUARIO_CRIACAO")
+                        .HasColumnOrder(25);
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("VARCHAR(150)")
+                        .HasColumnName("DESCRICAO")
+                        .HasColumnOrder(10);
+
+                    b.Property<DateTime>("Dt_Criacao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DT_CRIACAO")
+                        .HasColumnOrder(20);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnName("NOME")
+                        .HasColumnOrder(5);
+
+                    b.HasKey("Cd_Download");
+
+                    b.ToTable("AWM_DOWNLOAD");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Empresa", b =>
