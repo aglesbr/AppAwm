@@ -181,6 +181,13 @@ var getObejct = function (patname) {
             }
             return { funcoes: JSON.stringify(obj) };
 
+        case 'Download':
+            obj = {
+                nome: $("#nome").val().toUpperCase(),
+                descricao: $("#descricao").val()
+            }
+            return { download: JSON.stringify(obj) };
+
         default:
             return { id: 100, error: 'caminho desconhecido' };
     }

@@ -261,7 +261,7 @@ namespace AppAwm.Services
                 Colaborador? colaborador = null;
                 List<Colaborador> list = [];
 
-                string[] header = ["Colaborador", "Sexo", "Função", "CPF", "Telefone", "Data_nascimento", "Data_admissão"];
+                string[] header = ["COLABORADOR", "SEXO", "FUNÇÃO", "CPF", "TELEFONE", "DATA_NASCIMENTO", "DATA_ADMISSAO"];
                 bool validaArquivo = true;
                 int linha = 0, fimLista = 0;
                 object campo;

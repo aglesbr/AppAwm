@@ -16,7 +16,7 @@ $('#btnImportaColaboradores').on('click', (event) => {
         content: '' +
             '<form method="post" enctype="multipart/form-data id="formImportarColaborador">' +
             '<div class="input-field">' +
-            '<input type="file" name="filePlan" id="filePlan" required />' +
+            '<input type="file" name="filePlan" id="filePlan" required accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"  />' +
             '</div>' +
             '<div class="input-field">' +
             '<input type="text" maxlength="100" id="nomeEmpresa", name="nomeEmpresa" value="'+nomeEmpresa+'"/> ' +
@@ -59,8 +59,6 @@ $('#btnImportaColaboradores').on('click', (event) => {
                         })
                             .done(function (data) {
 
-                                debugger
-
                                 if (data.success) {
 
                                     $('#btnSearch').trigger('click',);
@@ -73,7 +71,7 @@ $('#btnImportaColaboradores').on('click', (event) => {
                                 loading(false);
                         })
                         .fail(function (data) {
-                            M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao tentar localiar o endereço pelo Cep', classes: 'red rounded' });
+                            M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao realizar o upload do arquivo', classes: 'red rounded' });
                             loading(false);
                         });
                 }
@@ -268,5 +266,5 @@ $('#file-input').on('input', () => {
 });
 
 $('#baixarModeloexcel').on('click', () => {
-    window.location.href = '/Anexo/downloadFile/101?isApp=true';
+    window.location.href = '/Download/downloadFile/2';
 })
