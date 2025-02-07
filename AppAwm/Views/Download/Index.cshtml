@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Gerenciar Arquivos";
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+
+    var msg = ViewBag?.FileNotFound;
+
+    if (msg != null)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">report</i>&nbsp;@msg', classes: 'orange darken-3 rounded' });
+        </script>
+    }
+}
+
+@if (userSession?.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+{
+    <form>
+        <div class="row">
+            <h4>Pesquisar arquivos do sistema</h4>
+            <div class="input-field col s6">
+                <input id="nome" type="text">
+                <label for="nome">Nome do arquivo</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="descricao" type="text">
+                <label for="descricao">Descrição do arquivo</label>
+            </div>
+        </div>
+
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small " id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a id="btnUploadArquivo" class="waves-effect waves-light btn-small "><i class="material-icons left small">add</i>Novo upload</a>
+        </div>
+    </form>
+    <hr>
+    <footer id="DivRenderData" style="display:none;"></footer>
+}
+
+<script src="~/js/download/download.js"></script>
