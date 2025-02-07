@@ -119,6 +119,7 @@ namespace AppAwm.DAL
         public virtual DbSet<DocumentacaoComplementar> DocumentacoesComplementares { get; set; }
         public virtual DbSet<DocumentacaoCargo> DocumentacaoCargos { get; set; }
         public virtual DbSet<Cliente> Clientes { get; set; }
+        public virtual DbSet<Download> Downloads { get; set; }
 
     }
 }

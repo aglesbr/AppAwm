@@ -48,7 +48,14 @@ builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAns
 builder.Services.AddScoped<IChart<ChartAnswer>, ChartService>();
 builder.Services.AddScoped<ICliente<ClienteAnswer>, ClienteService>();
 builder.Services.AddScoped<IDocumentoCargo<DocumentoCargoAnswer>, DocumentoCargoService>();
+builder.Services.AddScoped<IDownload<DownloadAnswer>, DownloadService>();
+
+//************************************************************************************************
+//implementação e seviço com multiplas classe com distinção de entrada e retorno do tipo de classe
 builder.Services.AddScoped<DepartamentoService>();
+
+//************************************************************************************************
+
 
 builder.Services.AddSession(s =>
 {
