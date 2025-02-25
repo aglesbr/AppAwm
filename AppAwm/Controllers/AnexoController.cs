@@ -60,9 +60,8 @@ namespace AppAwm.Controllers
                         {
                             if (obj.Scope == "anexoComumColaborador")
                                 anexo.Cd_Funcionario_Id = Convert.ToInt32(obj.CodigoColaborador);
-                            else
-                                anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
 
+                            anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
                             anexo.Status = EnumStatusDocs.None;
                         }
 
@@ -372,7 +371,7 @@ namespace AppAwm.Controllers
 
                 var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                Colaborador? obj = servicoColaborador.List(g => g.Cd_Funcionario == cd_funcionario).Colaboradore.FirstOrDefault();
+                Colaborador? obj = servicoColaborador.List(g => g.Cd_Funcionario == cd_funcionario).Colaboradores.FirstOrDefault();
 
                 if (obj != null)
                 {

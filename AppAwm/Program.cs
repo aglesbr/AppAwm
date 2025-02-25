@@ -57,12 +57,12 @@ builder.Services.AddScoped<DepartamentoService>();
 //************************************************************************************************
 
 
-builder.Services.AddSession(s =>
-{
-    s.IdleTimeout = TimeSpan.FromHours(1);
-    s.Cookie.HttpOnly = true;
-    s.Cookie.IsEssential = true;
-});
+//builder.Services.AddSession(s =>
+//{
+//    s.IdleTimeout = TimeSpan.FromHours(1);
+//    s.Cookie.HttpOnly = true;
+//    s.Cookie.IsEssential = true;
+//});
 
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -1,5 +1,4 @@
 ﻿using AppAwm.Models;
-using AppAwm.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAwm.DAL
@@ -67,34 +66,46 @@ namespace AppAwm.DAL
         {
 
             modelBuilder.Entity<Empresa>()
-            .HasMany(e => e.Anexos)
-            .WithOne(e => e.Empresa)
-            .HasForeignKey(e => e.Cd_Empresa_Id)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Colaborador>()
-            .HasMany(e => e.Anexos)
-            .WithOne(e => e.Colaborador)
-            .HasForeignKey(e => e.Cd_Funcionario_Id)
-            .IsRequired(false);
+                .HasMany(e => e.Anexos)
+                .WithOne(e => e.Empresa)
+                .HasForeignKey(e => e.Cd_Empresa_Id)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Empresa>()
                 .HasMany(e => e.Funcionarios)
                 .WithOne(e => e.Empresa)
                 .HasForeignKey(e => e.Id_Empresa)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Colaborador>()
+                .HasMany(e => e.Anexos)
+                .WithOne(e => e.Colaborador)
+                .HasForeignKey(e => e.Cd_Funcionario_Id)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Empresa>()
+               .HasMany(e => e.Usuarios)
+               .WithOne(e => e.Empresa)
+               .HasForeignKey(e => e.Cd_Empresa)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Empresa>()
                .HasMany(e => e.Obras)
                .WithOne(e => e.Empresa)
                .HasForeignKey(e => e.Cd_Empresa_Id)
-               .IsRequired(false);
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Colaborador>()
                .HasMany(e => e.VinculoObras)
                .WithOne(e => e.Colaborador)
                .HasForeignKey(e => e.Cd_Funcionario_Id)
-               .IsRequired(false);
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Cliente>()
                .HasMany(e => e.Empresas)

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <!--<TargetFramework>net8.0</TargetFramework>-->
@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU;x86</Platforms>
     <Configurations>Debug;Release;Staging;StagingOn;ReleaseOn</Configurations>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <PublishAot>False</PublishAot>
   </PropertyGroup>
 
@@ -60,10 +60,6 @@
     <Compile Remove="Respostas\TreinamentoAnswer .cs" />
     <Compile Remove="Services\Interface\ITreinamento.cs" />
     <Compile Remove="Services\TreinamentoService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>

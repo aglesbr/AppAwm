@@ -88,6 +88,7 @@ $('#enviarAnexo').on('click', () => {
 
                 bindAnexos(obj);
                 $('#frmAnexo').trigger("reset");
+                $('#btnSearch').trigger('click');
             }
         })
         .fail(function (data) {
@@ -186,6 +187,7 @@ $('#enviarAnexoColaborador').on('click', () => {
 
                 bindAnexos(obj);
                 $('#frmDocumentoColaborador').trigger("reset");
+                $('#btnSearch').trigger('click');
             }
         })
         .fail(function (data) {
@@ -334,6 +336,7 @@ var removeFile = (objeto) => {
                 }
 
                 bindAnexos(obj);
+                $('#btnSearch').trigger('click');
             }
         })
         .fail(function (data) {

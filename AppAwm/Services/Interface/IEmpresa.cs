@@ -13,5 +13,6 @@ namespace AppAwm.Services.Interface
         ValueTask<T> GetCnpj(string cnpj);
         int Vincular(ColaboradorVinculoObra vinculoObra);
         List<Cliente> GetClientes(Expression<Func<Cliente, bool>> predicate);
+        T Remove(int id);
     }
 }

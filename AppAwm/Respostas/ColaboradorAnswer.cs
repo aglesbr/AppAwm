@@ -12,7 +12,7 @@ namespace AppAwm.Respostas
 
         public Colaborador Colaborador { get; } = new();
         public string[] Erros { get; } = [];
-        public List<Colaborador> Colaboradore { get; } = [];
+        public List<Colaborador> Colaboradores { get; } = [];
         public List<SelectListItem> Empresas { get; } = [];
         public EnumAcao Acao { get; }
 
@@ -20,7 +20,7 @@ namespace AppAwm.Respostas
 
         public ColaboradorAnswer(bool success, string message, string[] erro) : base(success, message) => Erros = erro;
 
-        public ColaboradorAnswer(bool success, string message, List<Colaborador> list) : base(success, message) => Colaboradore = list;
+        public ColaboradorAnswer(bool success, string message, List<Colaborador> list) : base(success, message) => Colaboradores = list;
 
         public ColaboradorAnswer(bool success, string message, Colaborador funcionario) : base(success, message) => Colaborador = funcionario;
 

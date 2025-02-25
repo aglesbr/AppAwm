@@ -24,7 +24,7 @@
                     <div class="switch">
                         <label>
                             Desvincular
-                                <input type="checkbox" class="vincula" onchange="javasecript:vinculaFuncionario({ checked:this.checked, cd_funcionario_id:@item.Cd_Funcionario})" @(item.VinculoObras.Any(s => s.Vinculado) ? "checked" : "")>
+                                <input type="checkbox" class="vincula" onchange="javasecript:vinculaFuncionario({ checked:this.checked, cd_funcionario_id:@item.Cd_Funcionario})" @(item.VinculoObras == null ? "" : item.VinculoObras.Any(s => s.Vinculado) ? "checked" : "")>
                             <span class="lever"></span>
                             Vincular
                         </label>

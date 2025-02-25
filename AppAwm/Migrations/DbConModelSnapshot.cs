@@ -786,6 +786,8 @@ namespace AppAwm.Migrations
 
                     b.HasKey("Cd_Usuario");
 
+                    b.HasIndex("Cd_Empresa");
+
                     b.ToTable("AWM_USUARIO");
                 });
 
@@ -793,11 +795,13 @@ namespace AppAwm.Migrations
                 {
                     b.HasOne("AppAwm.Models.Empresa", "Empresa")
                         .WithMany("Anexos")
-                        .HasForeignKey("Cd_Empresa_Id");
+                        .HasForeignKey("Cd_Empresa_Id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AppAwm.Models.Colaborador", "Colaborador")
                         .WithMany("Anexos")
-                        .HasForeignKey("Cd_Funcionario_Id");
+                        .HasForeignKey("Cd_Funcionario_Id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Colaborador");
 
@@ -808,7 +812,8 @@ namespace AppAwm.Migrations
                 {
                     b.HasOne("AppAwm.Models.Empresa", "Empresa")
                         .WithMany("Funcionarios")
-                        .HasForeignKey("Id_Empresa");
+                        .HasForeignKey("Id_Empresa")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Empresa");
                 });
@@ -817,7 +822,8 @@ namespace AppAwm.Migrations
                 {
                     b.HasOne("AppAwm.Models.Colaborador", "Colaborador")
                         .WithMany("VinculoObras")
-                        .HasForeignKey("Cd_Funcionario_Id");
+                        .HasForeignKey("Cd_Funcionario_Id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Colaborador");
                 });
@@ -844,7 +850,18 @@ namespace AppAwm.Migrations
                 {
                     b.HasOne("AppAwm.Models.Empresa", "Empresa")
                         .WithMany("Obras")
-                        .HasForeignKey("Cd_Empresa_Id");
+                        .HasForeignKey("Cd_Empresa_Id")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Usuario", b =>
+                {
+                    b.HasOne("AppAwm.Models.Empresa", "Empresa")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("Cd_Empresa")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Empresa");
                 });
@@ -873,6 +890,8 @@ namespace AppAwm.Migrations
                     b.Navigation("Funcionarios");
 
                     b.Navigation("Obras");
+
+                    b.Navigation("Usuarios");
                 });
 #pragma warning restore 612, 618
         }
