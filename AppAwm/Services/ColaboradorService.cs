@@ -72,7 +72,8 @@ namespace AppAwm.Services
                 using var contexto = new RepositoryGeneric<Colaborador>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<Colaborador> funcionarios = [.. contexto.GetAll(predicate).Include(emp => emp.Empresa).OrderBy(o => o.Nome)
+                    List<Colaborador> funcionarios = [.. contexto.GetAll(predicate)
+                        .Include(emp => emp.Empresa).OrderBy(o => o.Nome)
                         .Include(o => o.VinculoObras)
                         .Include(a => a.Anexos)
                         .Select(ss => new Colaborador 
@@ -82,6 +83,8 @@ namespace AppAwm.Services
                                  Cd_Anexo = anx.Cd_Anexo, TipoAnexo = anx.TipoAnexo, Status = anx.Status, Cd_Empresa_Id = anx.Cd_Empresa_Id, Cd_Funcionario_Id = anx.Cd_Funcionario_Id,
                                   MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome
                              }),
+                             VinculoObras = ss.VinculoObras,
+                             Empresa = ss.Empresa,
                              Cd_Funcionario = ss.Cd_Funcionario,
                              Documento = ss.Documento,
                              Integrado = ss.Integrado,

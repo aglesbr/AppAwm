@@ -183,6 +183,32 @@ namespace AppAwm.Services
             }
         }
 
+        public EmpresaAnswer Remove(int id)
+        {
+            try
+            {
+                int retorno = 0;
+
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<Empresa>(db, out status);
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    Empresa? empresa = contexto.GetItem(x => x.Cd_Empresa == id);
+                    if (empresa != null)
+                    {
+                        retorno = contexto.Delete(empresa);
+                        return retorno > 0 ? EmpresaAnswer.DeExclusao("Empresa removida com sucesso") : EmpresaAnswer.DeErro("Ocorreu um erro ao tentar remover a empresa<br>empresa não localizada");
+                    }
+                }
+
+                return EmpresaAnswer.DeFalha("Ocorreu um erro na comunicação com o banco de dados");
+            }
+            catch (Exception ex)
+            {
+                return EmpresaAnswer.DeFalha(ex.Message);
+            }
+        }
+
         //public void OpenTransaction()
         //{
         //    using DbCon db = new();

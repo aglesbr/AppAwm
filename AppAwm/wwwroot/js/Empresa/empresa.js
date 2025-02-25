@@ -53,6 +53,7 @@ $('#enviarObra').on('click', (event) => {
     let obj = {
         cd_obra: $('#cd_obra').val(),
         cd_empresa_id: $('#cd_empresa_id').val(),
+        cd_cliente: $('#cd_cliente_id').val(),
         descricao: $('#descricaoObra').val(),
         nome: $('#nomeObra').val(),
         status: $('#Status').prop('checked')
@@ -77,6 +78,10 @@ $('#enviarObra').on('click', (event) => {
     })
         .done(function (data) {
 
+            bindObras(obj);
+            LimparCampos();
+            $('#btnSearch').trigger('click');
+
             loading(false);
 
             if (data.success == true) {
@@ -84,8 +89,6 @@ $('#enviarObra').on('click', (event) => {
                     html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                 });
 
-                bindObras(obj);
-                $('#frmObra').trigger("reset");
             }
         })
         .fail(function (data) {
@@ -142,6 +145,7 @@ $('#Cnpj').on('keyup', function (event) {
 
 //******************************************************************************************************************************
 
+
 var setFileds = (objeto) => {
 
     // Formatar Telefone
@@ -173,7 +177,6 @@ var setFileds = (objeto) => {
     $("#status").prop("checked", objeto.status.text == 'Ativa');
 }
 
-
 var editarObra = (obj) => {
 
     $('#cd_obra').val(obj.cd_Obra);
@@ -181,6 +184,14 @@ var editarObra = (obj) => {
     $('#nomeObra').val(obj.nome).trigger('focus');
     $('#descricaoObra').val(obj.descricao).trigger('focus');
     $("#Status").prop("checked", obj.status)
+}
+
+var LimparCampos = () => {
+
+    $('#cd_obra').val(0);
+    $('#descricaoObra').val('');
+    $('#nomeObra').val('');
+    $('#Status').prop('checked', false);
 }
 
 var openModal = (objeto) => {
@@ -191,20 +202,20 @@ var openModal = (objeto) => {
 
         if (scopes.some(s => s == objeto.scope)) {
 
+            $('#frmObra').trigger("reset");
             $('#tituloEmpresaObra').html(`<h6>${objeto.titulo} - ${objeto.cnpj}</h6>`);
 
             if (objeto.scope == 'obra') {
                 
                 $('#cd_empresa_id').val(objeto.cd_empresa_id);
+                $('#cd_cliente_id').val(objeto.cd_cliente);
                 $('#modalObraEmpresa').modal({ dismissible: false }).modal('open');
-
-                $('#frmObra').trigger("reset");
-
                 bindObras(objeto);
             }
 
             if (objeto.scope == 'vincularColaborador') {
                 $('#cd_empresa').val(objeto.cd_empresa_id);
+                $('#cd_cliente_id').val(objeto.cd_cliente);
                 $('#modalVincularColaborador').modal({ dismissible: false }).modal('open');
                 $('#tituloColaboradorObra').html(`<h6>${objeto.nome} - ${objeto.cnpj}</h6>`)
                 $('#frmVincularColaborador').trigger("reset");                
@@ -226,13 +237,13 @@ $('#comboBoxObras').on('change', (event) => {
     getFuncionario(obj);
 })
 
-
 var vinculaFuncionario = (obj) => {
 
     let vinculo = {
 
         cd_funcionario_id: obj.cd_funcionario_id,
         cd_empresa_id: $('#cd_empresa').val(),
+        cd_cliente: $('#cd_cliente_id').val(),
         cd_obra_id: $('#comboBoxObras').val(),
         vinculado: obj.checked
     }
@@ -315,32 +326,66 @@ var getObras = (obj) => {
         async: true,
         data: { id: obj.cd_empresa_id }
     })
-        .done(function (data) {
+    .done(function (data) {
 
-            obra.innerHTML = null;
-            obra.append(new Option('Selecione uma obra...', '0', true));
+        obra.innerHTML = null;
+        obra.append(new Option('Selecione uma obra...', '0', true));
 
-            if (data.success == true) {
+        if (data.success == true) {
 
-                M.FormSelect.getInstance(obra);
-                data.obras.forEach(s => {
-                    obra.append(new Option(s.nome, s.cd_Obra))
-                })
+            M.FormSelect.getInstance(obra);
+            data.obras.forEach(s => {
+                obra.append(new Option(s.nome, s.cd_Obra))
+            })
 
-                M.FormSelect.init(obra);
-            }
-            else {
+            M.FormSelect.init(obra);
+        }
+        else {
 
-                M.FormSelect.init(obra);
-                M.toast({
-                    html: '<i class="material-icons white-text">cancel</i> Não existe Obra ativa para essa empresa!', classes: 'red darken-2 rounded'
-                });
-            }
-        })
-        .fail(function (data) {
+            M.FormSelect.init(obra);
             M.toast({
-                html: '<i class="material-icons white-text">cancel</i> ocorreu um erro ao tentar listar as obras', classes: 'red darken-2 rounded'
+                html: '<i class="material-icons white-text">cancel</i> Não existe Obra ativa para essa empresa!', classes: 'red darken-2 rounded'
             });
+        }
+    })
+    .fail(function (data) {
+        M.toast({
+            html: '<i class="material-icons white-text">cancel</i> ocorreu um erro ao tentar listar as obras', classes: 'red darken-2 rounded'
         });
+    });
 }
+
+var removeEmpresa = (objeto) => {
+
+    loading(true);
+
+    $.ajax({
+        type: 'DELETE',
+        url: '/empresa/remove/' + objeto.id,
+        dataType: "json",
+        async: false,
+    })
+    .done(function (data) {
+
+        $('#btnSearch').trigger('click');
+
+        loading(false);
+
+        if (data.success == true) {
+            M.toast({
+                html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
+            });
+               
+        }
+    })
+    .fail(function (data) {
+        loading(false);
+
+        M.toast({
+            html: '<i class="material-icons white-text">cancel</i>&nbsp - ' + data.message, classes: 'red darken-2 rounded'
+        });
+        bindAnexos(objeto);
+    });
+}
+
 

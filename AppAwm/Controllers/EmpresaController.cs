@@ -11,11 +11,12 @@ using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IColaborador<ColaboradorAnswer> _servicoFuncionario) : Controller
+    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IColaborador<ColaboradorAnswer> _servicoFuncionario, IAnexo<AnexoAnswer> _servicoAnexo) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;
         private readonly IObra<ObraAnswer> servicoObra = _servicoObra;
         private readonly IColaborador<ColaboradorAnswer> servicoFuncionario = _servicoFuncionario;
+        private readonly IAnexo<AnexoAnswer> servicoAnexo = _servicoAnexo;
 
         [HttpGet]
         [Authorize(Roles = "Terceiro, Administrador")]
@@ -220,8 +221,12 @@ namespace AppAwm.Controllers
                 if (sessao != null)
                 {
                     Obra obj = JsonConvert.DeserializeObject<Obra>(comandoObra) ?? new();
-                    obj.Cd_Usuario_Criacao = sessao.Nome;
-                    obj.Id_UsuarioCriacao = sessao.Cd_Usuario;
+
+                    if (obj.Cd_Obra == 0)
+                    {
+                        obj.Cd_Usuario_Criacao = sessao.Nome;
+                        obj.Id_UsuarioCriacao = sessao.Cd_Usuario;
+                    }
 
                     if (!obj.Status)
                     {
@@ -262,14 +267,14 @@ namespace AppAwm.Controllers
 
                 ColaboradorAnswer resposta = servicoFuncionario.List(
                      x => x.Status && x.Id_Empresa == id_Empresa);
-                var query = resposta.Colaboradore;
+                var query = resposta.Colaboradores;
                 var filter = query.Select(s => new Colaborador
                 {
                     Cd_Funcionario = s.Cd_Funcionario,
                     Nome = s.Nome,
                     Documento = s.Documento,
                     Telefone = s.Telefone,
-                    VinculoObras = s.VinculoObras.Where(g => g.Cd_Obra_Id == id_Obra).ToList()
+                    VinculoObras = s.VinculoObras?.Where(g => g.Cd_Obra_Id == id_Obra).ToList()
                 }).ToPagedList(skip, 15);
                 return PartialView("ListColaboradorRecord", filter);
             }
@@ -295,6 +300,8 @@ namespace AppAwm.Controllers
                 {
                     ColaboradorVinculoObra obj = JsonConvert.DeserializeObject<ColaboradorVinculoObra>(comandoVincularObra) ?? new();
                     obj.Cd_UsuarioCriacao = sessao.Nome;
+                    obj.Cd_Cliente = sessao.Cliente!.Cd_Cliente;
+                    obj.Id_UsuarioCriacao = sessao.Cd_Usuario;
 
                     int ret = servico.Vincular(obj);
                     var retorno = new { success = ret > 0, message = "item registrado com sucesso" };
@@ -310,5 +317,32 @@ namespace AppAwm.Controllers
 
         }
 
+        [HttpDelete("/empresa/remove/{id:int}")]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult RemoveEmpresa(int id)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Start");
+
+                var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+                if (sessao != null)
+                {
+
+                    servicoAnexo.List(x => x.Cd_Empresa_Id == id, false).Anexos.ForEach(x => servicoAnexo.Remove(x));
+
+                    EmpresaAnswer resposta = servico.Remove(id);
+
+                    return new JsonResult(resposta);
+                }
+                return BadRequest(EmpresaAnswer.DeErro("Usuário com a sessão expirida."));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(EmpresaAnswer.DeErro($"Ocorreu um erro na execução, ERRO: {ex.Message}"));
+            }
+
+        }
     }
 }

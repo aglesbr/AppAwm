@@ -174,7 +174,7 @@ namespace AppAwm.Controllers
                      && (x.TipoContrato == (obj.TipoContrato == 0 ? x.TipoContrato : obj.TipoContrato))
                      && (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status)));
 
-                var query = resposta.Colaboradore.ToPagedList(skip, 12);
+                var query = resposta.Colaboradores.ToPagedList(skip, 12);
                 return PartialView("ListRecord", query);
             }
             catch

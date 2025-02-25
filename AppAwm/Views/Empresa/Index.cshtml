@@ -111,6 +111,7 @@ else
     <form method="post" id="frmObra">
     <input type="hidden" id="cd_obra" name="cd_obra" value="0" />
     <input type="hidden" id="cd_empresa_id" name="cd_empresa_id" />
+    <input type="hidden" id="cd_cliente_id" name="cd_cliente_id" />
         <div class="modal-content">
             <div class="right-align" id="tituloEmpresaObra"></div>
             <div class="row">
@@ -138,7 +139,7 @@ else
         <div class="modal-footer alert-info">
             <span class="new badge left" data-badge-caption="Registrar/Editar Obras">Formulário:</span>
             <a id="btnCloseModaObra" class="modal-close waves-effect waves-teal btn-flat">fechar</a>
-            <button type="button" class="btn waves-effect waves-light red darken-3" onclick="javascript:document.getElementById('frmObra').reset();">limpar</button>
+            <button type="button" class="btn waves-effect waves-light red darken-3" onclick="javascript:LimparCampos();">limpar</button>
             <button type="button" id="enviarObra" class="btn waves-effect waves-light">salvar</button>
         </div>
     </form>

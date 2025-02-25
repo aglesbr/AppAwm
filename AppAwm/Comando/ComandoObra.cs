@@ -14,6 +14,10 @@ namespace AppAwm.Comando
         [JsonPropertyName("cd_Empresa_id")]
         public int Cd_Empresa_Id { get; set; }
 
+        [JsonProperty("cd_Cliente_id")]
+        [JsonPropertyName("cd_Cliente_id")]
+        public int Cd_Cliente_Id { get; set; }
+
         [JsonProperty("nome")]
         [JsonPropertyName("nome")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o nome da Obra.")]

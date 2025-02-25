@@ -51,7 +51,7 @@ namespace AppAwm.Services
                             && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? f.Id_UsuarioCriacao == usuario.Cd_Usuario : f.Id_Empresa > 0)
                         );
 
-                        chartRetorno.TotalSemDoc = funcionarioAnswer.Colaboradore.Count(s => s.Anexos!.Count == 0);
+                        chartRetorno.TotalSemDoc = funcionarioAnswer.Colaboradores.Count(s => s.Anexos!.Count == 0);
                     }
                     else
                     {
@@ -85,7 +85,7 @@ namespace AppAwm.Services
                 }
 
                 funcionarioAnswer = servicoColaborador.List(f => f.Status && f.Id_Empresa == listAnexos!.FirstOrDefault()!.Cd_Empresa_Id);
-                chartRetorno.TotalSemDoc = funcionarioAnswer.Colaboradore.Count(s => s.Anexos!.Count == 0);
+                chartRetorno.TotalSemDoc = funcionarioAnswer.Colaboradores.Count(s => s.Anexos!.Count == 0);
 
                 return ChartAnswer.DeSucesso(chartRetorno);
             }

@@ -48,16 +48,17 @@
                     <td class="right-align">
                         <a data-position="left" data-tooltip="Vincular Colaboradores ao Contrato/Obra"  enable
                             class="waves-effect waves-light btn-small teal modal-trigger blue-grey darken-2 tooltipped"
-                           onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa,nome:'@item.Nome', cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")' ,scope:'vincularColaborador'})"
+                           onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa,nome:'@item.Nome', cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")', cd_cliente:@item.Cd_Cliente_Id ,scope:'vincularColaborador'})"
                         @(item.Obras.Count == 0 ? "disabled" : "")>
                             <i class="material-icons center">swap_horiz</i></a>
-                        <a data-position="top" data-tooltip="Contrato/Obras" class="waves-effect waves-light btn-small black modal-trigger tooltipped" onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa, cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")' , titulo:'@item.Nome', scope:'obra'})">
+                        <a data-position="top" data-tooltip="Contrato/Obras" class="waves-effect waves-light btn-small black modal-trigger tooltipped" onclick="javascript:openModal({cd_empresa_id:@item.Cd_Empresa, cnpj:'@Convert.ToUInt64(item.Cnpj).ToString(@"00\.000\.000\/0000\-00")',cd_cliente:@item.Cd_Cliente_Id , titulo:'@item.Nome', scope:'obra'})">
                             <i class="material-icons center">
                                 transfer_within_a_station
                             </i>
                         </a>
                         <a data-position="bottom" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigoEmpresa:@item.Cd_Empresa, documento:@item.Cnpj,documentacaoPendente:@(item.DocumentacaoValidada ? 0 : 1) ,titulo:'@item.Nome', scope:'empresa'})"><i class="material-icons center">attach_file</i></a>
                         <a data-position="right" data-tooltip="Editar" asp-controller="Empresa" asp-action="Create" asp-route-id="@item.Cd_Empresa" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
+                        <a data-position="top" data-tooltip="Excluir" class="waves-effect waves-light btn-small red darken-4 modal-trigger tooltipped removeEmpresa" data-itemid="@item.Cd_Empresa"><i class="material-icons center">delete_forever</i></a>
                     </td>
                 </tr>
             }
@@ -127,6 +128,32 @@ else
                 bottomEnd: null,
                 topEnd: null,
             }
+        });
+
+
+           $('.removeEmpresa').on('click', (event) => {
+
+            $.confirm({
+                title: 'Você confirma a exclusão desta empresa?',
+                content: 'ATENÇÃO: essa ação não poderá ser desfeita!<br>Todos os colaboradores, documentos, anexos e usuarios referente a essa empresa serão excluidos',
+                boxWidth: '30%',
+                type: 'dark',
+                useBootstrap: false,
+                buttons: {
+                    cancelar: function () {},
+                    confirmar: function () {
+                        removeEmpresa({ id: event.currentTarget.dataset.itemid})
+                    },
+                    // somethingElse: {
+                    //     text: 'Something else',
+                    //     btnClass: 'btn-blue',
+                    //     keys: ['enter', 'shift'],
+                    //     action: function () {
+                    //         $.alert('Something else?');
+                    //     }
+                    // }
+                }
+            });
         });
     });
     

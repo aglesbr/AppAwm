@@ -245,7 +245,7 @@ namespace AppAwm.Controllers
             try
             {
                 UsuarioAnswer usuarioAnswer = servicoUsuario.Get(s => s.Status && s.Nome == nameUser, EnumAcao.Nenhum);
-                Colaborador? funcionarioAnswer = servicoFuncionario.List(f => f.Status && f.Cd_Funcionario == idFunc).Colaboradore.FirstOrDefault() ?? new Colaborador();
+                Colaborador? funcionarioAnswer = servicoFuncionario.List(f => f.Status && f.Cd_Funcionario == idFunc).Colaboradores.FirstOrDefault() ?? new Colaborador();
                 EmpresaAnswer empresaAnswer = servicoEmpresa.Get(g => g.Status && g.Cd_Empresa == idEmp);
 
                 if (usuarioAnswer.Success)
@@ -316,7 +316,7 @@ namespace AppAwm.Controllers
 
                     if (lista.Success)
                     {
-                        lista.Colaboradore.ForEach(x => 
+                        lista.Colaboradores.ForEach(x => 
                         {
                             if (x.Empresa != null)
                             {
@@ -324,7 +324,7 @@ namespace AppAwm.Controllers
                             }
                         });
 
-                        foreach (var item in lista.Colaboradore)
+                        foreach (var item in lista.Colaboradores)
                         {
                             var vencimentos = item.Anexos!.Where(i => (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 && i.Status == EnumStatusDocs.Aprovado).ToList();
 
