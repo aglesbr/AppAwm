@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace AppAwm.Comando
 {
-    public class ComandoDocumentoCargo
+    public class ComandoDocumento
     {
         [JsonProperty("cd_Cargo_Id")]
         [JsonPropertyName("cd_Cargo_Id")]
@@ -13,9 +13,17 @@ namespace AppAwm.Comando
         [JsonPropertyName("cd_Documento_Id")]
         public int Cd_Documento_Id { get; set; }
 
+        [JsonProperty("cd_Documento_Complementar")]
+        [JsonPropertyName("cd_Documento_Complementar")]
+        public int Cd_Documento_Complementar { get; set; }
+
         [JsonProperty("cd_Empresa")]
         [JsonPropertyName("cd_Empresa")]
-        public int Cd_Empresa { get; set; }
+        public int Cd_Empresa_Id { get; set; }
+
+        [JsonProperty("origem")]
+        [JsonPropertyName("origem")]
+        public int Origem { get; set; }
 
         [JsonProperty("vinculado")]
         [JsonPropertyName("vinculado")]

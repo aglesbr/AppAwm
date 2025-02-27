@@ -11,12 +11,15 @@ using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, IColaborador<ColaboradorAnswer> _servicoFuncionario, IAnexo<AnexoAnswer> _servicoAnexo) : Controller
+    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, 
+        IColaborador<ColaboradorAnswer> _servicoFuncionario, IAnexo<AnexoAnswer> _servicoAnexo,
+        IDocumentoEmpresa<DocumentoEmpresaAnswer> _servicoDocumentoEmprea ) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;
         private readonly IObra<ObraAnswer> servicoObra = _servicoObra;
         private readonly IColaborador<ColaboradorAnswer> servicoFuncionario = _servicoFuncionario;
         private readonly IAnexo<AnexoAnswer> servicoAnexo = _servicoAnexo;
+        private readonly IDocumentoEmpresa<DocumentoEmpresaAnswer> servicoDocumentoEmpresa = _servicoDocumentoEmprea;
 
         [HttpGet]
         [Authorize(Roles = "Terceiro, Administrador")]
@@ -87,6 +90,17 @@ namespace AppAwm.Controllers
                     empresa.Cnpj = Regex.Replace(empresa.Cnpj!, @"[^\d]", string.Empty);
 
                     EmpresaAnswer empresaAnswer = servico.Save(empresa, (empresa.Cd_Empresa == 0 ? EnumAcao.Criar : EnumAcao.Editar));
+
+                    if (empresaAnswer.Success)
+                    {
+                        string codigos_documentoComplementarPadrão = "28,29,30,31,32,33,34,35,36,37,38,39"; // codigos de documentos padrão
+                        servicoDocumentoEmpresa.Save(
+                            new DocumentacaoEmpresa { 
+                                Cd_Empresa_Id = empresa.Cd_Empresa,
+                                Cd_Documento_Id = 2020,
+                                Cd_Documentos_Complementares_Id = codigos_documentoComplementarPadrão, 
+                                Status = true });
+                    }
 
                     return empresaAnswer.Success ? Ok(empresaAnswer) : BadRequest(empresaAnswer);
 

@@ -226,7 +226,9 @@ var bindAnexos = (obj) => {
             if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
 
-                populaTipoDocumento(2020);  // pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
+                debugger
+
+                populaTipoDocumento(obj);  // pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
 
             if (obj.scope == 'colaborador') {
@@ -513,13 +515,17 @@ var populaTipoDocumento = (obj) => {
     var list;
     var codidoCargoOuEmpresa = obj.codigoCargo == undefined ? obj : obj.codigoCargo 
 
+    var link = '/Anexo/listDocuments';
+
+    debugger
+
     $.ajax({
         type: 'Get',
-        url: '/Anexo/listDocuments/' + codidoCargoOuEmpresa,
+        url: link,
         contentType: "application/json; charset=utf-8",
         dataType: "html",
         async: false,
-        data: { tipoAnexoEmpresa: codidoCargoOuEmpresa == 2020, cd_empresa: obj.codigoEmpresa }
+        data: { comandoAnexoInformacao: JSON.stringify(obj) }
     })
         .done(function (data) {
 

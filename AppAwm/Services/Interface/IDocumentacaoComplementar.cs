@@ -6,6 +6,6 @@ namespace AppAwm.Services.Interface
     public interface IDocumentacaoComplementar<T> where T : class
     {
         T Get(Expression<Func<DocumentacaoComplementar, bool>> predicate);
-        T GetDocumentoCargo(int cd_codigo_id, int? cd_empresa, int origem = 1);
+        T GetTipoDocumento(int cd_codigo_id,int cd_emprsa_id,int origem = 1);
     }
 }

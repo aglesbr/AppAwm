@@ -118,6 +118,13 @@ namespace AppAwm.DAL
                 .WithOne(e => e.Cargo)
                 .HasForeignKey(e => e.Cd_Cargo_Id)
                 .IsRequired(false);
+
+            modelBuilder.Entity<Empresa>()
+                .HasMany(e => e.DocumentoComplementar)
+                .WithOne(e => e.Empresa)
+                .HasForeignKey(e => e.Cd_Empresa_Id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
         }
 
         public virtual DbSet<Usuario> Usuarios { get; set; }
@@ -129,6 +136,7 @@ namespace AppAwm.DAL
         public virtual DbSet<HistoricoExecucao> HistoricoExecucoes { get; set; }
         public virtual DbSet<DocumentacaoComplementar> DocumentacoesComplementares { get; set; }
         public virtual DbSet<DocumentacaoCargo> DocumentacaoCargos { get; set; }
+        public virtual DbSet<DocumentacaoEmpresa> DocumentacaoEmpresas { get; set; }
         public virtual DbSet<Cliente> Clientes { get; set; }
         public virtual DbSet<Download> Downloads { get; set; }
 

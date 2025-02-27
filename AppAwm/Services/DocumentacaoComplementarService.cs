@@ -32,7 +32,7 @@ namespace AppAwm.Services
             }
         }
 
-        public DocumentacaoComplementarAnswer GetDocumentoCargo(int cd_codigo_id, int? cd_empresa, int origem = 1)
+        public DocumentacaoComplementarAnswer GetTipoDocumento(int cd_codigo_id, int cd_empresa_id, int origem = 1)
         {
             try
             {
@@ -41,10 +41,18 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<DocumentacaoCargo> documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id)];
+                    List<DocumentacaoCargo>? documentacaoCargo =  null;
+                    List<DocumentacaoEmpresa>? documentacaoEmpresa = null;
 
-                    documentacaoCargo.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
 
+                    if (origem == 1)
+                    {
+                        documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id && p.Cd_Empresa_Id == (cd_empresa_id > 0 ? cd_empresa_id : p.Cd_Empresa_Id) )];
+                    }
+                    else
+                    {
+                        documentacaoEmpresa = [.. db.DocumentacaoEmpresas.Where(p => p.Cd_Empresa_Id == cd_codigo_id)];
+                    }
                     //var filter = db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_codigo_id).ToList();
                     //filter.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
 
@@ -53,7 +61,18 @@ namespace AppAwm.Services
 
                     DocumentacaoComplementarAnswer resposa = Get(s => s.Origem == origem);
 
-                    resposa.DocumentacaoComplementares.ForEach(f => f.Vinculado = documentacaoCargo.Any(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id));
+                    resposa.DocumentacaoComplementares.ForEach(f =>
+                    {
+                        if (origem == 1)
+                        {
+                            f.Vinculado = documentacaoCargo!.Any(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id);
+                        }
+                        else
+                        {
+                            List<int> items = [..documentacaoEmpresa!.FirstOrDefault()!.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
+                            f.Vinculado = items.Any(a => a == f.Cd_Documentaco_Complementar);
+                        }
+                    });
 
                    return resposa;
                 }

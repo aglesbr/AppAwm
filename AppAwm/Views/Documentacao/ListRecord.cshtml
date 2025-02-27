@@ -1,4 +1,4 @@
-﻿@model X.PagedList.IPagedList<Cargo>
+﻿@model X.PagedList.IPagedList<Documento_Empresa_Cargo>
 @using X.PagedList
 @using X.Web.PagedList
 
@@ -30,7 +30,7 @@
                         @(item.Status ? "Ativo" : "Inativo")
                     </td>
                     <td class="right-align">
-                        <a class="waves-effect waves-light btn-small" href="javascript:editFuncao({id:@item.Cd_Cargo, nomeCargo:'@item.Nome', origem:1});"><i class="material-icons left">edit</i>Editar</a>
+                        <a class="waves-effect waves-light btn-small" href="javascript:editTipoDocumento({id:@item.Cd, titleTipo:'@item.Nome', origem: @item.Origem});"><i class="material-icons left">edit</i>Editar</a>
                     </td>
                 </tr>
             }

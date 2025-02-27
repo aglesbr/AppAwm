@@ -79,6 +79,9 @@ namespace AppAwm.Models
         public virtual ICollection<Obra> Obras { get; } = [];
 
         [NotMapped]
+        public virtual ICollection<DocumentacaoEmpresa>? DocumentoComplementar { get; }
+
+        [NotMapped]
         public int? StatusFilter { get; set; }
     }
 }
