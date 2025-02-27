@@ -4,6 +4,7 @@ using AppAwm.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    partial class DbConModelSnapshot : ModelSnapshot
+    [Migration("20250226131152_AddTabelaDocumentoEmpresa")]
+    partial class AddTabelaDocumentoEmpresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -502,11 +505,6 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CD_DOCUMENTO_ID")
                         .HasColumnOrder(10);
-
-                    b.Property<string>("Cd_Documentos_Complementares_Id")
-                        .HasColumnType("VARCHAR(80)")
-                        .HasColumnName("CD_DOCUMENTOS_COMPLEMENTARES_ID")
-                        .HasColumnOrder(11);
 
                     b.Property<int>("Cd_Empresa_Id")
                         .HasColumnType("INT")

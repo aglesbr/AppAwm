@@ -12,10 +12,11 @@ using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    public class AnexoController(IAnexo<AnexoAnswer> _servico, IColaborador<ColaboradorAnswer> _servicoColaborador) : Controller
+    public class AnexoController(IAnexo<AnexoAnswer> _servico, IColaborador<ColaboradorAnswer> _servicoColaborador, IDocumentoEmpresa<DocumentoEmpresaAnswer> documentoEmpresa) : Controller
     {
         private readonly IAnexo<AnexoAnswer> servico = _servico;
         private readonly IColaborador<ColaboradorAnswer> servicoColaborador= _servicoColaborador;
+        private readonly IDocumentoEmpresa<DocumentoEmpresaAnswer> servicoDocumentoEmpresa = documentoEmpresa;
 
         [HttpPost("/Anexo/AddFiles")]
         [Authorize(Roles = "Colaborador, Terceiro, Administrador")]
@@ -394,13 +395,30 @@ namespace AppAwm.Controllers
         }
 
         [HttpGet]
-        [Route("/Anexo/listDocuments/{Id:int}")]
+        [Route("/Anexo/listDocuments")]
         [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
-        public JsonResult GetDocumentoComplementar(int id, bool tipoAnexoEmpresa = false, int? cd_empresa =  null)
+        public JsonResult GetDocumentoComplementar(string comandoAnexoInformacao, int skip = 1)
         {
             try
             {
-                var documentos = !tipoAnexoEmpresa ? servico.DocumentacaoComplementar(id, cd_empresa) : servico.DocumentacaoComplementar(dc => dc.Cd_DocumentoComplementar_Id == id.ToString());
+                ComandoAnexoInformacao obj = JsonConvert.DeserializeObject<ComandoAnexoInformacao>(comandoAnexoInformacao) ?? new();
+
+
+                var documentos = obj.Scope == "colaborador" 
+                    ? servico.DocumentacaoComplementar(Convert.ToInt32(obj.CodigoCargo),Convert.ToInt32(obj.CodigoEmpresa)) 
+                    : servico.DocumentacaoComplementar(dc => dc.Cd_DocumentoComplementar_Id == "2020");
+
+
+                if (obj.Scope == "empresa")
+                {
+                    DocumentoEmpresaAnswer empresaAnswer = servicoDocumentoEmpresa.Get(g => g.Cd_Documento_Id == 2020 && g.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa));
+
+                    if (empresaAnswer.Success)
+                    {
+                        List<int> items = [..empresaAnswer.DocumentacaoEmpresa.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
+                        documentos.RemoveAll(r => !items.Contains(r.Cd_Documentaco_Complementar));
+                    }
+                }
 
                 return documentos.Count > 0 ? Json(new { documentos, success = true }) : Json(new { erro = "nenhum item encontrado", success = false });
             }

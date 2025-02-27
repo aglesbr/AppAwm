@@ -1,24 +1,23 @@
 ﻿@{
-    ViewData["Title"] = "Funções/Cargos";
+    ViewData["Title"] = "Documentação";
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
 }
 
-<h4>Pesquisar Funções/Cargos</h4>
+<h4 id="tituloPagina">Pesquisar</h4>
 <input type="hidden" id="cd_documentoComplementar_id" />
 <form>
     <div class="row">
         <div class="input-field col s9">
             <input id="nome" type="text">
-            <label>Cargo</label>
+            <label id="titlePesquisa">Empresa</label>
         </div>
 
         <div class="input-field col s3">
-            <select id="StatusFilter">
-                <option value="" selected>Todos</option>
-                <option value="1">Ativo</option>
-                <option value="0">Inativo</option>
+            <select id="tipoDocumento">
+                <option value="2">Empresa</option>
+                <option value="1">Cargo/Função</option>
             </select>
-            <label>Status</label>
+            <label>Documentção por</label>
         </div>
     </div>
     <div>
@@ -31,28 +30,18 @@
 <hr>
 <footer id="DivRenderData" style="display:none;"></footer>
 
-<!-- Modal Abrir documento vs Cargo -->
-<div id="modalDocumentoCargo" class="modal modal-fixed-footer">
-    <input type="hidden" id="codigoCargo" name="codigo" />
+<!-- Modal Abrir tipo documento  -->
+<div id="modalDocumentoTipoDocumento" class="modal modal-fixed-footer">
+    <input type="hidden" id="codigoCargo" />
+    <input type="hidden" id="codigoEmpresa"/>
         <div class="modal-content">
             <div class="right-align" id="titulo"></div>
-            <div class="row" style="margin-bottom:2px;">
-                <div class="input-field col s10">
-                    <select id="cd_empresa" asp-items="selectLists">
-                        <option value="" selected>Todos</option>
-                    </select>
-                        <label>Empresa</label>
+            <div class="row" style="margin-bottom: -5px !important">
+                <div id="modalCd_Empresa" class="input-field col s6" style="display:none;">
+                    <select id="cd_empresa" asp-items="selectLists"></select>
+                    <label>Documentção por Empresa</label>
                 </div>
-            <div class="input-field col s2">
-                <select id="cd_Origem">
-                    <option value="1">Colaborador</option>
-                    <option value="2">Empresa</option>
-                </select>
-                <label>Origem do documento</label>
-            </div>
-            </div>
-            <div class="row">
-                <div id="nomeCargo" class="col s12 left-align"></div>
+                <div id="titleTipo" class="col s6 left-align" style="margin-top:15px;"></div>
             </div>
             <div id="DivRecordDocumentoComplementar"></div>
         </div>
@@ -62,4 +51,4 @@
         </div>
 </div>
 
-<script src="~/js/funcoes/funcoes.js"></script>
+<script src="~/js/documentacao/documentacao.js"></script>

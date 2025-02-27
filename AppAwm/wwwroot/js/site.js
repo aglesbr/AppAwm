@@ -174,12 +174,12 @@ var getObejct = function (patname) {
             }
             return { cliente: JSON.stringify(obj) };
 
-        case 'Funcoes':
+        case 'Documentacao':
             obj = {
                 nome: $("#nome").val().toUpperCase(),
-                statusfilter: $("#StatusFilter").val()
+                Origem: $("#tipoDocumento").val()
             }
-            return { funcoes: JSON.stringify(obj) };
+            return { documentacao: JSON.stringify(obj) };
 
         case 'Download':
             obj = {

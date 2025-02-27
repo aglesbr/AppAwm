@@ -1,23 +1,34 @@
 ﻿var action = null;
 var isModalOpen = null;
-var editFuncao = (obj) => {
 
-    $('#codigoCargo').val(obj.id);
-    $('#nomeCargo').empty().html(`<h5><b>Função:</b> ${obj.nomeCargo}</h5> `);
+var editTipoDocumento = (obj) => {
 
-    $('#modalDocumentoCargo').modal(
+    if (obj.origem == 1) 
+        $('#codigoCargo').val(obj.id);
+    else 
+        $('#codigoEmpresa').val(obj.id);
+    
+
+    $('#titleTipo').empty().html(`<h6><b>${obj.origem == 2 ? 'Empresa' : 'Função'}:</b> ${obj.titleTipo}</h6> `);
+
+    $('#modalDocumentoTipoDocumento').modal(
         {
             dismissible: false,
-            onOpenStart: () => { getDocumentCargo(obj); }
+            onOpenStart: () => { getTipoDocumento(obj); }
         }).modal('open');
     
 }
 
-var getDocumentCargo = (obj) => {
+$('#cd_empresa').on('change', (event) => {
+    var obj = { pagina: 1, id: $('#codigoCargo').val(), origem: $('#tipoDocumento').val(), cd_empresa_id:  $('#cd_empresa').val() };
+    getTipoDocumento(obj);
+})
+
+var getTipoDocumento = (obj) => {
 
     $('#DivRecordDocumentoComplementar').empty().html('<div class="progress"><div class="indeterminate"></div></div>');
     $('#cd_documentoComplementar_id').val(obj.id);
-    action = 'funcoes/typeDocument/' + (obj.pagina == undefined ? 1 : obj.pagina);
+    action = 'documentacao/typeDocument/' + (obj.pagina == undefined ? 1 : obj.pagina);
 
      $.ajax({
         url: action,
@@ -25,7 +36,7 @@ var getDocumentCargo = (obj) => {
         dataType: "html",
         async: true,
          method: 'get',
-         data: { id: obj.id, origem: obj.origem, cd_empresa: $('#cd_empresa').val() }
+         data: { id: obj.id, cd_empresa_id: obj.cd_empresa_id ?? 0, origem: obj.origem }
     }).done(function (response) {
         $("#DivRecordDocumentoComplementar").empty().html(response);
         
@@ -34,19 +45,21 @@ var getDocumentCargo = (obj) => {
     });
 }
 
-var vincularFuncaoAoDocumento = (obj) => {
-
+var vincularDocumento = (obj) => {
+   
     var comandoDocumento = {
         cd_cargo_id: $('#codigoCargo').val(),
+        cd_documento_complementar: obj.cd_documento_complementar,
         cd_documento_id: obj.cd_documento_id,
-        cd_empresa: $('#cd_empresa').val(),
+        cd_empresa_id: ($('#tipoDocumento').val() == 1 ? $('#cd_empresa').val() : $('#codigoEmpresa').val()),
         vinculado: obj.checked,
+        origem: $('#tipoDocumento').val(),
         status: true
     }
 
     $.ajax({
         type: 'POST',
-        url: 'Funcoes/vincular-documento-cargo',
+        url: 'Documentacao/vincular-documento',
         dataType: 'json',
         data: comandoDocumento 
     })
@@ -71,12 +84,11 @@ $('#btnCloseModaDdocumentCargo').on('click', () => {
     $('select').formSelect();
 })
 
-$('#cd_Origem').on('change',(event) => {
-    var obj = { id: $('#cd_documentoComplementar_id').val(), origem: event.currentTarget.value };
-    getDocumentCargo(obj);
+
+$('#tipoDocumento').on('change', (event) => {
+    $("#titlePesquisa").text(event.currentTarget.value == 2 ? 'Nome da Empresa' : 'Cargo');
+    $("#tituloPagina").text(event.currentTarget.value == 2 ? 'Pesquisa por Empresa' : 'Pesquisa por Cargo/Função');
+    $('#modalCd_Empresa').css('display', event.currentTarget.value == 2 ? 'none' : '');
+    $("#DivRenderData").empty();
 })
 
-$('#cd_empresa').on('change', (event) => {
-    var obj = { id: $('#cd_documentoComplementar_id').val(), origem: $('#cd_Origem').val() };
-    getDocumentCargo(obj);
-})

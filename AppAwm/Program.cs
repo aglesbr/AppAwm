@@ -48,6 +48,7 @@ builder.Services.AddScoped<IDocumentacaoComplementar<DocumentacaoComplementarAns
 builder.Services.AddScoped<IChart<ChartAnswer>, ChartService>();
 builder.Services.AddScoped<ICliente<ClienteAnswer>, ClienteService>();
 builder.Services.AddScoped<IDocumentoCargo<DocumentoCargoAnswer>, DocumentoCargoService>();
+builder.Services.AddScoped<IDocumentoEmpresa<DocumentoEmpresaAnswer>, DocumentoEmpresaService>();
 builder.Services.AddScoped<IDownload<DownloadAnswer>, DownloadService>();
 
 //************************************************************************************************

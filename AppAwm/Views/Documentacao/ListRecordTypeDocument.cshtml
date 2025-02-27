@@ -33,7 +33,7 @@
                         <div class="switch">
                             <label>
                                 @(item.Vinculado ? "Desvincular" : "Desvinculado")
-                                <input type="checkbox" class="vincula" checked="@item.Vinculado" onchange="javasecript:vincularFuncaoAoDocumento({cd_documento_id:@item.Cd_DocumentoComplementar_Id, checked:this.checked});">
+                                <input type="checkbox" class="vincula" checked="@item.Vinculado" onchange="javasecript:vincularDocumento({cd_documento_complementar:@item.Cd_Documentaco_Complementar, cd_documento_id:@item.Cd_DocumentoComplementar_Id, checked:this.checked});">
                                 <span class="lever"></span>
                                 @(item.Vinculado ? "Vinculado" : "Vincular")
                             </label>
@@ -89,15 +89,15 @@ else
         });
 
         $('#tableListDocumentoComplemento .btnSearch').click((event) => {
-            var obj = {pagina: event.target.innerHTML,  id: $('#cd_documentoComplementar_id').val(), origem: $('#cd_Origem').val()};
-           getDocumentCargo(obj);
+            var obj = {pagina: event.target.innerHTML,  id: $('#cd_documentoComplementar_id').val(), origem: $('#tipoDocumento').val()};
+           getTipoDocumento(obj);
         });
 
          $('#tableListDocumentoComplemento').DataTable({
             language: {
                 url: 'js/pt-br.json',
             },
-             pageLength: 11,
+             pageLength: 17,
             layout: {
                 topStart: null,
                 bottom: null,
