@@ -57,6 +57,9 @@ var vincularDocumento = (obj) => {
         status: true
     }
 
+    $('#tituloDesvincula_' + obj.cd_documento_complementar).text(obj.checked ? 'Desvincular' : 'Desvinculado');
+    $('#tituloVincula_' + obj.cd_documento_complementar).text(obj.checked ? 'Vinculado' : 'Vincular');
+
     $.ajax({
         type: 'POST',
         url: 'Documentacao/vincular-documento',

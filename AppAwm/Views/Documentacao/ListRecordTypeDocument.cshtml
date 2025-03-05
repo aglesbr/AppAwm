@@ -32,10 +32,10 @@
                     <td class="right-align">
                         <div class="switch">
                             <label>
-                                @(item.Vinculado ? "Desvincular" : "Desvinculado")
+                                <span id="tituloDesvincula_@item.Cd_Documentaco_Complementar"> @(item.Vinculado ? "Desvincular" : "Desvinculado")</span>
                                 <input type="checkbox" class="vincula" checked="@item.Vinculado" onchange="javasecript:vincularDocumento({cd_documento_complementar:@item.Cd_Documentaco_Complementar, cd_documento_id:@item.Cd_DocumentoComplementar_Id, checked:this.checked});">
                                 <span class="lever"></span>
-                                @(item.Vinculado ? "Vinculado" : "Vincular")
+                                <span id="tituloVincula_@item.Cd_Documentaco_Complementar">@(item.Vinculado ? "Vinculado" : "Vincular")</span>
                             </label>
                         </div>
                     </td>

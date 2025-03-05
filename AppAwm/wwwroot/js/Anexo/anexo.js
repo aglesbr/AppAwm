@@ -271,7 +271,7 @@ var bindAnexos = (obj) => {
             $('select').formSelect();
 
             var msgContent = `<p>Após a validação carreta de todos os documentos enviados, solicite a administração do HDDOC a liberação da
-                              ${(obj.scope == 'colaborador' ? ' integração do colaborador' : ' empresa para o acesso a planta da obra')}.<br><br><b>Contato: (11) 98539-9315<br>E-mail:conferencia@hddoc.com.br</b></p>`
+                              ${(obj.scope == 'colaborador' ? ' integração do colaborador' : ' empresa para o acesso a planta da obra')}.<br><br><b>Contato: (11) 99135-9273<br>E-mail:conferencia@hddoc.com.br</b></p>`
 
             if (obj.scope == 'colaborador') {
                 if (Boolean(obj.integrado)) {
