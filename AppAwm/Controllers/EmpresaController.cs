@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using NuGet.Protocol;
 using System.Text.RegularExpressions;
 using X.PagedList.Extensions;
 
@@ -13,13 +14,14 @@ namespace AppAwm.Controllers
 {
     public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, 
         IColaborador<ColaboradorAnswer> _servicoFuncionario, IAnexo<AnexoAnswer> _servicoAnexo,
-        IDocumentoEmpresa<DocumentoEmpresaAnswer> _servicoDocumentoEmprea ) : Controller
+        IDocumentoEmpresa<DocumentoEmpresaAnswer> _servicoDocumentoEmprea, ICliente<ClienteAnswer> _servicoCliente ) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;
         private readonly IObra<ObraAnswer> servicoObra = _servicoObra;
         private readonly IColaborador<ColaboradorAnswer> servicoFuncionario = _servicoFuncionario;
         private readonly IAnexo<AnexoAnswer> servicoAnexo = _servicoAnexo;
         private readonly IDocumentoEmpresa<DocumentoEmpresaAnswer> servicoDocumentoEmpresa = _servicoDocumentoEmprea;
+        private readonly ICliente<ClienteAnswer> servicoCliente = _servicoCliente;
 
         [HttpGet]
         [Authorize(Roles = "Terceiro, Administrador")]
@@ -345,8 +347,17 @@ namespace AppAwm.Controllers
                 {
 
                     servicoAnexo.List(x => x.Cd_Empresa_Id == id, false).Anexos.ForEach(x => servicoAnexo.Remove(x));
+                    int total = servicoFuncionario.List(x => x.Id_Empresa == id).Colaboradores.Count;
 
                     EmpresaAnswer resposta = servico.Remove(id);
+
+                    if (resposta.Success)
+                    { 
+                        sessao.Cliente = servicoCliente.Get(s => s.Cd_Cliente == sessao.Cliente.Cd_Cliente).Cliente;
+                        
+                        Util.Utility.Cliente.PlanoVidasAtivadas = (sessao.Cliente.PlanoVidasAtivadas - total);
+                        servicoCliente.UpdateVidas(Util.Utility.Cliente);
+                    }
 
                     return new JsonResult(resposta);
                 }

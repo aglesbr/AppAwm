@@ -3,7 +3,6 @@
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectsEmpresa"]!;
 
     var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
-    
 }
 
 <h4>Pesquisar Colaborador</h4>
@@ -43,7 +42,7 @@
             </select>
             <label>Status</label>
         </div>
-        <div class="input-field col s2">
+        <div class="input-field col s2" style="display:@(userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? "" : "none")">
             <span class="new badge green" data-badge-caption="@AppAwm.Util.Utility.Cliente.PlanoVidasAtivadas vidas utilizadas de @AppAwm.Util.Utility.Cliente.PlanoVidas contratadas"></span>
         </div>
     </div>

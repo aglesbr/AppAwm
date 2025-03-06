@@ -9,5 +9,6 @@ namespace AppAwm.Services.Interface
         T Save(Cliente cliente, EnumAcao acao);
         T List(Expression<Func<Cliente, bool>> predicate);
         T Get(Expression<Func<Cliente, bool>> predicate);
+        T UpdateVidas(Cliente cliente);
     }
 }

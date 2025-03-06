@@ -3,6 +3,7 @@ using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
+using System;
 using System.Linq.Expressions;
 
 namespace AppAwm.Services
@@ -66,6 +67,27 @@ namespace AppAwm.Services
                         return ClienteAnswer.DeFalha("Ocorreu um erro ao tentar registar a empresa");
 
                     return ret > 0 ? ClienteAnswer.DeSucesso(cliente) : ClienteAnswer.DeErro();
+                }
+
+                return ClienteAnswer.DeFalha();
+            }
+            catch (Exception ex)
+            {
+                return ClienteAnswer.DeFalha(ex.Message);
+            }
+        }
+
+        public ClienteAnswer UpdateVidas(Cliente cliente)
+        {
+            try
+            {
+                using DbCon db = new();
+                using var contexto = new RepositoryGeneric<Cliente>(db, out status);
+                if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
+                {
+                    int ret = contexto.Edit(cliente);
+
+                    return cliente is not null ? ClienteAnswer.DeSucesso(cliente) : ClienteAnswer.DeFalha("Nenhum registro fui localizado");
                 }
 
                 return ClienteAnswer.DeFalha();
