@@ -88,7 +88,7 @@ namespace AppAwm.Util
 
                 client = new SmtpClient("smtp-relay.brevo.com", 587);
                 client.EnableSsl = true;
-               
+
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
@@ -110,7 +110,7 @@ namespace AppAwm.Util
             }
         }
 
-        public static void EnviarEmail(string message, Usuario usuario)
+        public static void EnviarEmail(string message, Usuario usuario, string? assunto = null)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace AppAwm.Util
                 client.Credentials = login;
                 msg = new MailMessage { From = new MailAddress("conferencia@hddoc.com.br", "Sistema - HDDOC", Encoding.Default), };
                 msg.To.Add(new MailAddress(usuario.Email!, usuario.Nome, Encoding.ASCII));
-                msg.Subject = $"HDDOC - Vencimento de Documento";
+                msg.Subject = assunto ?? $"HDDOC - Vencimento de Documento";
                 msg.Body = message;
                 msg.BodyEncoding = Encoding.Default;
                 msg.IsBodyHtml = true;

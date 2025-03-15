@@ -59,14 +59,14 @@ namespace AppAwm.Services
             try
             {
                 int ret = 0;
-                DocumentoCargoAnswer? resposta =  null;
+                DocumentoCargoAnswer? resposta = null;
 
                 using DbCon db = new();
                 using var contexto = new RepositoryGeneric<DocumentacaoCargo>(db, out status);
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                   
+
                     DocumentacaoCargo? checkDocumentoCargo = contexto.GetItem(g =>
                         g.Cd_Documento_Id == documentacaoCargo.Cd_Documento_Id
                         && g.Cd_Cargo_Id == documentacaoCargo.Cd_Cargo_Id
@@ -75,7 +75,7 @@ namespace AppAwm.Services
 
                     if (vincular)
                     {
-                        if(checkDocumentoCargo is null)
+                        if (checkDocumentoCargo is null)
                         {
                             ret = contexto.Create(documentacaoCargo);
                         }
@@ -90,7 +90,7 @@ namespace AppAwm.Services
                     else
                     {
 
-                        ret =  contexto.Delete(checkDocumentoCargo!);
+                        ret = contexto.Delete(checkDocumentoCargo!);
                         resposta = ret > 0 ? DocumentoCargoAnswer.DeSucesso(checkDocumentoCargo!) : DocumentoCargoAnswer.DeErro("Ocorreu um erro ao tentar desvincular função com o tipo dedocumento");
                     }
 

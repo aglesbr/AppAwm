@@ -3,7 +3,6 @@ using AppAwm.Models;
 using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
-using System;
 using System.Linq.Expressions;
 
 namespace AppAwm.Services

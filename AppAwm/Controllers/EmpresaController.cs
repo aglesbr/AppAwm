@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using NuGet.Protocol;
 using System.Text.RegularExpressions;
 using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra, 
+    public class EmpresaController(IEmpresa<EmpresaAnswer> _servico, IObra<ObraAnswer> _servicoObra,
         IColaborador<ColaboradorAnswer> _servicoFuncionario, IAnexo<AnexoAnswer> _servicoAnexo,
-        IDocumentoEmpresa<DocumentoEmpresaAnswer> _servicoDocumentoEmprea, ICliente<ClienteAnswer> _servicoCliente ) : Controller
+        IDocumentoEmpresa<DocumentoEmpresaAnswer> _servicoDocumentoEmprea, ICliente<ClienteAnswer> _servicoCliente) : Controller
     {
         private readonly IEmpresa<EmpresaAnswer> servico = _servico;
         private readonly IObra<ObraAnswer> servicoObra = _servicoObra;
@@ -97,11 +96,13 @@ namespace AppAwm.Controllers
                     {
                         string codigos_documentoComplementarPadrão = "28,29,30,31,32,33,34,35,36,37,38,39"; // codigos de documentos padrão
                         servicoDocumentoEmpresa.Save(
-                            new DocumentacaoEmpresa { 
+                            new DocumentacaoEmpresa
+                            {
                                 Cd_Empresa_Id = empresa.Cd_Empresa,
                                 Cd_Documento_Id = 2020,
-                                Cd_Documentos_Complementares_Id = codigos_documentoComplementarPadrão, 
-                                Status = true });
+                                Cd_Documentos_Complementares_Id = codigos_documentoComplementarPadrão,
+                                Status = true
+                            });
                     }
 
                     return empresaAnswer.Success ? Ok(empresaAnswer) : BadRequest(empresaAnswer);
@@ -352,9 +353,9 @@ namespace AppAwm.Controllers
                     EmpresaAnswer resposta = servico.Remove(id);
 
                     if (resposta.Success)
-                    { 
+                    {
                         sessao.Cliente = servicoCliente.Get(s => s.Cd_Cliente == sessao.Cliente.Cd_Cliente).Cliente;
-                        
+
                         Util.Utility.Cliente.PlanoVidasAtivadas = (sessao.Cliente.PlanoVidasAtivadas - total);
                         servicoCliente.UpdateVidas(Util.Utility.Cliente);
                     }

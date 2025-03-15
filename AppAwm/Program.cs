@@ -2,6 +2,7 @@ using AppAwm.DAL;
 using AppAwm.Respostas;
 using AppAwm.Services;
 using AppAwm.Services.Interface;
+using AppAwm.Worker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ builder.Services.Configure<IISServerOptions>(options =>
     options.AutomaticAuthentication = false;
 });
 
+
+
 builder.Services.AddScoped<IUsuario<UsuarioAnswer>, UsuarioService>();
 builder.Services.AddScoped<IEmpresa<EmpresaAnswer>, EmpresaService>();
 builder.Services.AddScoped<IAnexo<AnexoAnswer>, AnexoService>();
@@ -58,13 +61,7 @@ builder.Services.AddScoped<DepartamentoService>();
 //************************************************************************************************
 
 
-//builder.Services.AddSession(s =>
-//{
-//    s.IdleTimeout = TimeSpan.FromHours(1);
-//    s.Cookie.HttpOnly = true;
-//    s.Cookie.IsEssential = true;
-//});
-
+builder.Services.AddHostedService<MonitorarValidadoDocumento>();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
@@ -98,6 +95,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 var migration = (IApplicationBuilder app) =>
 {
     using var serviceScope = app.ApplicationServices
@@ -127,6 +125,7 @@ app.Use(async (context, next) =>
         await next();
     }
 });
+
 
 app.UseStatusCodePages(context =>
 {

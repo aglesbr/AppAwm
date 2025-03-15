@@ -20,29 +20,29 @@ namespace AppAwm.DAL
             {
 
 
-            #if DEBUG || RELEASE
+#if DEBUG || RELEASE
                 //---- SQL Servre
                 var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT");
-            #endif
+#endif
 
-            #if RELEASEON
+#if RELEASEON
                 //---- SQL Servre online
                 var appSeting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT3");
-            #endif
+#endif
 
-            #if STAGING
+#if STAGING
                 //---- MySql
                 var appSeting =  "Staging";
                 var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT1");
-            #endif
+#endif
 
-            #if STAGINGON
+#if STAGINGON
                 //---- MariaDB online
                 var appSeting = "Staging";
                 var cnn = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECT2");
-            #endif
+#endif
 
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile($"appsettings.{appSeting}.json", true);
@@ -51,8 +51,8 @@ namespace AppAwm.DAL
 
 
                 string _urlBase = string.Format(config.GetSection($"ConnectionStrings:WAConnection").Value!, cnn);
-                
-                if(appSeting.Equals("Staging"))
+
+                if (appSeting.Equals("Staging"))
                     optionsBuilder.UseMySQL(_urlBase, x => x.MigrationsHistoryTable("__EFMigrationsHistory"));
                 else
                     optionsBuilder.UseSqlServer(_urlBase, x => x.MigrationsHistoryTable("__EFMigrationsHistory"));

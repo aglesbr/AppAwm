@@ -128,7 +128,7 @@ namespace AppAwm.DAL
         {
             try
             {
-                if(entities.Count == 0) return 0;
+                if (entities.Count == 0) return 0;
 
                 dbSet.AddRange(entities);
                 return dbContext.SaveChanges();

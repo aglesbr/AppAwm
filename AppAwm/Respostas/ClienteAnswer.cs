@@ -13,7 +13,7 @@ namespace AppAwm.Respostas
         public List<Cliente> Clientes { get; } = [];
         public string[] Erros { get; } = [];
 
-        public ClienteAnswer(bool success, string message) : base(success, message){}
+        public ClienteAnswer(bool success, string message) : base(success, message) { }
 
         public ClienteAnswer(bool success, string message, string[] erro) : base(success, message) => Erros = erro;
 
@@ -31,7 +31,7 @@ namespace AppAwm.Respostas
         public static EmpresaAnswer DeErro(string[] error) => new(false, string.Empty, error);
 
         public static ClienteAnswer DeErro() => new(false, messageOfError);
-        
+
         public static ClienteAnswer DeFalha() => new(false, messageOfFalha);
 
         public static ClienteAnswer DeFalha(string falha) => new(false, falha ?? messageOfFalha);

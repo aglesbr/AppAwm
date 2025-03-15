@@ -18,7 +18,7 @@ namespace AppAwm.DAL.Repository
             dbContext = dataContext!;
         }
 
-       
+
 
         public IQueryable<Anexo> GetAll(Expression<Func<Anexo, bool>> predicate, bool hasDocumnt = false)
         {
@@ -42,10 +42,11 @@ namespace AppAwm.DAL.Repository
                         Nome = a.Nome,
                         Status = a.Status,
                         Dt_Validade_Documento = a.Dt_Validade_Documento,
-                        Arquivo = hasDocumnt ? a.Arquivo :  null,
+                        Arquivo = hasDocumnt ? a.Arquivo : null,
                     }).AsNoTracking();
             }
-            catch (Exception) { throw; };
+            catch (Exception) { throw; }
+            ;
         }
 
         protected virtual void Dispose(bool disposing)

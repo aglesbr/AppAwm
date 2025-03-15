@@ -62,10 +62,10 @@ namespace AppAwm.Services
                         if (empresaAnswer.Empresas.Count == 0)
                             return ChartAnswer.DeSucesso(chartRetorno);
 
-                        var empresaSemDocs = empresaAnswer.Empresas.Select(s =>  new Anexo { Cd_Empresa_Id = s.Cd_Empresa }).ExceptBy(listAnexos.Select(ss =>  ss.Cd_Empresa_Id), Sa1 => Sa1.Cd_Empresa_Id).ToList();
-                        
+                        var empresaSemDocs = empresaAnswer.Empresas.Select(s => new Anexo { Cd_Empresa_Id = s.Cd_Empresa }).ExceptBy(listAnexos.Select(ss => ss.Cd_Empresa_Id), Sa1 => Sa1.Cd_Empresa_Id).ToList();
+
                         if (usuario.Perfil == Models.Enum.EnumPerfil.Administrador)
-                            chartRetorno.TotalSemDoc =  empresaSemDocs.Count;
+                            chartRetorno.TotalSemDoc = empresaSemDocs.Count;
                         else
                         {
                             if (empresaSemDocs.Count == 0)

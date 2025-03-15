@@ -1,6 +1,5 @@
 ﻿using AppAwm.DAL;
 using AppAwm.Models;
-using AppAwm.Services.Interface;
 using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +54,7 @@ namespace AppAwm.Controllers
                             if (empresaCliente is not null)
                             {
                                 Utility.DocumentacaoComplementares = [.. db.DocumentacoesComplementares];
-                                Utility.Cliente = _Usuario.Cliente =  empresaCliente.Cliente;
+                                Utility.Cliente = _Usuario.Cliente = empresaCliente.Cliente;
                                 _Usuario.Cliente!.Empresas!.Clear();
                             }
 

@@ -62,7 +62,7 @@ namespace AppAwm.Controllers
 
                 ModelState.Remove("Cd_Funcionario");
 
-                Colaborador? checkColaborador =  null;
+                Colaborador? checkColaborador = null;
 
                 if (ModelState.IsValid)
                 {
@@ -252,20 +252,20 @@ namespace AppAwm.Controllers
 
                 var formFile = files[0];
 
-                if(!formFile.FileName.Split('.').Any(a => a == "xlsx" ))
+                if (!formFile.FileName.Split('.').Any(a => a == "xlsx"))
                     return Json(ColaboradorAnswer.DeErro("O tipo do arquivo informado, não é compativel para realizar a importação<br/>somente arquivos com a extensão .xlsx"));
 
                 using var stream = new MemoryStream();
                 await formFile.CopyToAsync(stream);
 
                 ColaboradorAnswer resposta = servico.ImportarColaboradore(stream, userSession, Convert.ToInt32(cd_empresa));
-                
+
                 //if(resposta.Success)
                 //    empresa = servico.GetEmpresas(p => p.Cd_Empresa == Convert.ToInt32(cd_empresa)).FirstOrDefault();
 
                 return Json(resposta.Success ? resposta : ColaboradorAnswer.DeErro(resposta.Message));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(ColaboradorAnswer.DeErro($"Ocorreu um erro na importação de colaboradores {ex.Message}"));
             }

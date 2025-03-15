@@ -29,7 +29,7 @@ namespace AppAwm.Models
         // configuração MS Sql
         //[Column("ANEXO", TypeName = "VARBINARY(MAX)")]
         // configuração MySql
-        [Column("ANEXO")]  
+        [Column("ANEXO")]
         public byte[]? Arquivo { get; set; }
 
         [Column("DT_CRIACAO", TypeName = "DATETIME")]

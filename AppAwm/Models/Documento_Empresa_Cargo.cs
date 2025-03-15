@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Text.Json.Serialization;
-
-namespace AppAwm.Models
+﻿namespace AppAwm.Models
 {
     public class Documento_Empresa_Cargo
     {

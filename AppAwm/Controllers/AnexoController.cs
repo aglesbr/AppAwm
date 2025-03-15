@@ -15,7 +15,7 @@ namespace AppAwm.Controllers
     public class AnexoController(IAnexo<AnexoAnswer> _servico, IColaborador<ColaboradorAnswer> _servicoColaborador, IDocumentoEmpresa<DocumentoEmpresaAnswer> documentoEmpresa) : Controller
     {
         private readonly IAnexo<AnexoAnswer> servico = _servico;
-        private readonly IColaborador<ColaboradorAnswer> servicoColaborador= _servicoColaborador;
+        private readonly IColaborador<ColaboradorAnswer> servicoColaborador = _servicoColaborador;
         private readonly IDocumentoEmpresa<DocumentoEmpresaAnswer> servicoDocumentoEmpresa = documentoEmpresa;
 
         [HttpPost("/Anexo/AddFiles")]
@@ -129,7 +129,7 @@ namespace AppAwm.Controllers
                 return BadRequest(AnexoAnswer.DeErro(ex.Message));
             }
         }
-        
+
         [HttpGet]
         [Route("/Anexo/Search/{skip:int}")]
         [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
@@ -158,7 +158,7 @@ namespace AppAwm.Controllers
                     }
                     else
                     {
-                        anexoAnswer = servico.List(x => 
+                        anexoAnswer = servico.List(x =>
                         (obj.Scope == "empresa" ? x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa) : x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador))
                         && (obj.Scope == "empresa" ? x.TipoAnexo >= 28 : x.TipoAnexo < 28)
                         && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
@@ -189,7 +189,7 @@ namespace AppAwm.Controllers
 
 
                     var queryGroup = (obj.Scope == "colaborador" || obj.Scope == "empresa")
-                        ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss =>  ss.FirstOrDefault()).ToPagedList(skip, 10)
+                        ? query.OrderByDescending(ob => ob.Dt_Criacao).GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault()).ToPagedList(skip, 10)
                         : query.ToPagedList(skip, 10);
 
                     if (obj.Scope == "colaborador")
@@ -404,8 +404,8 @@ namespace AppAwm.Controllers
                 ComandoAnexoInformacao obj = JsonConvert.DeserializeObject<ComandoAnexoInformacao>(comandoAnexoInformacao) ?? new();
 
 
-                var documentos = obj.Scope == "colaborador" 
-                    ? servico.DocumentacaoComplementar(Convert.ToInt32(obj.CodigoCargo),Convert.ToInt32(obj.CodigoEmpresa)) 
+                var documentos = obj.Scope == "colaborador"
+                    ? servico.DocumentacaoComplementar(Convert.ToInt32(obj.CodigoCargo), Convert.ToInt32(obj.CodigoEmpresa))
                     : servico.DocumentacaoComplementar(dc => dc.Cd_DocumentoComplementar_Id == "2020");
 
 
@@ -415,7 +415,7 @@ namespace AppAwm.Controllers
 
                     if (empresaAnswer.Success)
                     {
-                        List<int> items = [..empresaAnswer.DocumentacaoEmpresa.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
+                        List<int> items = [.. empresaAnswer.DocumentacaoEmpresa.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
                         documentos.RemoveAll(r => !items.Contains(r.Cd_Documentaco_Complementar));
                     }
                 }

@@ -195,7 +195,7 @@ namespace AppAwm.Services
             using DbCon db = new();
             using var contexto = new RepositoryGeneric<DocumentacaoComplementar>(db, out status);
 
-            var filter =db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).ToList();
+            var filter = db.DocumentacaoCargos.Where(s => s.Cd_Cargo_Id == cd_Cargo).ToList();
             filter.RemoveAll(r => r.Cd_Empresa_Id != null && r.Cd_Empresa_Id != cd_empresa);
 
             List<int> list = filter.Select(ss => ss.Cd_Documento_Id).ToList();

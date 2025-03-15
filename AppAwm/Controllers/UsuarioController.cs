@@ -31,7 +31,7 @@ namespace AppAwm.Controllers
         {
             try
             {
-               // Utility.EnviarEmail(true, new Usuario { Email = "agles.net@msn.com", Nome="agles silva" }, "http://hdsfasd.local.teste");
+                // Utility.EnviarEmail(true, new Usuario { Email = "agles.net@msn.com", Nome="agles silva" }, "http://hdsfasd.local.teste");
 
                 ModelState.Remove("usuario.Cd_Usuario");
 

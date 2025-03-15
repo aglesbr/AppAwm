@@ -74,7 +74,7 @@ namespace AppAwm.Models
 
         public virtual ICollection<Colaborador> Funcionarios { get; } = [];
 
-        public virtual ICollection<Usuario> Usuarios{ get; } = [];
+        public virtual ICollection<Usuario> Usuarios { get; } = [];
 
         public virtual ICollection<Obra> Obras { get; } = [];
 

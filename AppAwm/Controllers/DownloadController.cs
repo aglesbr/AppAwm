@@ -61,7 +61,7 @@ namespace AppAwm.Controllers
                 using var stream = new MemoryStream();
                 await formFile.CopyToAsync(stream);
 
-                download = new Download() { Cd_UsuarioCriacao = userSession!.Nome, Descricao = descricao,  Anexo = stream.ToArray(), Nome = formFile.FileName };
+                download = new Download() { Cd_UsuarioCriacao = userSession!.Nome, Descricao = descricao, Anexo = stream.ToArray(), Nome = formFile.FileName };
 
                 DownloadAnswer resposta = servico.Save(download);
 
@@ -87,7 +87,7 @@ namespace AppAwm.Controllers
                 DownloadAnswer resposta = servico.Get(id);
 
                 return resposta.Success ? Json(servico.Remover(resposta.Download)) : Json(DownloadAnswer.DeErroOuVazio("Não foi possivel localizar o arquivo para exlusão."));
-                
+
             }
             catch (Exception ex)
             {

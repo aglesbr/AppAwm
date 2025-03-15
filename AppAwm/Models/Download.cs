@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
 {
@@ -14,7 +14,7 @@ namespace AppAwm.Models
         public int? Codigo { get; set; }
 
         [Column("NOME", TypeName = "VARCHAR(50)", Order = 5)]
-        public required string  Nome { get; set; }
+        public required string Nome { get; set; }
 
         [Column("DESCRICAO", TypeName = "VARCHAR(150)", Order = 10)]
         public string? Descricao { get; set; }
@@ -25,7 +25,7 @@ namespace AppAwm.Models
         [Column("DT_CRIACAO", TypeName = "DATE", Order = 20)]
         public DateTime Dt_Criacao { get; set; } = DateTime.Now;
 
-        [Column("CD_USUARIO_CRIACAO", TypeName = "VARCHAR(50)", Order =25)]
+        [Column("CD_USUARIO_CRIACAO", TypeName = "VARCHAR(50)", Order = 25)]
         [MaxLength(50)]
         public string? Cd_UsuarioCriacao { get; set; }
     }

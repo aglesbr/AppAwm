@@ -74,7 +74,7 @@ namespace AppAwm.Services
 
                     if (vincular)
                     {
-                        List<string> items = [..checkDocumentoEmpresa!.Cd_Documentos_Complementares_Id!.Split(',')];
+                        List<string> items = [.. checkDocumentoEmpresa!.Cd_Documentos_Complementares_Id!.Split(',')];
                         items.Add(documentacaoEmpresa.Cd_Documentos_Complementares_Id!);
                         items.Sort();
                         checkDocumentoEmpresa.Cd_Documentos_Complementares_Id = string.Join(',', items);
@@ -89,7 +89,7 @@ namespace AppAwm.Services
                         List<string> items = [.. checkDocumentoEmpresa!.Cd_Documentos_Complementares_Id!.Split(',')];
                         items.Remove(documentacaoEmpresa.Cd_Documentos_Complementares_Id!);
                         checkDocumentoEmpresa.Cd_Documentos_Complementares_Id = string.Join(',', items);
-                        
+
                         ret = contexto.Edit(checkDocumentoEmpresa!);
 
                         resposta = ret > 0 ? DocumentoEmpresaAnswer.DeSucesso(documentacaoEmpresa!) : DocumentoEmpresaAnswer.DeErro("Ocorreu um erro ao tentar desvincular função com o tipo dedocumento");

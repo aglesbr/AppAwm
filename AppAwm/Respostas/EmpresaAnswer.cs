@@ -46,7 +46,7 @@ namespace AppAwm.Respostas
         public static EmpresaAnswer DeFalha() => new(false, messageOfFalha);
 
         public static EmpresaAnswer DeFalha(string falha) => new(false, falha ?? messageOfFalha);
-        
+
         public static EmpresaAnswer DeSucesso(string consumerCnpj) => new(true, messageOfConsulta, consumerCnpj);
 
         public static EmpresaAnswer DeExclusao(string msg) => new(true, msg ?? "menssagem indefinida");

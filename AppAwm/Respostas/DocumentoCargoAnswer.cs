@@ -10,7 +10,7 @@ namespace AppAwm.Respostas
         public DocumentacaoCargo DocumentacaoCargo { get; } = new();
         public List<DocumentacaoCargo> DocumentacoesCargos { get; } = [];
 
-        public DocumentoCargoAnswer(bool success, string message) : base(success, message){}
+        public DocumentoCargoAnswer(bool success, string message) : base(success, message) { }
         public DocumentoCargoAnswer(bool success, string message, DocumentacaoCargo documentoCargo) : base(success, message) => this.DocumentacaoCargo = documentoCargo;
         public DocumentoCargoAnswer(bool success, string message, List<DocumentacaoCargo> documentosCargos) : base(success, message) => this.DocumentacoesCargos = documentosCargos;
 

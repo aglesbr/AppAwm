@@ -12,7 +12,7 @@ namespace AppAwm.Controllers
 {
 
     public class DocumentacaoController(
-            ICargo<CargoAnswer> _servico, 
+            ICargo<CargoAnswer> _servico,
             IDocumentacaoComplementar<DocumentacaoComplementarAnswer> documentacao,
             IEmpresa<EmpresaAnswer> empresa,
             IDocumentoCargo<DocumentoCargoAnswer> documentoCargo,
@@ -102,7 +102,7 @@ namespace AppAwm.Controllers
                 {
                     respostaCargo = servico.List(c => c.Nome.ToUpper().StartsWith(obj.Nome.ToUpper()));
                     var query = respostaCargo.Cargos
-                        .Select(s => new Documento_Empresa_Cargo { Cd = s.Cd_Cargo, Nome = s.Nome, Status = s.Status ,Origem = 1 })
+                        .Select(s => new Documento_Empresa_Cargo { Cd = s.Cd_Cargo, Nome = s.Nome, Status = s.Status, Origem = 1 })
                         .ToPagedList(skip, 14);
                     return PartialView("ListRecord", query);
                 }
@@ -126,18 +126,18 @@ namespace AppAwm.Controllers
         [HttpGet]
         [Route("/documentacao/typeDocument/{skip:int}")]
         [Authorize(Roles = "Administrador")]
-        public PartialViewResult GetTipoDocumento(int id, int cd_empresa_id,  int origem, int skip)
+        public PartialViewResult GetTipoDocumento(int id, int cd_empresa_id, int origem, int skip)
         {
             try
             {
                 if (!User.Identity.IsAuthenticated)
-                return PartialView("ListRecordTypeDocument", BadRequest(DocumentacaoComplementarAnswer.DeErro("Usuario não esta autenticado")));
+                    return PartialView("ListRecordTypeDocument", BadRequest(DocumentacaoComplementarAnswer.DeErro("Usuario não esta autenticado")));
 
                 var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 var documentoComplementar = servicoDocumentoComplementar.GetTipoDocumento(id, cd_empresa_id, origem);
 
-                return PartialView("ListRecordTypeDocument", documentoComplementar.Success ? documentoComplementar.DocumentacaoComplementares.ToPagedList(skip,15) : documentoComplementar.Message);
+                return PartialView("ListRecordTypeDocument", documentoComplementar.Success ? documentoComplementar.DocumentacaoComplementares.ToPagedList(skip, 15) : documentoComplementar.Message);
             }
             catch (Exception ex)
             {

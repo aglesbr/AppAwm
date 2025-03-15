@@ -41,13 +41,13 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    List<DocumentacaoCargo>? documentacaoCargo =  null;
+                    List<DocumentacaoCargo>? documentacaoCargo = null;
                     List<DocumentacaoEmpresa>? documentacaoEmpresa = null;
 
 
                     if (origem == 1)
                     {
-                        documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id && p.Cd_Empresa_Id == (cd_empresa_id > 0 ? cd_empresa_id : p.Cd_Empresa_Id) )];
+                        documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id && p.Cd_Empresa_Id == (cd_empresa_id > 0 ? cd_empresa_id : p.Cd_Empresa_Id))];
                     }
                     else
                     {
@@ -69,12 +69,12 @@ namespace AppAwm.Services
                         }
                         else
                         {
-                            List<int> items = [..documentacaoEmpresa!.FirstOrDefault()!.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
+                            List<int> items = [.. documentacaoEmpresa!.FirstOrDefault()!.Cd_Documentos_Complementares_Id!.Split(',').Select(Int32.Parse)];
                             f.Vinculado = items.Any(a => a == f.Cd_Documentaco_Complementar);
                         }
                     });
 
-                   return resposa;
+                    return resposa;
                 }
 
                 return DocumentacaoComplementarAnswer.DeErro("não foi possivel conectar com o banco de dados");

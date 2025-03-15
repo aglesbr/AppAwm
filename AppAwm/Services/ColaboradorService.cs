@@ -76,10 +76,10 @@ namespace AppAwm.Services
                         .Include(emp => emp.Empresa).OrderBy(o => o.Nome)
                         .Include(o => o.VinculoObras)
                         .Include(a => a.Anexos)
-                        .Select(ss => new Colaborador 
-                        { 
-                             Anexos = (ICollection<Anexo>)ss.Anexos.Select(anx =>  
-                             new Anexo { 
+                        .Select(ss => new Colaborador
+                        {
+                             Anexos = (ICollection<Anexo>)ss.Anexos.Select(anx =>
+                             new Anexo {
                                  Cd_Anexo = anx.Cd_Anexo, TipoAnexo = anx.TipoAnexo, Status = anx.Status, Cd_Empresa_Id = anx.Cd_Empresa_Id, Cd_Funcionario_Id = anx.Cd_Funcionario_Id,
                                   MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome
                              }),
@@ -276,19 +276,19 @@ namespace AppAwm.Services
                     return ColaboradorAnswer.DeErro($"A empresa com o cnpj: {empresa!.Cnpj}, ainda não está cadastrada no sistema.");
 
                 IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream);
-                
+
                 DataTable ds = reader.AsDataSet().Tables["ListaColaborador"]!;
 
-                if(ds == null)
+                if (ds == null)
                     return ColaboradorAnswer.DeErro("O arquivo enviado para importação não é válido");
 
                 var t = ds.Rows[0];
                 foreach (var coluna in t.ItemArray)
                 {
-                       if(!header.Contains(coluna.ToString()))
+                    if (!header.Contains(coluna.ToString()))
                         return ColaboradorAnswer.DeErro("O arquivo enviado para importação não é válido");
                 }
-                
+
                 ds.Rows.RemoveAt(0);
                 foreach (DataRow dr in ds.Rows)
                 {
@@ -322,10 +322,10 @@ namespace AppAwm.Services
             }
             catch (Exception ex)
             {
-                return ColaboradorAnswer.DeErro("Ocorreu um erro na importação,<br/> verifique se dos os campos estão preenchido conforme o modelo da planilha fornecida<br/>ERRO " +ex.Message);
+                return ColaboradorAnswer.DeErro("Ocorreu um erro na importação,<br/> verifique se dos os campos estão preenchido conforme o modelo da planilha fornecida<br/>ERRO " + ex.Message);
             }
         }
-      
+
         public bool CheckClienteVidasDisponivel()
         {
             using DbCon db = new();

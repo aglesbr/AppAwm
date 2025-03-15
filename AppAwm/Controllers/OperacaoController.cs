@@ -62,12 +62,12 @@ namespace AppAwm.Controllers
 
                 AnexoAnswer anexoAnswer = servicoAnexo.List(
                      x => (x.Cd_Empresa_Id == (codigoEmpresa == 0 ? x.Cd_Empresa_Id : codigoEmpresa))
-                     && (x.Status !=  EnumStatusDocs.None)
+                     && (x.Status != EnumStatusDocs.None)
                      );
 
 
                 var query = anexoAnswer.Anexos
-                    .OrderByDescending(ob => ob.Dt_Criacao )
+                    .OrderByDescending(ob => ob.Dt_Criacao)
                     .DistinctBy(d => d.TipoAnexo)
                     .Select(s =>
                     new Anexo
@@ -85,10 +85,10 @@ namespace AppAwm.Controllers
                     .ToList();
 
                 var queryGroup = query.GroupBy(gb => gb.TipoAnexo).Select(ss => ss.FirstOrDefault())
-                   
+
                     .ToPagedList(skip, 12);
 
-                return PartialView("ListRecord",  queryGroup);
+                return PartialView("ListRecord", queryGroup);
             }
             catch
             {
@@ -286,105 +286,6 @@ namespace AppAwm.Controllers
                 throw;
             }
         }
-
-        [HttpGet]
-        [Route("/Operacao/Monitor")]
-        public IActionResult? ValidaDatasDocumenot()
-        {
-            try
-            {
-                bool hasAnexo = false;
-
-                string mensagem = string.Empty;
-                mensagem += "<html><body><h3><center>HDDOC - AVISO DE VALIDADE DE DOCUMENTO</center><hr/></h3><br/><p>Olá {0}<br/></p>";
-                mensagem += "<p>O sistema identificou documentos com o prazo de validade proximo do vencimento.</p>";
-                mensagem += "<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>DOCUMENTO:<br><ul>{1}</ul><br>FUNCIONARIO: {2}<br>EMPRESA: {3}";
-                mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
-
-                var execucao = servicoAnexo.GetLastHistoricoExecucao() ?? new HistoricoExecucao { Dt_Execucao = DateTime.Now.Date };
-
-                var date = (execucao?.Dt_Execucao.Month == DateTime.Now.Date.Month);
-
-                if (date)
-                {
-                    servicoAnexo.InsereProximaExecucao(new HistoricoExecucao { Dt_Execucao = execucao!.Dt_Execucao.AddMonths(1) });
-
-                    var lista = servicoFuncionario.List(x => x.Status && x.Anexos!.Count > 0);
-
-                    var users = servicoUsuario.List(y => y.Status);
-                    string docs = string.Empty;
-
-                    if (lista.Success)
-                    {
-                        lista.Colaboradores.ForEach(x => 
-                        {
-                            if (x.Empresa != null)
-                            {
-                                x.Foto = null;
-                            }
-                        });
-
-                        foreach (var item in lista.Colaboradores)
-                        {
-                            var vencimentos = item.Anexos!.Where(i => (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 && i.Status == EnumStatusDocs.Aprovado).ToList();
-
-                            if (vencimentos.Count > 0)
-                            {
-                                vencimentos.ForEach(i => { docs += "<li>" + i.Nome + " - validade: " + i.Dt_Validade_Documento.ToShortDateString() + "</li>"; });
-
-                                Usuario user = users.Usuarios.FirstOrDefault(f => f.Cd_Usuario == vencimentos[0].Id_UsuarioCriacao)!;
-                                string msg = string.Format(mensagem, user.Nome, docs, item.Nome, item.Empresa!.Nome);
-
-                                Utility.EnviarEmail(msg, user);
-
-                                hasAnexo = true;
-                            }
-                        }
-                    }
-                    return new JsonResult(hasAnexo ? AnexoAnswer.DeSucesso("alerta de vencimento enviado") : AnexoAnswer.DeErro("Nenhum documento está proximo do vencimento"));
-                }
-
-                return new JsonResult(AnexoAnswer.DeErro("Execução fora da data prevista."));
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        [HttpPut]
-        [Route("/Operacao/UpdateValidadeResalva")]
-        public async Task<AnexoAnswer?> UpdateStatusDocumentoValidadeReslva()
-        {
-            try
-            {
-                AnexoAnswer? anexoAnswer = null;
-                string motivo = "Rejeitado por falta de ajuste no prazo da resalva";
-                AnexoAnswer resposta = servicoAnexo.List(l => l.Status == EnumStatusDocs.Resalva);
-
-                if (resposta.Success)
-                {
-                    foreach (var item in resposta.Anexos)
-                    {
-                        DateTime dateValidate = (item.Status == EnumStatusDocs.Resalva ? item.Dt_Criacao.Date.AddDays(1) : item.Dt_Validade_Documento);
-
-                        if ((dateValidate - DateTime.Now.Date).TotalDays <= 0)
-                        {
-                            anexoAnswer = await Task.Run(() => servicoAnexo.UpdateStatus(item.Cd_Anexo, item.Status == EnumStatusDocs.Aprovado ? EnumStatusDocs.Expirado : EnumStatusDocs.Rejeitado, "Sistema HDDOC", item.Status == EnumStatusDocs.Resalva ? motivo : null));
-                        }
-                    }
-                }
-
-                return anexoAnswer;
-
-            }
-            catch (Exception ex)
-            {
-                return AnexoAnswer.DeErro("Ocorreu um erro: " + ex.Message);
-            }
-        }
-
 
         [HttpGet]
         [Route("/Operacao/GetColaborador/{id:int}")]
