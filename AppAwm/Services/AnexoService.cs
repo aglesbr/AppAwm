@@ -159,9 +159,9 @@ namespace AppAwm.Services
                 var corpo = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(1));
 
                 var queueName = canal.QueueDeclare(queue: Utility.Cliente!.CanalMq, false, false, false, null).QueueName;
-                canal.QueueBind(queue: queueName, exchange: "ChangeHDdoc", routingKey: "docs");
+                canal.QueueBind(queue: queueName, exchange: "ChangeHDdoc", routingKey: Utility.Cliente.RoutingKeyMq);
 
-                canal.BasicPublish(exchange: "ChangeHDdoc", routingKey: "docs", basicProperties: props, body: corpo);
+                canal.BasicPublish(exchange: "ChangeHDdoc", routingKey: Utility.Cliente.RoutingKeyMq, basicProperties: props, body: corpo);
 
                 canal.WaitForConfirmsOrDie(TimeSpan.FromSeconds(2));
 
@@ -169,7 +169,6 @@ namespace AppAwm.Services
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }

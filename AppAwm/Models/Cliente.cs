@@ -34,6 +34,8 @@ namespace AppAwm.Models
         [Column("CANALMQ", TypeName = "VARCHAR(30)", Order = 21)]
         public string CanalMq { get; set; } = "operacao";
 
+        [Column("ROUTINGKEYMQ", TypeName = "VARCHAR(30)", Order = 22)]
+        public string? RoutingKeyMq { get; set; }
 
         [Column("STATUS", TypeName = "BIT", Order = 25)]
         public bool Status { get; set; }
