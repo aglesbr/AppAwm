@@ -17,9 +17,6 @@
                     Descrição
                 </th>
                 <th>
-                    URL
-                </th>
-                <th>
                     Status
                 </th>
                 <th>&nbsp;</th>
@@ -34,10 +31,6 @@
                     </td>
                     <td>
                         @item.Descricao
-                    </td>
-                    <td>
-                        <a href='@(userSession!.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? item.Url : null)' target='_blank'>
-                            @(userSession!.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? item.Url : "********************")</a>
                     </td>
                     <td class="@(item.Status ? "green-text": "red-text" )">
                         @(item.Status ? "Ativo" : "Inativo")
@@ -55,7 +48,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">
+                <td colspan="3">
                     <input type="hidden" value="@Model.PageCount" id="pageCount" />
                     @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
                    {

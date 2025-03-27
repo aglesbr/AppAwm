@@ -1,4 +1,6 @@
-﻿$('#postButton').on('click', (event) => {
+﻿$('input#video_descricao, input#titulo, input#urlLink').characterCounter();
+
+$('#postButton').on('click', (event) => {
 
     debugger
 

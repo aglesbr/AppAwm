@@ -844,7 +844,8 @@ namespace AppAwm.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Video"));
 
                     b.Property<string>("Descricao")
-                        .HasColumnType("VARCHAR(100)")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR(150)")
                         .HasColumnName("DESCRICAO")
                         .HasColumnOrder(10);
 
@@ -855,19 +856,21 @@ namespace AppAwm.Migrations
 
                     b.Property<string>("Titulo")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(100)")
+                        .HasMaxLength(70)
+                        .HasColumnType("VARCHAR(70)")
                         .HasColumnName("TITULO")
                         .HasColumnOrder(5);
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(200)")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)")
                         .HasColumnName("URL")
                         .HasColumnOrder(15);
 
                     b.HasKey("Cd_Video");
 
-                    b.ToTable("AWM_Video");
+                    b.ToTable("AWM_VIDEO");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Anexo", b =>

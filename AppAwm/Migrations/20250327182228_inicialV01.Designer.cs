@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20250319164930_addCammpoRoutingKeyMq_tabela_ClienteV01")]
-    partial class addCammpoRoutingKeyMq_tabela_ClienteV01
+    [Migration("20250327182228_inicialV01")]
+    partial class inicialV01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -834,6 +834,46 @@ namespace AppAwm.Migrations
                     b.HasIndex("Cd_Empresa");
 
                     b.ToTable("AWM_USUARIO");
+                });
+
+            modelBuilder.Entity("AppAwm.Models.Video", b =>
+                {
+                    b.Property<int>("Cd_Video")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_VIDEO")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Video"));
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR(150)")
+                        .HasColumnName("DESCRICAO")
+                        .HasColumnOrder(10);
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INT")
+                        .HasColumnName("STATUS")
+                        .HasColumnOrder(20);
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("VARCHAR(70)")
+                        .HasColumnName("TITULO")
+                        .HasColumnOrder(5);
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("URL")
+                        .HasColumnOrder(15);
+
+                    b.HasKey("Cd_Video");
+
+                    b.ToTable("AWM_VIDEO");
                 });
 
             modelBuilder.Entity("AppAwm.Models.Anexo", b =>
