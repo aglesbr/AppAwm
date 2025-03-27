@@ -17,7 +17,7 @@
 
 </head>
 <body style="overflow:hidden; background-image:url(../images/@(!Context.User.Identity.IsAuthenticated ? img : "")); background-size:cover;" id="bodyMain">
-    <header style="height:30px;">
+    <header >
         <nav class="z-depth-2" id="navHeader">
             <div class="row">
                 <div class="col s1">
@@ -30,23 +30,12 @@
                 <div class="center col s10">
                     SISTEMA DE CONFERÊNCIA E GESTÃO DOCUMENTAL <small>HDDOC - v1.0</small>
                 </div>
-
-                @*  @if (Context.User.Identity.IsAuthenticated)
-                {
-                    var clientSession = JsonConvert.DeserializeObject<Cliente>(Context.Session.GetString("ClientAuth")!);
-
-                    var isRedLimiteVida = clientSession.PlanoVidasAtivadas == clientSession.PlanoVidas;
-
-                    var strVidas = clientSession.PlanoVidasAtivadas + " vidas utilizadas de " + clientSession.PlanoVidas +" contratadas";
-
-                    <div class="col s2"><span class="new badge @(isRedLimiteVida ? "red" : "green")" style="margin-top:20px;" data-badge-caption="">@strVidas</span></div>
-                } *@
-
                 <div class="col s1 right-align">
-                    <img src="~/images/Preview.png" style="width:48%; height:63px;">
+                    <img class="brand-logo right" src="~/images/Preview.png" style="height:60px; padding:5px;">
                 </div>
             </div>
         </nav>
+
 
         <ul id="slide-out" class="sidenav">
             @if (Context.User.Identity.IsAuthenticated)
@@ -108,6 +97,7 @@
                 {
                     <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
                     <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Colaborador" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>
+                    <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Ajuda" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">help_outline</i>Ajuda</a></li>
                 }
             }
 @*

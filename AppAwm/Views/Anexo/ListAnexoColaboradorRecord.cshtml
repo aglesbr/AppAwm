@@ -51,11 +51,16 @@
                         }
                         <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
                     </td>
-                    <td>
-                        @string.Format("{0:d}", item.Dt_Validade_Documento)
+                    @{
+                        var counDay = (item.Dt_Validade_Documento - DateTime.Now.Date).TotalDays;
+                    }
+                    <td class="@(counDay <= 30 && (int?)item.Status == 3 ? "red-text": "")">
+                        <i style="cursor:progress; padding-right:5px;" class="tiny material-icons red-text @(counDay <= 30 && (int?)item.Status == 3 ? "" : "hide")" title=" @counDay dia(s) para o vencimento">notifications_none</i>
+                        @string.Format("{0:dd/MM/yyyy}", item.Dt_Validade_Documento)
+
                     </td>
                     <td>
-                        @item.Dt_Criacao
+                       @string.Format("{0:dd/MM/yyyy hh:mm}", @item.Dt_Criacao)
                     </td>
                     <td>
                         @{
@@ -138,8 +143,7 @@ else
         });
 
         $('#tableAnexoColaboradorRecord .btnSearch').click((event) => {
-            
-            var obj = { pagina: event.target.innerHTML, codigo: $('#codigo').val(), scope: $('#scope').val() };
+            var obj = { pagina: event.target.innerHTML,codigoCargo: $('#codigoCargo').val(), codigoColaborador: $('#codigoColaborador').val(), scope: $('#scope').val() };
             bindAnexos(obj);
         });
 

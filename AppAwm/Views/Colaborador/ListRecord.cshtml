@@ -29,7 +29,7 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
+                <tr style="background-color: @(item.TotalDocumentoParaVencer != 0 ? "#fbe9e7" : item.Anexos.Any(v => v.Status == AppAwm.Models.Enum.EnumStatusDocs.Expirado) ? "#cfd8dc" : "");">
                     <td>
                         @Html.DisplayFor(modelItem => item.Nome)
                     </td>
@@ -46,9 +46,11 @@
                         @(item.Integrado ? "Integrado" : "Pendente")
                     </td>
                     <td class="right-align">
+                        <i style="cursor:progress; padding-right:5px;" class="tiny material-icons red-text @(item.TotalDocumentoParaVencer == 0 ? "hide" : "")" title="@item.TotalDocumentoParaVencer documentos(s) próximo do vencimento">notifications_none</i>
+                        <i style="cursor:progress; padding-right:5px;" class="tiny material-icons red-text @(item.Anexos.Any(v => v.Status == AppAwm.Models.Enum.EnumStatusDocs.Expirado) ? "" : "hide")" title="usuário contem documento expirado.">new_releases</i>
                         <a data-position="bottom" data-tooltip="Crachá do colaborador" class="waves-effect waves-light btn-small modal-trigger tooltipped @(!item.Integrado ? "disabled" : "")" onclick="javascript:abreCracha(@item.Cd_Funcionario);"><i class="material-icons center">perm_contact_calendar</i></a>
-                        <a data-position="top" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small @(item.Anexos?.Count(ac => ac.TipoAnexo > 0) > 0 ? "deep-purple darken-1" : "grey darken-1") modal-trigger  tooltipped" onclick="javascript:modalParams({codigoColaborador:@item.Cd_Funcionario, codigoEmpresa: @item.Id_Empresa, documento:@item.Documento, codigoCargo:@item.Cd_Cargo ,titulo:'@item.Nome', scope:'colaborador', integrado:@(item.Integrado ? 0: 1)})"><i class="material-icons center">description</i></a>
-                        <a data-position="bottom" data-tooltip="Documentação opcional" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigoColaborador:@item.Cd_Funcionario,codigoEmpresa: @item.Id_Empresa ,documento:@item.Documento ,titulo:'@item.Nome', scope:'anexoComumColaborador'})"><i class="material-icons center">attach_file</i></a>
+                        <a data-position="top" data-tooltip="Documentação obrigatória" class="waves-effect waves-light btn-small @(item.Anexos?.Count(ac => ac.TipoAnexo > 0) > 0 ? "deep-purple darken-1" : "grey darken-1") modal-trigger  tooltipped" onclick="javascript:modalParams({codigoColaborador:@item.Cd_Funcionario, codigoEmpresa: @item.Id_Empresa, documento:'@Regex.Replace(item.Documento!, @"(\d{3})(\d{3})(\d{3})(\d{2})", @"$1.$2.$3-$4")', codigoCargo:@item.Cd_Cargo ,titulo:'@item.Nome', scope:'colaborador', integrado:@(item.Integrado ? 0: 1)})"><i class="material-icons center">description</i></a>
+                        <a data-position="bottom" data-tooltip="Documentação opcional" class="waves-effect waves-light btn-small teal modal-trigger tooltipped" onclick="javascript:modalParams({codigoColaborador:@item.Cd_Funcionario,codigoEmpresa: @item.Id_Empresa ,documento:'@Regex.Replace(item.Documento!, @"(\d{3})(\d{3})(\d{3})(\d{2})", @"$1.$2.$3-$4")' ,titulo:'@item.Nome', scope:'anexoComumColaborador'})"><i class="material-icons center">attach_file</i></a>
                         <a data-position="right" data-tooltip="Editar" asp-controller="Colaborador" asp-action="Create" asp-route-id="@item.Cd_Funcionario" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
                     </td>
                 </tr>

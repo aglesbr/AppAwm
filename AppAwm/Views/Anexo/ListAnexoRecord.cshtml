@@ -55,7 +55,7 @@
                             <i data-position="left" data-tooltip="@itemStatus.Value.Split(',')[0]" class="material-icons prefix text-accent-3 @itemStatus.Value.Split(',')[1] tooltipped">@statusIcon</i>
                         </td>
 
-                        <td>@item.Dt_Criacao</td>
+                        <td>@string.Format("{0:dd/MM/yyyy hh:mm}",item.Dt_Criacao)</td>
                         <td>
                             @{
                                 var itemTipo = AppAwm.Util.Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo, new DocumentacaoComplementar { Nome = "Documento Comum" });

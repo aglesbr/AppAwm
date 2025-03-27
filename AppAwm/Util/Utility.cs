@@ -166,6 +166,8 @@ namespace AppAwm.Util
 
         public static List<DocumentacaoComplementar> DocumentacaoComplementares { get; set; } = [];
 
+        public static List<DocumentacaoComplementar> DocumentacaoComplementarWorker { get; set; } = [];
+
         public static List<KeyValuePair<int, string>> TipoStatus
         {
             get => [

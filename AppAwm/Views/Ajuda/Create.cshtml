@@ -1,0 +1,60 @@
+﻿@model AppAwm.Respostas.VideoAnswer
+
+@{
+    ViewData["Title"] = (Model.Video.Cd_Video == 0 ? "Cadastrar" : "Atualizar") + " Vídeo";
+
+
+    var user = Context.Session.GetString("UserAuth");
+    Usuario? userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(user!);
+}
+
+<p class="flow-text"> @(Model.Video.Cd_Video == 0 ? "Cadastrar" : "Atualizar") Video</p>
+
+<form asp-action="Create">
+    <input asp-for="Video.Cd_Video" id="cd_cliente" type="hidden" />
+    <div class="row">
+        <div class="input-field col s4">
+            <label asp-for="Video.Titulo"></label>
+            <input asp-for="Video.Titulo" id="titulo" autocomplete="off" />
+        </div>
+        <div class="input-field col s8" >
+            <label asp-for="Video.Descricao"></label>
+            <input asp-for="Video.Descricao" id="video_descricao" autocomplete="off" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s6">
+            <label asp-for="Video.Url"></label>
+            <input asp-for="Video.Url" id="urlLink" placeholder="http://" autocomplete="off" />
+        </div>
+        <div class="input-field col s2" style="top:10px;">
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Video.Status" id="Status" checked="@Model.Video.Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field">
+            <button class="btn waves-effect waves-light" type="button" name="action" id="postButton">
+                <i class="material-icons left">save</i>
+                @(Model?.Video.Cd_Video == 0 ? "Salvar" : "Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model?.Video.Cd_Video == 0 ? "" : "none");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="backFrm">
+                <i class="material-icons left">arrow_back</i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</form>
+
+<script src="~/js/Ajuda/ajuda.js"></script>

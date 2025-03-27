@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Ajuda";
+
+    var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
+    var isHide = userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador;
+}
+
+@if (userSession.Perfil is (AppAwm.Models.Enum.EnumPerfil.Administrador or AppAwm.Models.Enum.EnumPerfil.Terceiro))
+{
+    <form id="frmAjudaPesquisa">
+        <h4>Pesquisar por videos de apoio</h4>
+        <div class="row" style="margin-bottom:-30px;">
+            <div class="input-field col @(isHide ? "s10" : "s12")" style="margin-top:30px;">
+                <input id="video_titulo" type="text" placeholder="Ex: cadastro de colaboradores, uploade arquivos">
+                <label for="video_titulo">Titulo do video</label>
+            </div>
+            <div class="input-field col @(isHide ? "s2" : "s12") @(isHide ? "" : "hide")" style="margin-top:30px;">
+                <select id="StatusFilter">
+                    <option value="" selected>Todos</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                </select>
+                <label>Status</label>
+            </div>
+        </div>
+        <div class="col s4">
+            <div class="input-field col s2">
+                <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+                <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+                <a asp-controller="Ajuda" asp-action="Create" class="btn-small waves-effect waves-light btn @(userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? null : "hide")"><i class="material-icons left small">add</i>Novo Video</a>
+            </div>
+        </div>
+    </form>
+
+    <footer id="DivRenderData" style="display:none;"></footer>
+}
+
+<script src="~/js/ajuda/ajuda.js"></script>

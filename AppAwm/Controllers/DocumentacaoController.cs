@@ -34,6 +34,7 @@ namespace AppAwm.Controllers
 
             List<SelectListItem> selectListItems = [.. servicoEmpresa.List(s => s.Status).Empresas
                 .Select(s => new SelectListItem { Text = s.Nome, Value = s.Cd_Empresa.ToString() }).OrderBy(o => o.Text)];
+            selectListItems.Insert(0, new SelectListItem { Value = "0", Text = "Selecione uma opção..." });
             ViewData["selectsEmpresa"] = selectListItems;
 
             return View();

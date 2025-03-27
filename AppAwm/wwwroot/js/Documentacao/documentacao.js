@@ -14,7 +14,7 @@ var editTipoDocumento = (obj) => {
     $('#modalDocumentoTipoDocumento').modal(
         {
             dismissible: false,
-            onOpenStart: () => { getTipoDocumento(obj); }
+            onOpenStart: () => { if (obj.origem == 2) getTipoDocumento(obj); }
         }).modal('open');
     
 }
@@ -83,6 +83,11 @@ var vincularDocumento = (obj) => {
 }
 
 $('#btnCloseModaDdocumentCargo').on('click', () => {
+
+    $("#codigoCargo").val(null);
+    $("#codigoEmpresa").val(null);
+    $("#DivRecordDocumentoComplementar").empty();
+
     $('#cd_empresa').prop('selectedIndex', 0);
     $('select').formSelect();
 })

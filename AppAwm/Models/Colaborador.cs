@@ -105,6 +105,9 @@ namespace AppAwm.Models
         public virtual ICollection<Anexo>? Anexos { get; set; }
 
         [NotMapped]
+        public int TotalDocumentoParaVencer { get; set; }
+
+        [NotMapped]
         public int? StatusFilter { get; set; }
     }
 }

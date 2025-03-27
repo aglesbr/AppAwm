@@ -188,6 +188,14 @@ var getObejct = function (patname) {
             }
             return { download: JSON.stringify(obj) };
 
+        case 'Ajuda':
+            obj = {
+                titulo: $("#video_titulo").val().toUpperCase(),
+                descricao: $("#video_descricao").val(),
+                statusfilter: $("#StatusFilter").val() 
+            }
+            return { video: JSON.stringify(obj) };
+
         default:
             return { id: 100, error: 'caminho desconhecido' };
     }

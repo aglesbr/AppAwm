@@ -12,14 +12,20 @@ namespace AppAwm.Worker
         private readonly IAnexo<AnexoAnswer> servicoAnexo;
         private readonly IUsuario<UsuarioAnswer> servicoUsuario;
         private readonly IColaborador<ColaboradorAnswer> servicoFuncionario;
+        private readonly IDocumentacaoComplementar<DocumentacaoComplementarAnswer> servicoDocumentacao;
+
         public MonitorarValidadoDocumento()
         {
             servicoAnexo = new AnexoService();
             servicoUsuario = new UsuarioService();
             servicoFuncionario = new ColaboradorService();
+            servicoDocumentacao = new DocumentacaoComplementarService();
         }
 
 
+        /// <summary>
+        /// checa a validade dos documentos 1 vez por mês e envia um e-mail para o usuário
+        /// </summary>
         protected void ChecarDatadcoumento()
         {
             string mensagem = string.Empty;
@@ -56,7 +62,10 @@ namespace AppAwm.Worker
 
                         foreach (var item in lista.Colaboradores)
                         {
-                            var vencimentos = item.Anexos!.Where(i => (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 && i.Status == EnumStatusDocs.Aprovado).ToList();
+                            var vencimentos = item.Anexos!.Where(i => Enumerable.Range(1, 27).Contains(i.TipoAnexo) 
+                            && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1
+                            && i.Status == EnumStatusDocs.Aprovado
+                            && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 ).ToList();
 
                             if (vencimentos.Count > 0)
                             {
@@ -79,12 +88,14 @@ namespace AppAwm.Worker
                 mensagem += $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>ERRO: {ex.Message} ";
                 mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
-                Utility.EnviarEmail(mensagem, new Usuario { Email = "hagles@hddoc.com.br", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO");
+                Utility.EnviarEmail(mensagem, new Usuario { Email = "agles.net@msn.com", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO");
             }
 
         }
 
-
+        /// <summary>
+        /// checar a validade do documento com RESALVA e atualizar o status do documento para REJEITADO caso o prazo tenha expirado
+        /// </summary>
         protected void UpdateStatusDocumentoValidadeReslva()
         {
             string mensagem = string.Empty;
@@ -99,11 +110,25 @@ namespace AppAwm.Worker
                 {
                     foreach (var item in resposta.Anexos)
                     {
-                        DateTime dateValidate = (item.Status == EnumStatusDocs.Resalva ? item.Dt_Criacao.Date.AddDays(1) : item.Dt_Validade_Documento);
-
-                        if ((dateValidate - DateTime.Now.Date).TotalDays <= 0)
+                        if ((item.Dt_Criacao.Date - DateTime.Now.Date).TotalDays < 0)
                         {
-                            servicoAnexo.UpdateStatus(item.Cd_Anexo, item.Status == EnumStatusDocs.Aprovado ? EnumStatusDocs.Expirado : EnumStatusDocs.Rejeitado, "Sistema HDDOC", item.Status == EnumStatusDocs.Resalva ? motivo : null);
+                            servicoAnexo.UpdateStatus(item.Cd_Anexo, EnumStatusDocs.Rejeitado, "Sistema HDDOC", item.Status == EnumStatusDocs.Resalva ? motivo : null);
+                        }
+                    }
+                }
+
+                resposta = servicoAnexo.List(w => Enumerable.Range(1,27).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Aprovado);
+
+
+                if (resposta.Success)
+                {
+                    int totalDays = 0;
+                    foreach (var item in resposta.Anexos)
+                    {
+                        totalDays = (item.Dt_Validade_Documento - DateTime.Now.Date).Days;
+                        if (0 <= totalDays && totalDays <= 1)
+                        { 
+                            servicoAnexo.UpdateStatus(item.Cd_Anexo, totalDays == 1 ? EnumStatusDocs.Resalva : EnumStatusDocs.Expirado, "Sistema HDDOC", "documento previsto para o vencimento em 24 horas");
                         }
                     }
                 }
@@ -117,18 +142,102 @@ namespace AppAwm.Worker
                 mensagem += $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>ERRO: {ex.Message} ";
                 mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
-                Utility.EnviarEmail(mensagem, new Usuario { Email = "hagles@hddoc.com.br", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO COM RESALVAS");
+                Utility.EnviarEmail(mensagem, new Usuario { Email = "agles.net@msn.com", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO COM RESALVAS");
             }
         }
 
+        /// <summary>
+        /// checar a validade do documento com APROVADO e atualizar o status do documento para EXPIRADO caso o prazo tenha expirado
+        /// </summary>
+        protected void ChecarValidadoDocumentoAprovador()
+        {
+            string mensagem = string.Empty;
+            try
+            {
+
+                AnexoAnswer resposta = servicoAnexo.List(l => Enumerable.Range(1, 27).Contains(l.TipoAnexo) && l.Status == EnumStatusDocs.Aprovado);
+
+                if (resposta.Success)
+                {
+                    foreach (var item in resposta.Anexos)
+                    {
+                        if ((item.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 0)
+                        {
+                            servicoAnexo.UpdateStatus(item.Cd_Anexo, EnumStatusDocs.Expirado, "Sistema HDDOC", "documento vencido");
+                           
+                            ColaboradorAnswer respostaColaborador = servicoFuncionario.List(g => g.Cd_Funcionario == item.Cd_Funcionario_Id!);
+
+                            if(respostaColaborador.Success)
+                            {
+                                Colaborador colaborador = respostaColaborador.Colaboradores.FirstOrDefault()!;
+                                
+                                UsuarioAnswer respostaUsuario = servicoUsuario.List(g => g.Cd_Usuario == colaborador!.Id_UsuarioCriacao);
+                                var user = respostaUsuario.Usuarios.FirstOrDefault();
+
+                                colaborador.Integrado = false;
+
+                                respostaColaborador = servicoFuncionario.Save(colaborador, EnumAcao.Editar);
+
+                                if (respostaColaborador.Success)
+                                {
+                                    var tipoDocumento = Utility.DocumentacaoComplementarWorker.FirstOrDefault(f => f.Cd_Documentaco_Complementar == item.TipoAnexo)!;
+
+                                    mensagem += "<html><body><h3><center>HDDOC - DOCUMENTAÇÃO EXPIRADA</center><hr/></h3><br/>";
+                                    mensagem += $"<p>O sistema identificou EXPIRAÇÃO DE DOCUMENTO </p>";
+                                    mensagem += $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>TIPO DO DOCUMENTO:{tipoDocumento.Nome}<br/>NOME DO DOCUMENTO: {item.Nome} - VALIDADE: {item.Dt_Validade_Documento:dd/MM/yyyy}<br>FUNCIONÁRIO: {colaborador.Nome} - CPF: {colaborador.Documento}";
+                                    mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
+                                    Utility.EnviarEmail(mensagem, new Usuario
+                                    {
+                                        Email = user!.Email,
+                                        Nome = user.Nome,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                mensagem += "<html><body><h3><center>HDDOC - MONITORAMENTO DE DOCUMENTOS(EXPIRADO)</center><hr/></h3><br/>";
+                mensagem += "<p>O sistema identificou no monitoramento de EXPIRAÇÃO</p>";
+                mensagem += $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>ERRO: {ex.Message} ";
+                mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
+                Utility.EnviarEmail(mensagem, new Usuario
+                {
+                    Email = "agles.net@msn.com",
+                    Nome = "Herbert Agles"
+                }, "DOCUMENTAÇÃO EXPIRADA");
+            }
+        }
+
+
+        protected void CarregarDocumentosComplementares()
+        {
+            try
+            {
+                var documentos = servicoDocumentacao.Get(l => l.Status);
+                if (documentos.Success)
+                {
+                    Utility.DocumentacaoComplementarWorker = documentos.DocumentacaoComplementares;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
             var timer = new PeriodicTimer(TimeSpan.FromDays(1));
 
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
+                CarregarDocumentosComplementares();
                 ChecarDatadcoumento();
                 UpdateStatusDocumentoValidadeReslva();
+                ChecarValidadoDocumentoAprovador();
             }
         }
     }

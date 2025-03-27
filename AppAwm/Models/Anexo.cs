@@ -66,9 +66,15 @@ namespace AppAwm.Models
         [Column("STATUS", TypeName = "INT")]
         public EnumStatusDocs? Status { get; set; }
 
+        /// <summary>
+        /// Código dos documentos propriedade apoio para a tela de anexos
+        /// </summary>
         [NotMapped]
         public string? CodigosDocumentos { get; set; }
 
+        /// <summary>
+        /// Propriedade de apoio para a tela de anexos
+        /// </summary>
         [NotMapped]
         public bool TemHistorico { get; set; }
 

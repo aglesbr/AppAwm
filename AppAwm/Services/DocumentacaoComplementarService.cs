@@ -47,7 +47,7 @@ namespace AppAwm.Services
 
                     if (origem == 1)
                     {
-                        documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id && p.Cd_Empresa_Id == (cd_empresa_id > 0 ? cd_empresa_id : p.Cd_Empresa_Id))];
+                        documentacaoCargo = [.. db.DocumentacaoCargos.Where(p => p.Cd_Cargo_Id == cd_codigo_id)];
                     }
                     else
                     {
@@ -65,7 +65,11 @@ namespace AppAwm.Services
                     {
                         if (origem == 1)
                         {
-                            f.Vinculado = documentacaoCargo!.Any(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id);
+                            var item  = documentacaoCargo!.FirstOrDefault(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id);
+
+                            f.Vinculado = item?.Cd_Empresa_Id == null
+                                ? item?.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id
+                                : item?.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id && item?.Cd_Empresa_Id == cd_empresa_id;
                         }
                         else
                         {

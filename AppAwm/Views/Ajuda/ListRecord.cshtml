@@ -1,0 +1,149 @@
+﻿@model X.PagedList.IPagedList<Video>
+@using X.PagedList
+@using X.Web.PagedList
+
+@if (Model?.Count() > 0)
+{
+    var user = Context.Session.GetString("UserAuth");
+    Usuario? userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(user!);
+
+    <table id="tableList" class="display compact">
+        <thead>
+            <tr>
+                <th>
+                    Titulo
+                </th>
+                <th>
+                    Descrição
+                </th>
+                <th>
+                    URL
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Titulo
+                    </td>
+                    <td>
+                        @item.Descricao
+                    </td>
+                    <td>
+                        <a href='@(userSession!.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? item.Url : null)' target='_blank'>
+                            @(userSession!.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador ? item.Url : "********************")</a>
+                    </td>
+                    <td class="@(item.Status ? "green-text": "red-text" )">
+                        @(item.Status ? "Ativo" : "Inativo")
+                    </td>
+                    <td class="right-align">
+                        <a data-position="bottom" data-tooltip="Exibir Video" data-url="@item.Url" data-titulo="@item.Titulo" class="waves-effect waves-light btn-small modal-trigger deep-purple darken-1 tooltipped openVideo"><i class="material-icons center">play_circle_outline</i></a>
+                        @if (userSession!.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+                        {
+                            <a data-position="right" data-tooltip="Editar" asp-controller="Ajuda" asp-action="Create" asp-route-id="@item.Cd_Video" class="waves-effect waves-light btn-small tooltipped"><i class="material-icons center">edit</i></a>
+                            <a data-position="top" data-tooltip="Excluir" class="waves-effect waves-light btn-small red darken-4 modal-trigger tooltipped removeVideo" data-itemid="@item.Cd_Video"><i class="material-icons center">delete_forever</i></a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                    @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                   {
+                       DisplayLinkToIndividualPages = true,
+                       DisplayPageCountAndCurrentLocation = false,
+                       MaximumPageNumbersToDisplay = 25,
+                       LiElementClasses = new string[] { "waves-effect" },
+                       PageClasses = new string[] { "btnSearch" },
+                       DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                       DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                   })
+                </td>
+                <td>
+                    <span class="badge text-accent-3 blue-text right"> Total de Registros: @Model.TotalItemCount</span>
+                </td>
+            </tr>
+
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado.</div>
+    </div>
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#tableList .tooltipped').tooltip();
+
+        $('#tableList .pagination').attr('id', 'pageItem');
+
+        var paren = $('#tableList .pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('#tableList .btnSearch').click((event) => {
+            $("#btnSearch").trigger("click", event.target.innerHTML);
+        });
+
+        $('#tableList').DataTable({
+            language: {
+                url: 'js/pt-br.json',
+            },
+            "iDisplayLength": 12,
+            layout: {
+                topStart: null,
+                bottom: null,
+                bottomStart: null,
+                bottomEnd: null,
+                topEnd: null,
+            }
+        });
+
+        $('.openVideo').on('click', (event) => {
+            debugger
+                $.dialog({
+                title: event.currentTarget.dataset.titulo,
+                content: `<iframe width="625" height="400" src="${event.currentTarget.dataset.url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`,
+                boxWidth: '35%',
+                type: 'purple',
+                useBootstrap: false
+            });
+        });
+
+           $('.removeVideo').on('click', (event) => {
+
+            $.confirm({
+                title: 'Você confirma a exclusão deste vídeo?',
+                content: 'ATENÇÃO: essa ação não poderá ser desfeita!',
+                boxWidth: '30%',
+                type: 'red',
+                useBootstrap: false,
+                buttons: {
+                    cancelar: function () {},
+                    confirmar: function () {
+                        removeVideo(event.currentTarget.dataset.itemid)
+                    },
+                }
+            });
+        });
+    });
+</script>

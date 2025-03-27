@@ -1,6 +1,8 @@
 ﻿@model AppAwm.Respostas.ClienteAnswer
 
 @{
+    ViewData["Title"] = (Model.Cliente.Cd_Cliente == 0 ? "Cadastrar" : "Atualizar") +" Cliente";
+
     var isChecked = Model.Cliente.Status;
     var isPeriodoTeste = Model.Cliente.Periodo_Teste;
 
@@ -12,6 +14,7 @@
 
 <form asp-action="Create">
     <input asp-for="Cliente.Cd_Cliente" id="cd_cliente" type="hidden" />
+    <input asp-for="Cliente.RoutingKeyMq" id="routingKeyMq" type="hidden" />
     <div class="row">
         <div class="input-field col s4">
             <label asp-for="Cliente.Nome"></label>
@@ -36,6 +39,10 @@
             <label asp-for="Cliente.PlanoVidas"></label>
             <input type="number" asp-for="Cliente.PlanoVidas" id="planoVidas" placeholder=" " min="500" step="10" disabled/>
         </div>
+        <div class="input-field col s1">
+            <label asp-for="Cliente.PlanoVidasAtivadas"></label>
+            <input asp-for="Cliente.PlanoVidasAtivadas" id="PlanoVidasAtivadas" readonly />
+        </div>
         
     </div>
     <div class="row">
@@ -56,7 +63,7 @@
                 Cliente em periodo de teste: &nbsp;
                 <label>
                     Não
-                    <input type="checkbox" asp-for="Cliente.Periodo_Teste" id="isPeriodoTeste">
+                    <input type="checkbox" asp-for="Cliente.Periodo_Teste" id="isPeriodoTeste" checked="@isPeriodoTeste">
                     <span class="lever"></span>
                     Sim
                 </label>
@@ -88,9 +95,3 @@
 </form>
 
 <script src="~/js/cliente/cliente.js"></script>
-
-<script>
-$(document).ready(function () {
-        $('#dtVencimentoPeriodoTeste').prop('disabled', '@isPeriodoTeste' == 'False');
-});
-</script>

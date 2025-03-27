@@ -81,7 +81,8 @@ namespace AppAwm.Services
                              Anexos = (ICollection<Anexo>)ss.Anexos.Select(anx =>
                              new Anexo {
                                  Cd_Anexo = anx.Cd_Anexo, TipoAnexo = anx.TipoAnexo, Status = anx.Status, Cd_Empresa_Id = anx.Cd_Empresa_Id, Cd_Funcionario_Id = anx.Cd_Funcionario_Id,
-                                  MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome
+                                 MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome, Dt_Validade_Documento = anx.Dt_Validade_Documento,
+                                 Cd_UsuarioCriacao = anx.Cd_UsuarioCriacao, Id_UsuarioCriacao = anx.Id_UsuarioCriacao
                              }),
                              VinculoObras = ss.VinculoObras,
                              Empresa = ss.Empresa,
@@ -101,9 +102,16 @@ namespace AppAwm.Services
                              Id_Empresa = ss.Id_Empresa,
                              Cd_Cargo = ss.Cd_Cargo,
                              Nome = ss.Nome,
-                             Telefone = ss.Telefone
+                             Telefone = ss.Telefone,
                         })];
 
+                    funcionarios.ForEach(f =>
+                    {
+                        f.TotalDocumentoParaVencer = f.Anexos!.Count(w =>
+                            Enumerable.Range(1, 27).Contains(w.TipoAnexo)
+                            && w.Status == EnumStatusDocs.Aprovado 
+                            && (w.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (w.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30);
+                    });
 
                     return funcionarios.Count > 0 ? ColaboradorAnswer.DeSucesso(funcionarios) : ColaboradorAnswer.DeErro("Nenhum registro fui localizado");
                 }

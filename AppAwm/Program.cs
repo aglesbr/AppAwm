@@ -39,8 +39,6 @@ builder.Services.Configure<IISServerOptions>(options =>
     options.AutomaticAuthentication = false;
 });
 
-
-
 builder.Services.AddScoped<IUsuario<UsuarioAnswer>, UsuarioService>();
 builder.Services.AddScoped<IEmpresa<EmpresaAnswer>, EmpresaService>();
 builder.Services.AddScoped<IAnexo<AnexoAnswer>, AnexoService>();
@@ -53,13 +51,13 @@ builder.Services.AddScoped<ICliente<ClienteAnswer>, ClienteService>();
 builder.Services.AddScoped<IDocumentoCargo<DocumentoCargoAnswer>, DocumentoCargoService>();
 builder.Services.AddScoped<IDocumentoEmpresa<DocumentoEmpresaAnswer>, DocumentoEmpresaService>();
 builder.Services.AddScoped<IDownload<DownloadAnswer>, DownloadService>();
+builder.Services.AddScoped<IVideo<VideoAnswer>, VideoService>();
 
 //************************************************************************************************
 //implementação e seviço com multiplas classe com distinção de entrada e retorno do tipo de classe
 builder.Services.AddScoped<DepartamentoService>();
 
 //************************************************************************************************
-
 
 builder.Services.AddHostedService<MonitorarValidadoDocumento>();
 

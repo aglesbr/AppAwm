@@ -8,6 +8,7 @@ $('#btnCloseModaAnexoComum').on('click', () => {
 });
 
 
+
 $('#enviarAnexo').on('click', () => {
 
     loading(true);
@@ -25,6 +26,17 @@ $('#enviarAnexo').on('click', () => {
     if (files[0].name.length > 50) {
         M.toast({
             html: '<i class="material-icons white-text">check_circle</i>&nbsp - O nome do arquivo não pode conter mais que 50 caractéres.', classes: 'red darken-2 rounded'
+        });
+
+        loading(false);
+        return;
+    }
+
+    var rowCount = $("#tableAnexoRecord tr").length;
+
+    if (rowCount >= 13) {
+        M.toast({
+            html: '<i class="material-icons white-text">check_circle</i>&nbsp - Total de anexo permitido foi excedito.', classes: 'red darken-2 rounded'
         });
 
         loading(false);
@@ -226,13 +238,13 @@ var bindAnexos = (obj) => {
             if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
 
-                debugger
 
                 populaTipoDocumento(obj);  // pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
 
             if (obj.scope == 'colaborador') {
-                populaTipoDocumento(obj);
+                    populaTipoDocumento(obj);
+
                 $("#DivRecordAnexoColaborador").empty().html(data);
             }
 
@@ -366,7 +378,7 @@ var modalParams = (objeto) => {
 
         if (scopes.some(s => s == objeto.scope)) {
 
-            $('#titulo').html(`<h6>${objeto.titulo} - ${objeto.documento}</h6>`);
+            $('#titulo').html(`<h5>${objeto.titulo} - ${objeto.documento}</h5>`);
 
             if (objeto.scope == 'empresa') {
                 $('#divTipoAnexo').css('display', '');
@@ -395,7 +407,7 @@ var modalParams = (objeto) => {
             if (objeto.scope == 'colaborador') {
 
                 $('#frmDocumentoColaborador').trigger("reset");
-                $('#rotulo').html(`<h6>${objeto.titulo} - ${objeto.documento}</h6>`);
+                $('#rotulo').html(`<h5>${objeto.titulo} - ${objeto.documento}</h5>`);
                 $('#modalAnexoColaborador').modal({ dismissible: false }).modal('open');
                 bindAnexos(objeto);
             }
@@ -516,8 +528,6 @@ var populaTipoDocumento = (obj) => {
     var codidoCargoOuEmpresa = obj.codigoCargo == undefined ? obj : obj.codigoCargo 
 
     var link = '/Anexo/listDocuments';
-
-    debugger
 
     $.ajax({
         type: 'Get',

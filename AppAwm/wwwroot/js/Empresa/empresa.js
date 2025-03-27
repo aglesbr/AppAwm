@@ -203,7 +203,7 @@ var openModal = (objeto) => {
         if (scopes.some(s => s == objeto.scope)) {
 
             $('#frmObra').trigger("reset");
-            $('#tituloEmpresaObra').html(`<h6>${objeto.titulo} - ${objeto.cnpj}</h6>`);
+            $('#tituloEmpresaObra').html(`<h5>${objeto.titulo} - ${objeto.cnpj}</h5>`);
 
             if (objeto.scope == 'obra') {
                 

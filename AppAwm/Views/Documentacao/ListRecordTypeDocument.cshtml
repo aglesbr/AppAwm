@@ -89,7 +89,7 @@ else
         });
 
         $('#tableListDocumentoComplemento .btnSearch').click((event) => {
-            var obj = {pagina: event.target.innerHTML,  id: $('#cd_documentoComplementar_id').val(), origem: $('#tipoDocumento').val()};
+            var obj = {pagina: event.target.innerHTML,  id: $('#cd_documentoComplementar_id').val(), origem: $('#tipoDocumento').val(),  cd_empresa_id:  $('#tipoDocumento').val() == '1' ? $('#cd_empresa').val() : $('#codigoEmpresa').val() };
            getTipoDocumento(obj);
         });
 
