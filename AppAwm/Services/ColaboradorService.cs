@@ -219,13 +219,39 @@ namespace AppAwm.Services
 
 
                 var resposta = db.Funcionarios.Where(w => w.Cd_Funcionario == id)
-                    .Include(emp => emp.Empresa).FirstOrDefault();
+                    .Include(emp => emp.Empresa)
+                    .Include(axo => axo.Anexos)
+                    .Select(s => new
+                    {
+                        s.Nome,
+                        s.Documento,
+                        s.Foto,
+                        s.Cd_Cargo,
+                        s.Empresa,
+                        Anexo = s.Anexos.Where(w => w.Status == EnumStatusDocs.Aprovado)
+                        .ToList()
+                    }).FirstOrDefault();
+
 
                 if (resposta != null)
                 {
                     var cargo = db.Cargos.SingleOrDefault(s => s.Cd_Cargo == resposta.Cd_Cargo);
 
-                    Cracha cracha = new() { Nome = resposta.Nome, Documento = resposta.Documento, Empresa = resposta.Empresa.Nome, Foto = resposta.Foto, Cargo = cargo.Nome, QrCode = null };
+                    Cracha cracha = new() 
+                    { 
+                        Nome = resposta.Nome, 
+                        Documento = resposta.Documento, 
+                        Empresa = resposta.Empresa.Nome, 
+                        Foto = resposta.Foto, 
+                        Cargo = cargo.Nome, 
+                        QrCode = null,
+                        AnexosTreinamentos = [.. resposta.Anexo.Select(s => new Anexo 
+                        { 
+                                Dt_Validade_Documento = s.Dt_Validade_Documento,  
+                                Nome = Utility.DocumentacaoComplementarWorker.SingleOrDefault(f => f.Cd_Documentaco_Complementar == s.TipoAnexo).Nome 
+                        })
+                        .OrderBy(o => o.Nome)],
+                    };
 
                     return cracha;
                 }

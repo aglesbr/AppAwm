@@ -231,10 +231,10 @@ namespace AppAwm.Worker
         {
             //var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
             var timer = new PeriodicTimer(TimeSpan.FromDays(1));
+            CarregarDocumentosComplementares();
 
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
-                CarregarDocumentosComplementares();
                 ChecarDatadcoumento();
                 UpdateStatusDocumentoValidadeReslva();
                 ChecarValidadoDocumentoAprovador();

@@ -433,7 +433,7 @@ var modalParams = (objeto) => {
 
 var abreCracha = (id) => {
     $.confirm({
-        boxWidth: '420px',
+        boxWidth: '330px',
         useBootstrap: false,
         type: 'dark',
         buttons: {
@@ -443,10 +443,11 @@ var abreCracha = (id) => {
 
                     jQuery.fn.extend({
                         printElem: function () {
+                            $('#imgQrCode').css({ 'height': '100px'});
                             var cloned = this.clone();
                             var printSection = $('#printSection');
                             if (printSection.length == 0) {
-                                printSection = $('<div id="printSection" style="width:350px; height:500px; font-size:11px;"></div>')
+                                printSection = $(`<div id="printSection" style="width:220px; height:200px;"></div>`)
                                 $('body').append(printSection);
                             }
                             printSection.append(cloned);

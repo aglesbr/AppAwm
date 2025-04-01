@@ -3,9 +3,9 @@
 
 @if(Model != null)
 {
-<div class="printMe">
+    <div class="printMe">
     <div class="row" >
-        <div class="col s4">
+        <div class="col s6">
         @if (Model.Foto == null)
         {
             <img class="circle responsive-img" src="~/images/user.png" style="height:100px; width:100px; cursor:pointer;" />
@@ -21,24 +21,24 @@
         @{
             var base64Cracha = Convert.ToBase64String(Model.QrCode);
             var imgSrcCracha = String.Format("data:image/*;base64,{0}", base64Cracha);
-            <img src="@imgSrcCracha" style="height:120px; width:120px; cursor:pointer;" />
+            <img id="imgQrCode" src="@imgSrcCracha" style="height:120px; width:100%; cursor:pointer;" />
         }
         </div>
     </div>
         <div class="col s12 input-field">
-            <input type="text" value="@Model.Nome" id="crachaNome" readonly />
+            <input type="text" value="@Model.Nome" id="crachaNome" readonly style="font-size:12px;" />
             <label>Nome</label>
         </div>
         <div class="col s12 input-field">
-            <input type="text" value="@Regex.Replace(Model.Documento!, @"(\d{3})(\d{3})(\d{3})", @"$1.$2.$3-")" id="crachaDocumento" readonly />
+            <input type="text" value="@Regex.Replace(Model.Documento!, @"(\d{3})(\d{3})(\d{3})", @"$1.$2.$3-")" id="crachaDocumento" readonly style="font-size:12px;" />
             <label>Documento</label>
         </div>
         <div class="col s12 input-field">
-            <input type="text" value="@Model.Empresa" id="crachaEmpresa" readonly />
+            <input type="text" value="@Model.Empresa" id="crachaEmpresa" readonly style="font-size:12px;" />
             <label>Empresa</label>
         </div>
         <div class="col s12 input-field">
-            <input type="text" value="@Model.Cargo" id="crachaFuncao" readonly />
+            <input type="text" value="@Model.Cargo" id="crachaFuncao" readonly style="font-size:12px;" />
             <label>Função/Cargo</label>
         </div>
 </div>
