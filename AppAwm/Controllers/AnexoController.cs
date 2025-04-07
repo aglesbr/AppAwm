@@ -233,6 +233,7 @@ namespace AppAwm.Controllers
                         Descricao = s.Descricao,
                         Status = s.Status,
                         MotivoRejeicao = s.MotivoRejeicao,
+                        MotivoResalva = s.MotivoResalva,
                         Cd_UsuarioAnalista = s.Cd_UsuarioAnalista,
                         Dt_Criacao = s.Dt_Criacao
                     }).ToList();
