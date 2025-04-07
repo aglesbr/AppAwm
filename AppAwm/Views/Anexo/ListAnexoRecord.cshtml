@@ -89,7 +89,7 @@
                     <td class="dt-body-right">
                         <a class="waves-effect waves-light btn-small downloadFile" title="Baixar Arquivo" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
                         <a class="waves-effect waves-light btn-small red darken-4 removeFile" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="@(item.Cd_Empresa_Id == null ? "funcionario" :"empresa" )"
-                        title="Remover Arquivo" @(new int?[] { 2,3,6}.Contains((int?)item.Status) ? "disabled" : "")><i class="material-icons center">delete_forever</i></a>
+                        title="Remover Arquivo" @(new int?[] { 2,3}.Contains((int?)item.Status) ? "disabled" : "")><i class="material-icons center">delete_forever</i></a>
                     </td>
             </tr>
         }

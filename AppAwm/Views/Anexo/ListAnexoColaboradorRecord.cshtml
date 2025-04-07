@@ -93,7 +93,7 @@
                     </td>
                     <td class="dt-body-right">
                         <a data-position="left" data-tooltip="Baixar arquivo" class="waves-effect waves-light tooltipped btn-small downloadFile" data-itemid="@item.Cd_Anexo"><i class="material-icons center">cloud_download</i></a>
-                        <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3,6}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
+                        <a data-position="right" data-tooltip="Remover arquivo" class="waves-effect waves-light tooltipped btn-small red darken-4 removeFile  @(new int[]{2,3}.Contains(itemStatus.Key) ? "disabled" : "" )" data-itemid="@item.Cd_Anexo" data-codigo="@(item.Cd_Empresa_Id == null ? item.Cd_Funcionario_Id : item.Cd_Empresa_Id)" data-scope="colaborador"><i class="material-icons center">delete_forever</i></a>
                     </td>
                 </tr>
             }        

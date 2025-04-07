@@ -68,8 +68,9 @@
     <input type="hidden" id="codigoEmpresa" name="codigoEmpresa" />
     <input type="hidden" id="codigoCargo" name="codigoCargo" />
     <input type="hidden" id="isIntegrado" name="isIntegrado" />
+    
 
-<!-- Modal Anexo Colaborador -->
+<!-- Modal Anexo Colaborador documentos opcionais -->
 <div id="modalAnexoFuncionario" class="modal modal-fixed-footer">
     <form method="post" enctype="multipart/form-data" id="frmAnexo">
         <div class="modal-content">
@@ -100,8 +101,9 @@
     </form>
 </div>
 
-<!-- Modal Anexo colaborador documento -->
+<!-- Modal Anexo colaborador documentos obrigatórios -->
 <div id="modalAnexoColaborador" class="modal modal-fixed-footer">
+    <input type="hidden" id="listaTipoDocumento" name="isIntegrado" />
     <form method="post" enctype="multipart/form-data" id="frmDocumentoColaborador">
         <div class="modal-content">
             <div id="rotulo"></div><hr/>
@@ -141,7 +143,7 @@
         </div>
         <div class="modal-footer alert-info">
             <span class="new badge left" data-badge-caption="Requerimento de documentação ténica de colaborador">Formulário:</span>
-            <a id="btnCloseModa" class="modal-close waves-effect waves-teal btn-flat">fechar</a>
+            <a id="btnCloseModaDocumentoObrigatorio" class="modal-close waves-effect waves-teal btn-flat">fechar</a>
             <button type="button" id="enviarAnexoColaborador" class="btn waves-effect waves-light">salvar</button>
         </div>
     </form>

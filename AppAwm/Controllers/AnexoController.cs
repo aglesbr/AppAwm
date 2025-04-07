@@ -166,7 +166,7 @@ namespace AppAwm.Controllers
                     }
 
                     if (!anexoComum.Contains(obj.Scope))
-                        itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString())]);
+                        itemDocumento = string.Join(',', [.. anexoAnswer.Anexos.Select(s => s.TipoAnexo.ToString()).Order()]);
 
                     query = anexoAnswer.Anexos.Select(s => new Anexo
                     {
@@ -221,7 +221,7 @@ namespace AppAwm.Controllers
                     List<EnumStatusDocs> statusDocs = [EnumStatusDocs.Expirado, EnumStatusDocs.Rejeitado, EnumStatusDocs.Resalva];
 
                     AnexoAnswer anexoAnswer = servico.List(x =>
-                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.CodigoColaborador)
+                        (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.Scope == "empresa" ? obj.CodigoEmpresa : obj.CodigoColaborador)
                         // && (obj.Scope == "colaborador" ? statusDocs.Contains((EnumStatusDocs)x.Status!) : x.Status == null)
                         && statusDocs.Contains((EnumStatusDocs)x.Status!)
                         && x.TipoAnexo == obj.TipoAnexo);
@@ -267,7 +267,7 @@ namespace AppAwm.Controllers
                     }
                     else
                     {
-                        if ((EnumStatusDocs.Enviado | EnumStatusDocs.Rejeitado).HasFlag(anexoAnswer.Anexos[0].Status!))
+                        if ((EnumStatusDocs.Enviado | EnumStatusDocs.Rejeitado | EnumStatusDocs.Expirado).HasFlag(anexoAnswer.Anexos[0].Status!))
                         {
                             anexoAnswer = servico.Remove(anexoAnswer.Anexos[0]);
 

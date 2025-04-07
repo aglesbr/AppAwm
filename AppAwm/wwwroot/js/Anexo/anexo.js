@@ -7,6 +7,15 @@ $('#btnCloseModaAnexoComum').on('click', () => {
     $('#DivRecordAnexo').empty();
 });
 
+$('#btnCloseModaDocumentoObrigatorio').on('click', () => {
+    $('#listaTipoDocumento').val(null);
+});
+
+$('#btnCloseModaEmpresa').on('click', () => {
+    $('#listaTipoDocumento').val(null);
+});
+
+
 
 
 $('#enviarAnexo').on('click', () => {
@@ -97,6 +106,8 @@ $('#enviarAnexo').on('click', () => {
                 obj.descricao = null;
                 obj.tipoAnexo = 0;
                 obj.documento = 0;
+
+                $('#listaTipoDocumento').val(null);
 
                 bindAnexos(obj);
                 $('#frmAnexo').trigger("reset");
@@ -197,6 +208,8 @@ $('#enviarAnexoColaborador').on('click', () => {
                 obj.descricao = null;
                 obj.tipoAnexo = 0;
 
+                $('#listaTipoDocumento').val(null);
+
                 bindAnexos(obj);
                 $('#frmDocumentoColaborador').trigger("reset");
                 $('#btnSearch').trigger('click');
@@ -238,14 +251,20 @@ var bindAnexos = (obj) => {
             if (obj.scope == 'empresa') {
                 $("#DivRecordAnexo").empty().html(data);
 
+                if ($('#listaTipoDocumento').val() != '')
+                    return;
 
                 populaTipoDocumento(obj);  // pega os tipo de anexo com codigo 2020 que é anexo do tipo empresa
             }
 
             if (obj.scope == 'colaborador') {
-                    populaTipoDocumento(obj);
-
                 $("#DivRecordAnexoColaborador").empty().html(data);
+
+                if ($('#listaTipoDocumento').val() != '')
+                    return;
+
+                populaTipoDocumento(obj);
+
             }
 
             if (obj.scope == 'anexoComumColaborador' || obj.scope == 'anexoComumEmpresa') {
@@ -253,7 +272,10 @@ var bindAnexos = (obj) => {
                 return;
             }
 
+            $('#listaTipoDocumento').val($('#listAnexo').val().split(','));
+
             var tipo = $('#listAnexo').val().split(',');
+
 
             if (tipo.filter(t => t != '').length > 0) {
 
@@ -348,6 +370,8 @@ var removeFile = (objeto) => {
                     codigoCargo: $('#codigoCargo').val(),
                     integrado: $('#isIntegrado').val()
                 }
+
+                $('#listaTipoDocumento').val(null);
 
                 bindAnexos(obj);
                 $('#btnSearch').trigger('click');
