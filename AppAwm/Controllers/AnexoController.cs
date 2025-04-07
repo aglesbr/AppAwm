@@ -218,7 +218,7 @@ namespace AppAwm.Controllers
                 {
                     var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-                    List<EnumStatusDocs> statusDocs = [EnumStatusDocs.Expirado, EnumStatusDocs.Rejeitado];
+                    List<EnumStatusDocs> statusDocs = [EnumStatusDocs.Expirado, EnumStatusDocs.Rejeitado, EnumStatusDocs.Resalva];
 
                     AnexoAnswer anexoAnswer = servico.List(x =>
                         (obj.Scope == "empresa" ? x.Cd_Empresa_Id : x.Cd_Funcionario_Id) == Convert.ToInt32(obj.CodigoColaborador)

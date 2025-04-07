@@ -140,5 +140,6 @@ namespace AppAwm.DAL
         public virtual DbSet<Cliente> Clientes { get; set; }
         public virtual DbSet<Download> Downloads { get; set; }
         public virtual DbSet<Video> Videos { get; set; }
+        public virtual DbSet<LogException> LogExceptions { get; set; }
     }
 }

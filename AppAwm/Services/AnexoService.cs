@@ -71,8 +71,6 @@ namespace AppAwm.Services
             }
         }
 
-
-
         public AnexoAnswer UpdateStatus(int id, EnumStatusDocs statusDocs, string usuario, string? message = null, bool isRevoga = false)
         {
             try

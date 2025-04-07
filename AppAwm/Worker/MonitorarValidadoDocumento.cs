@@ -13,6 +13,7 @@ namespace AppAwm.Worker
         private readonly IUsuario<UsuarioAnswer> servicoUsuario;
         private readonly IColaborador<ColaboradorAnswer> servicoFuncionario;
         private readonly IDocumentacaoComplementar<DocumentacaoComplementarAnswer> servicoDocumentacao;
+        private readonly ILogException<LogExceptionAnswer> servicoLogException;
 
         public MonitorarValidadoDocumento()
         {
@@ -20,6 +21,7 @@ namespace AppAwm.Worker
             servicoUsuario = new UsuarioService();
             servicoFuncionario = new ColaboradorService();
             servicoDocumentacao = new DocumentacaoComplementarService();
+            servicoLogException = new LogExceptionService();
         }
 
 
@@ -89,6 +91,13 @@ namespace AppAwm.Worker
                 mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
                 Utility.EnviarEmail(mensagem, new Usuario { Email = "agles.net@msn.com", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO");
+
+                servicoLogException.Save(new LogException
+                {
+                    Error = $"{ex.Message} - ERRO NO MONITORAMENTO DE DOCUMENTOS",
+                    Metodo = "ChecarDatadcoumento()",
+                    OrigemTrace = "MonitorarValidadoDocumento"
+                });
             }
 
         }
@@ -117,12 +126,12 @@ namespace AppAwm.Worker
                     }
                 }
 
-                resposta = servicoAnexo.List(w => Enumerable.Range(1,27).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Aprovado);
+                resposta = servicoAnexo.List(w => Enumerable.Range(1,39).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Aprovado);
 
+                int totalDays = 0;
 
                 if (resposta.Success)
                 {
-                    int totalDays = 0;
                     foreach (var item in resposta.Anexos)
                     {
                         totalDays = (item.Dt_Validade_Documento - DateTime.Now.Date).Days;
@@ -133,7 +142,6 @@ namespace AppAwm.Worker
                     }
                 }
 
-
             }
             catch (Exception ex)
             {
@@ -143,6 +151,13 @@ namespace AppAwm.Worker
                 mensagem += "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
                 Utility.EnviarEmail(mensagem, new Usuario { Email = "agles.net@msn.com", Nome = "Herbert Agles" }, "ERRO DE MONITORAMENTO COM RESALVAS");
+
+                servicoLogException.Save(new LogException
+                {
+                    Error = $"{ex.Message} - ERRO NO MONITORAMENTO DE DOCUMENTOS COM RESALVAS",
+                    Metodo = "UpdateStatusDocumentoValidadeReslva()",
+                    OrigemTrace = "MonitorarValidadoDocumento"
+                });
             }
         }
 
@@ -155,7 +170,7 @@ namespace AppAwm.Worker
             try
             {
 
-                AnexoAnswer resposta = servicoAnexo.List(l => Enumerable.Range(1, 27).Contains(l.TipoAnexo) && l.Status == EnumStatusDocs.Aprovado);
+                AnexoAnswer resposta = servicoAnexo.List(l => Enumerable.Range(1, 39).Contains(l.TipoAnexo) && l.Status == EnumStatusDocs.Aprovado);
 
                 if (resposta.Success)
                 {
@@ -208,6 +223,49 @@ namespace AppAwm.Worker
                     Email = "agles.net@msn.com",
                     Nome = "Herbert Agles"
                 }, "DOCUMENTAÇÃO EXPIRADA");
+
+                servicoLogException.Save(new LogException
+                {
+                    Error = $"{ex.Message} - DOCUMENTAÇÃO EXPIRADA",
+                    Metodo = "ChecarValidadoDocumentoAprovador()",
+                    OrigemTrace = "MonitorarValidadoDocumento"
+                });
+            }
+        }
+
+        /// <summary>
+        /// Remove os documentos expirados a mais de 30 dias da base de dados
+        /// </summary>
+        protected void RemoveDocumentosExpirados()
+        {
+            try
+            {
+                AnexoAnswer resposta = servicoAnexo.List(w => Enumerable.Range(1, 39).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Expirado);
+
+                int totalDays = 0;
+
+                if (resposta.Success)
+                {
+                    foreach (var item in resposta.Anexos)
+                    {
+                        totalDays = (item.Dt_Validade_Documento - DateTime.Now.Date).Days;
+
+                        if (totalDays < -30)
+                        {
+                            servicoAnexo.Remove(item);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                servicoLogException.Save(new LogException
+                {
+                    Error = ex.Message,
+                    Metodo = "RemoveDocumentosExpirados()",
+                    OrigemTrace = "MonitorarValidadoDocumento"
+                });
             }
         }
 
@@ -224,20 +282,27 @@ namespace AppAwm.Worker
             }
             catch (Exception ex)
             {
-                throw ex;
+                servicoLogException.Save(new LogException
+                {
+                    Error = $"{ex.Message} - CARREGAR DOCUMENTO COMPLEMENTARRES CARGA INICIAL",
+                    Metodo = "CarregarDocumentosComplementares()",
+                    OrigemTrace = "MonitorarValidadoDocumento"
+                });
             }
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            CarregarDocumentosComplementares();
+
             //var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
             var timer = new PeriodicTimer(TimeSpan.FromDays(1));
-            CarregarDocumentosComplementares();
 
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
-                ChecarDatadcoumento();
                 UpdateStatusDocumentoValidadeReslva();
+                ChecarDatadcoumento();
                 ChecarValidadoDocumentoAprovador();
+                RemoveDocumentosExpirados();
             }
         }
     }
