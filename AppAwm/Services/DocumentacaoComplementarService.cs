@@ -65,7 +65,7 @@ namespace AppAwm.Services
                     {
                         if (origem == 1)
                         {
-                            var item  = documentacaoCargo!.FirstOrDefault(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id);
+                            var item = documentacaoCargo!.FirstOrDefault(a => a.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id);
 
                             f.Vinculado = item?.Cd_Empresa_Id == null
                                 ? item?.Cd_Documento_Id.ToString() == f.Cd_DocumentoComplementar_Id

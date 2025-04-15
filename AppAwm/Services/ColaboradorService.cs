@@ -109,7 +109,7 @@ namespace AppAwm.Services
                     {
                         f.TotalDocumentoParaVencer = f.Anexos!.Count(w =>
                             Enumerable.Range(1, 27).Contains(w.TipoAnexo)
-                            && w.Status == EnumStatusDocs.Aprovado 
+                            && w.Status == EnumStatusDocs.Aprovado
                             && (w.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1 && (w.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30);
                     });
 
@@ -237,18 +237,18 @@ namespace AppAwm.Services
                 {
                     var cargo = db.Cargos.SingleOrDefault(s => s.Cd_Cargo == resposta.Cd_Cargo);
 
-                    Cracha cracha = new() 
-                    { 
-                        Nome = resposta.Nome, 
-                        Documento = resposta.Documento, 
-                        Empresa = resposta.Empresa.Nome, 
-                        Foto = resposta.Foto, 
-                        Cargo = cargo.Nome, 
+                    Cracha cracha = new()
+                    {
+                        Nome = resposta.Nome,
+                        Documento = resposta.Documento,
+                        Empresa = resposta.Empresa.Nome,
+                        Foto = resposta.Foto,
+                        Cargo = cargo.Nome,
                         QrCode = null,
-                        AnexosTreinamentos = [.. resposta.Anexo.Select(s => new Anexo 
-                        { 
-                                Dt_Validade_Documento = s.Dt_Validade_Documento,  
-                                Nome = Utility.DocumentacaoComplementarWorker.SingleOrDefault(f => f.Cd_Documentaco_Complementar == s.TipoAnexo).Nome 
+                        AnexosTreinamentos = [.. resposta.Anexo.Select(s => new Anexo
+                        {
+                                Dt_Validade_Documento = s.Dt_Validade_Documento,
+                                Nome = Utility.DocumentacaoComplementarWorker.SingleOrDefault(f => f.Cd_Documentaco_Complementar == s.TipoAnexo).Nome
                         })
                         .OrderBy(o => o.Nome)],
                     };

@@ -58,7 +58,7 @@ namespace AppAwm.Controllers
 
                     VideoAnswer resposta = servico.Get(s => s.Cd_Video!.Equals(video.Cd_Video));
 
-                    if(resposta.Success)
+                    if (resposta.Success)
                     {
                         Video videoAtual = resposta.Video;
                         videoAtual.Titulo = video.Titulo;
@@ -101,7 +101,7 @@ namespace AppAwm.Controllers
 
                 VideoAnswer resposta = servico.List(
                      x => (x.Titulo!.ToUpper().Contains(obj.Titulo!.ToUpper())
-                     && (sessao.Perfil == EnumPerfil.Administrador ? (obj.StatusFilter.HasValue ? x.Status ==  obj.StatusFilter > 0 : x.Status == x.Status) : x.Status)));
+                     && (sessao.Perfil == EnumPerfil.Administrador ? (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status) : x.Status)));
 
                 var query = resposta.Videos.ToPagedList(skip, 12);
                 return PartialView("ListRecord", query);

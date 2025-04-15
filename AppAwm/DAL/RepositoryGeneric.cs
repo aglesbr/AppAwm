@@ -113,10 +113,7 @@ namespace AppAwm.DAL
         {
             try
             {
-                if (predicate is null)
-                    return null;
-
-                return dbSet.AsNoTracking().FirstOrDefault(predicate);
+                return predicate is null ? null : dbSet.AsNoTracking().FirstOrDefault(predicate);
             }
             catch
             {

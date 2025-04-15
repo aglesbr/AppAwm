@@ -189,7 +189,7 @@ namespace AppAwm.Controllers
         {
             try
             {
-                Cracha resposta = servico.GetCracha(Id);
+                Cracha? resposta = servico.GetCracha(Id);
                 return View("ViewQrCode", resposta);
             }
             catch
@@ -209,7 +209,7 @@ namespace AppAwm.Controllers
                 if (!User.Identity.IsAuthenticated)
                     return PartialView("PartilCracha", BadRequest("Usuario não autenticado"));
 
-                Cracha resposta = servico.GetCracha(Id);
+                Cracha? resposta = servico.GetCracha(Id);
 
                 if (resposta == null)
                     return PartialView("PartilCracha", resposta);
@@ -247,7 +247,6 @@ namespace AppAwm.Controllers
                 if (!User.Identity.IsAuthenticated)
                     return RedirectToAction("Index", "Start");
 
-                Empresa? empresa = null;
                 var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
                 var formFile = files[0];
@@ -259,9 +258,6 @@ namespace AppAwm.Controllers
                 await formFile.CopyToAsync(stream);
 
                 ColaboradorAnswer resposta = servico.ImportarColaboradore(stream, userSession, Convert.ToInt32(cd_empresa));
-
-                //if(resposta.Success)
-                //    empresa = servico.GetEmpresas(p => p.Cd_Empresa == Convert.ToInt32(cd_empresa)).FirstOrDefault();
 
                 return Json(resposta.Success ? resposta : ColaboradorAnswer.DeErro(resposta.Message));
             }

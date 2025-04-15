@@ -29,6 +29,9 @@
         <tbody>
             @foreach (var item in Model)
             {
+                if (item.Anexos is null)
+                    item.Anexos = new List<AppAwm.Models.Anexo>();
+
                 var hasExpired = item.Anexos.GroupBy(gb => gb.TipoAnexo).Select(g => g.Last()).Any(v => v.Status == AppAwm.Models.Enum.EnumStatusDocs.Expirado);
 
                 <tr style="background-color: @(item.TotalDocumentoParaVencer != 0 ? "#fbe9e7" : hasExpired ? "#cfd8dc" : "");">

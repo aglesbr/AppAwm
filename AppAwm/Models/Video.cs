@@ -23,9 +23,9 @@ namespace AppAwm.Models
 
         [Display(Name = "Link do Video")]
         [Column("URL", TypeName = "VARCHAR(100)", Order = 15)]
-        [MaxLength(length:100, ErrorMessage = "Máximo de caracter excedido para o Link")]
+        [MaxLength(length: 100, ErrorMessage = "Máximo de caracter excedido para o Link")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Informe o link do video")]
-        public string? Url { get; set; } 
+        public string? Url { get; set; }
 
         [Column("STATUS", TypeName = "INT", Order = 20)]
         public bool Status { get; set; }

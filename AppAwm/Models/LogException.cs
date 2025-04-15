@@ -17,7 +17,7 @@ namespace AppAwm.Models
         public string? OrigemTrace { get; set; }
 
         [Column("DATAEXCEPTION", TypeName = "DATE", Order = 10)]
-        public  DateTime DataException { get; set; } = DateTime.Now;
+        public DateTime DataException { get; set; } = DateTime.Now;
 
         [Column("ERROR", TypeName = "VARCHAR(500)", Order = 15)]
         public string? Error { get; set; }

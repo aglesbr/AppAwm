@@ -64,10 +64,10 @@ namespace AppAwm.Worker
 
                         foreach (var item in lista.Colaboradores)
                         {
-                            var vencimentos = item.Anexos!.Where(i => Enumerable.Range(1, 27).Contains(i.TipoAnexo) 
+                            var vencimentos = item.Anexos!.Where(i => Enumerable.Range(1, 27).Contains(i.TipoAnexo)
                             && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays > 1
                             && i.Status == EnumStatusDocs.Aprovado
-                            && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30 ).ToList();
+                            && (i.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 30).ToList();
 
                             if (vencimentos.Count > 0)
                             {
@@ -111,7 +111,6 @@ namespace AppAwm.Worker
 
             try
             {
-                AnexoAnswer? anexoAnswer = null;
                 string motivo = "Rejeitado por falta de ajuste no prazo da resalva";
                 AnexoAnswer resposta = servicoAnexo.List(l => l.Status == EnumStatusDocs.Resalva);
 
@@ -126,7 +125,7 @@ namespace AppAwm.Worker
                     }
                 }
 
-                resposta = servicoAnexo.List(w => Enumerable.Range(1,39).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Aprovado);
+                resposta = servicoAnexo.List(w => Enumerable.Range(1, 39).Contains(w.TipoAnexo) && w.Status == EnumStatusDocs.Aprovado);
 
                 int totalDays = 0;
 
@@ -136,7 +135,7 @@ namespace AppAwm.Worker
                     {
                         totalDays = (item.Dt_Validade_Documento - DateTime.Now.Date).Days;
                         if (0 <= totalDays && totalDays <= 1)
-                        { 
+                        {
                             servicoAnexo.UpdateStatus(item.Cd_Anexo, totalDays == 1 ? EnumStatusDocs.Resalva : EnumStatusDocs.Expirado, "Sistema HDDOC", "documento previsto para o vencimento em 24 horas");
                         }
                     }
@@ -179,13 +178,13 @@ namespace AppAwm.Worker
                         if ((item.Dt_Validade_Documento - DateTime.Now.Date).TotalDays < 0)
                         {
                             servicoAnexo.UpdateStatus(item.Cd_Anexo, EnumStatusDocs.Expirado, "Sistema HDDOC", "documento vencido");
-                           
+
                             ColaboradorAnswer respostaColaborador = servicoFuncionario.List(g => g.Cd_Funcionario == item.Cd_Funcionario_Id!);
 
-                            if(respostaColaborador.Success)
+                            if (respostaColaborador.Success)
                             {
                                 Colaborador colaborador = respostaColaborador.Colaboradores.FirstOrDefault()!;
-                                
+
                                 UsuarioAnswer respostaUsuario = servicoUsuario.List(g => g.Cd_Usuario == colaborador!.Id_UsuarioCriacao);
                                 var user = respostaUsuario.Usuarios.FirstOrDefault();
 

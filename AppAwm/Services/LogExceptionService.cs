@@ -1,9 +1,7 @@
 ﻿using AppAwm.DAL;
 using AppAwm.Models;
-using AppAwm.Models.Enum;
 using AppAwm.Respostas;
 using AppAwm.Services.Interface;
-using MySqlX.XDevAPI;
 using System.Linq.Expressions;
 
 namespace AppAwm.Services
