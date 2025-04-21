@@ -13,7 +13,7 @@
     })
         .done(function (data) {
 
-            if (data.chart.totalDocAnalise != 0 || data.chart.totalDocAprovado != 0 || data.chart.totalSemDoc != 0) {
+            if (data.chart.totalDocAnalise != 0 || data.chart.totalDocAprovado != 0 || data.chart.totalDocEnviado != 0 || data.chart.totalSemDoc != 0) {
                 if (origem == 1)
                     $("#charTituloColaborador").css('display', '');
                 else
@@ -30,7 +30,7 @@
 
 var setValueChart = (objData, origem, perfil) => {
 
-    var rotulo = (origem == 1 ? 'Colaborador' : 'Empresa') + ' sem documentação';
+    var rotulo =  'sem documentação';
 
     if (perfil == 'terceiro' && origem == 2) {
         rotulo = 'Documentos não enviado'
@@ -41,15 +41,16 @@ var setValueChart = (objData, origem, perfil) => {
             rotulo,
             'Aprovados',
             'Em Análise',
+            'Enviados',
         ],
         datasets: [{
             label: 'Total',
-            data: [objData.totalSemDoc, objData.totalDocAprovado, objData.totalDocAnalise],
+            data: [objData.totalSemDoc, objData.totalDocAprovado, objData.totalDocAnalise, objData.totalDocEnviado],
             backgroundColor: [
                 'rgb(255, 99, 132)',
                 'rgb(0,255,0)',
-                'rgb(54, 162, 235)'
-                //'rgb(255, 205, 86)'
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
             ],
             hoverOffset: 4
         }]

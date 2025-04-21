@@ -42,6 +42,7 @@ namespace AppAwm.Services
                     {
                         chartRetorno.TotalDocAnalise = listAnexos!.Count(c => c.Status == Models.Enum.EnumStatusDocs.EmAnalise);
                         chartRetorno.TotalDocAprovado = listAnexos!.Count(c => c.Status == Models.Enum.EnumStatusDocs.Aprovado);
+                        chartRetorno.TotalDocEnviado = listAnexos!.Count(c => c.Status == Models.Enum.EnumStatusDocs.Enviado);
                     }
                     else
                     {

@@ -1,4 +1,5 @@
-﻿@model AppAwm.Respostas.EmpresaAnswer
+﻿@using System.Text.RegularExpressions
+@model AppAwm.Respostas.EmpresaAnswer
 
 @{
     ViewData["Title"] = "Empresas";
@@ -55,7 +56,7 @@ else
                     </p>
                 </div>
                 <div class="card-action orange-text accent-3">
-                    <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
+                    <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:'@Regex.Replace(Model.Empresa.Cnpj!, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", @"$1.$2.$3/$4-$5")', titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
                         <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos obrigatórios
                     </a>
                     <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">

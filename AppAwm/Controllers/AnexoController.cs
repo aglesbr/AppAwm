@@ -71,6 +71,7 @@ namespace AppAwm.Controllers
                             anexo.Cd_Empresa_Id = Convert.ToInt32(obj.CodigoEmpresa);
                             anexo.TipoAnexo = obj.TipoAnexo;
                             anexo.Status = EnumStatusDocs.Enviado;
+                            anexo.Dt_Validade_Documento = Convert.ToDateTime("01/01/2100");
                         }
 
                         if (obj.Scope == "colaborador")

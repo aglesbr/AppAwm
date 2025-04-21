@@ -40,7 +40,7 @@ namespace AppAwm.Controllers
                    (userSession!.Perfil != Models.Enum.EnumPerfil.Administrador ? s.Cd_Empresa_Id == userSession!.Cd_Empresa : s.Cd_Empresa_Id > 0)
                    && (userSession.Perfil != Models.Enum.EnumPerfil.Administrador ? s.Id_UsuarioCriacao == userSession.Cd_Usuario : s.Id_UsuarioCriacao > 0)
                    && (origem == 1 ? s.Cd_Funcionario_Id != null : s.Cd_Funcionario_Id == null)
-                   && (s.Status == Models.Enum.EnumStatusDocs.Aprovado || s.Status == Models.Enum.EnumStatusDocs.EmAnalise), userSession!, origem);
+                   && (s.Status == Models.Enum.EnumStatusDocs.Enviado || s.Status == Models.Enum.EnumStatusDocs.EmAnalise || s.Status == Models.Enum.EnumStatusDocs.Aprovado), userSession!, origem);
 
                 return chartAnswer.Success ? Ok(chartAnswer) : BadRequest(chartAnswer);
             }
