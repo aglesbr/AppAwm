@@ -165,15 +165,16 @@ namespace AppAwm.Worker
         }
 
         /// <summary>
-        /// checar a validade do documento APROVADO e atualizar o status do documento para EXPIRADO caso o prazo tenha expirado
+        /// checar a validade do documento APROVADO ou REPROVADO e atualizar o status do documento para EXPIRADO caso o prazo tenha expirado
         /// </summary>
-        protected void ChecarValidadoDocumentoAprovado()
+        protected void ChecarValidadoDocumento()
         {
             string mensagem = string.Empty;
             try
             {
                 Usuario? usuario = null;
-                AnexoAnswer resposta = servicoAnexo.List(l => Enumerable.Range(1, 39).Contains(l.TipoAnexo) && l.Status == EnumStatusDocs.Aprovado);
+                AnexoAnswer resposta = servicoAnexo.List(l => Enumerable.Range(1, 39).Contains(l.TipoAnexo) 
+                && l.Status == EnumStatusDocs.Aprovado || l.Status == EnumStatusDocs.Rejeitado || l.Status == EnumStatusDocs.Enviado);
 
                 if (resposta.Success)
                 {
@@ -329,7 +330,7 @@ namespace AppAwm.Worker
             {
                 ChecarDatadcoumento();
                 UpdateStatusDocumentoValidadeReslva();
-                ChecarValidadoDocumentoAprovado();
+                ChecarValidadoDocumento();
                 RemoveDocumentosExpirados();
             }
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken));
