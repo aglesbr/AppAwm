@@ -3,6 +3,11 @@
     var isChecked = (Model ==  null || Model?.Usuario?.Cd_Usuario == 0) ? "true" : Model?.Usuario?.Status.ToString().ToLower();
 
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectCliente"]!;
+
+    if (Model is not null || Model?.Usuario?.Cd_Usuario == 0)
+    {
+        selectLists = selectLists.Where(s => s.Value == Model.Usuario.Cd_Empresa.ToString()).ToList();
+    }
 }
 
 <h4> @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Cadastrar" : "Atualizar") Usuário</h4>
@@ -12,7 +17,7 @@
     <input asp-for="Usuario.Cd_Usuario_Criacao" id="Cd_Usuario_Criacao" type="hidden" />
     <div class="row">
         <div class="input-field col s4">
-            <select id="Perfil" asp-for="Usuario.Cd_Empresa" asp-items="selectLists">
+            <select id="empresa" asp-for="Usuario.Cd_Empresa" asp-items="selectLists">
                 <option value="0" disabled selected>Selecione empresa do usuário</option>
             </select>
             <label>Empresa do Usuário</label>

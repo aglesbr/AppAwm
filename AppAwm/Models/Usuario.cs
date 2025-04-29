@@ -84,6 +84,9 @@ namespace AppAwm.Models
         public Cliente? Cliente { get; set; }
 
         [NotMapped]
+        public List<KeyValuePair<int, int>>? AdminUsers { get; set; }
+
+        [NotMapped]
         public int? StatusFilter { get; set; }
 
     }

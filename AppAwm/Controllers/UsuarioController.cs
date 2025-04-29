@@ -57,6 +57,7 @@ namespace AppAwm.Controllers
                             return BadRequest(exists);
                         }
 
+
                         usuario.Senha = Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
                         usuario.MudarSenha = true;

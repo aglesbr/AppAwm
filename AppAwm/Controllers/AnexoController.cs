@@ -47,6 +47,8 @@ namespace AppAwm.Controllers
                         if (obj.TipoAnexo > 0)
                             descricao = string.IsNullOrWhiteSpace(obj.Descricao) ? Utility.DocumentacaoComplementares.FirstOrDefault(f => f.Cd_Documentaco_Complementar == obj.TipoAnexo)!.Nome! : obj.Descricao;
 
+                        int id_usuario_criação = userSession.Perfil == EnumPerfil.Administrador ? userSession.AdminUsers.FirstOrDefault(sf => sf.Key == Convert.ToInt32(obj.CodigoEmpresa)).Value : userSession!.Cd_Usuario;
+
                         anexo = new()
                         {
                             Cd_UsuarioCriacao = User.Identity.Name,
@@ -54,7 +56,7 @@ namespace AppAwm.Controllers
                             Arquivo = arq,
                             Nome = formFile.FileName,
                             Descricao = obj.TipoAnexo > 0 ? descricao : obj.Descricao,
-                            Id_UsuarioCriacao = userSession!.Cd_Usuario,
+                            Id_UsuarioCriacao = (userSession.Perfil == EnumPerfil.Administrador && id_usuario_criação == 0) ? userSession.Cd_Usuario : id_usuario_criação,
                         };
 
                         if (anexoComum.Contains(obj.Scope))

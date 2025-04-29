@@ -4,6 +4,7 @@ using AppAwm.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -74,6 +75,10 @@ namespace AppAwm.Controllers
                                 return View(login);
                             }
 
+                            if (user.Perfil == Models.Enum.EnumPerfil.Administrador)
+                            {
+                                user.AdminUsers = [.. contexto.GetAll(u => u.Status).Select(s => new KeyValuePair<int,int>(s.Cd_Empresa, s.Cd_Usuario))];
+                            }
 
                             var token = Utility.GenerateToken(new Usuario { Nome = _Usuario.Nome, Email = _Usuario.Email ?? login.UserName, Perfil = login.Perfil, Telefone = _Usuario.Telefone });
                             HttpContext.Session.SetString("Token", token);

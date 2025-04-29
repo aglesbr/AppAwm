@@ -42,10 +42,7 @@ namespace AppAwm.Controllers
 
             var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
-            ColaboradorAnswer funcionarioAnswer = servico.Get(p =>
-            p.Cd_Funcionario == id
-            && p.Cd_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? p.Cd_UsuarioCriacao : userSession.Nome!)
-            , userSession);
+            ColaboradorAnswer funcionarioAnswer = servico.Get(p => p.Cd_Funcionario == id, userSession);
 
             return View(funcionarioAnswer);
         }
@@ -79,13 +76,14 @@ namespace AppAwm.Controllers
 
                         colaborador.Cd_UsuarioAtualizacao = User.Identity?.Name ?? "ANONYMOUS";
                         colaborador.Dt_Atualizacao = DateTime.Now;
-                        colaborador.Cd_UsuarioCriacao = colaborador.Cd_UsuarioCriacao;
+                        colaborador.Cd_UsuarioCriacao = checkColaborador.Cd_UsuarioCriacao;
                         colaborador.Cd_UsuarioAtualizacao = colaborador.Cd_UsuarioAtualizacao.PadRight(30, '*')[..30].Replace("*", string.Empty).Trim();
                     }
                     else
                     {
+                        int id_usuario_criação = userSession.Perfil == EnumPerfil.Administrador ? userSession.AdminUsers.FirstOrDefault(sf => sf.Key == colaborador.Id_Empresa).Value : userSession!.Cd_Usuario;
                         colaborador.Cd_UsuarioCriacao = User.Identity?.Name ?? "ANONYMOUS";
-                        colaborador.Id_UsuarioCriacao = userSession!.Cd_Usuario;
+                        colaborador.Id_UsuarioCriacao = (userSession.Perfil == EnumPerfil.Administrador && id_usuario_criação == 0) ? userSession.Cd_Usuario :id_usuario_criação ;
                         colaborador.Cd_UsuarioCriacao = colaborador.Cd_UsuarioCriacao.PadRight(30, '*')[..30].Replace("*", string.Empty).Trim();
 
                         string doc = Regex.Replace(colaborador.Documento!, @"[^\d]", string.Empty);

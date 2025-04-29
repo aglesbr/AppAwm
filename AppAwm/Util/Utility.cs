@@ -168,6 +168,12 @@ namespace AppAwm.Util
 
         public static List<DocumentacaoComplementar> DocumentacaoComplementarWorker { get; set; } = [];
 
+        //public static int GetIdUser(string codigoEmpresa, List<KeyValuePair<int, int>> )
+        //{ 
+        //    int cd_empresa =  Convert.ToInt32(codigoEmpresa);
+
+        //}
+
         public static List<KeyValuePair<int, string>> TipoStatus
         {
             get => [

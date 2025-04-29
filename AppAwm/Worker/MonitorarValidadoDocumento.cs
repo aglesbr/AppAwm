@@ -74,7 +74,7 @@ namespace AppAwm.Worker
 
                             if (vencimentos.Count > 0)
                             {
-                                vencimentos.ForEach(i => { docs += "<li>" + i.Nome + " - validade: " + i.Dt_Validade_Documento.ToShortDateString() + "</li>"; });
+                                vencimentos.ForEach(i => { docs += "<li>" + i.Nome + " - validade: " + i.Dt_Validade_Documento.ToString("dd/MM/yyyy") + "</li>"; });
 
                                 Usuario user = users.Usuarios.FirstOrDefault(f => f.Cd_Usuario == vencimentos[0].Id_UsuarioCriacao)!;
                                 string msg = string.Format(mensagem, user.Nome, docs, item.Nome, item.Empresa!.Nome);
@@ -204,7 +204,7 @@ namespace AppAwm.Worker
 
                                     mensagem = "<html><body><h3><center>HDDOC - DOCUMENTAÇÃO EXPIRADA</center><hr/></h3><br/>"
                                     + $"<p>O sistema identificou EXPIRAÇÃO DE DOCUMENTO </p>"
-                                    + $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>TIPO DO DOCUMENTO:{tipoDocumento.Nome}<br/>" 
+                                    + $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'><br>TIPO DO DOCUMENTO: {tipoDocumento.Nome}<br/>" 
                                     + $"NOME DO DOCUMENTO: {item.Nome} - VALIDADE: {item.Dt_Validade_Documento:dd/MM/yyyy}<br>" 
                                     + $"FUNCIONÁRIO: {colaborador.Nome} - CPF: {Regex.Replace(colaborador.Documento!, @"(\d{3})(\d{3})(\d{3})(\d{2})", @"$1.$2.$3-$3")}"
                                     + "</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
@@ -224,7 +224,7 @@ namespace AppAwm.Worker
                                 mensagem = "<html><body><h3><center>HDDOC - DOCUMENTAÇÃO EXPIRADA</center><hr/></h3><br/>"
                                     + $"<p>O sistema identificou EXPIRAÇÃO DE DOCUMENTO </p>"
                                     + $"<div style='border:1px solid black; padding:10px; border-radius: 5px;'>" 
-                                    + $"<br>TIPO DO DOCUMENTO:{tipoDocumento.Nome}<br/>NOME DO DOCUMENTO: {item.Nome} - VALIDADE: {item.Dt_Validade_Documento:dd/MM/yyyy}"
+                                    + $"<br>TIPO DO DOCUMENTO: {tipoDocumento.Nome}<br/>NOME DO DOCUMENTO: {item.Nome} - VALIDADE: {item.Dt_Validade_Documento:dd/MM/yyyy}"
                                     + $"<br>EMPRESA: {empresa.Nome} - CNPJ: {Regex.Replace(empresa.Cnpj!, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", @"$1.$2.$3/$4-$5")}"
                                     + $"</div><p>Resposta automático!<br/>Favor não responder este e-mail!</p></body></html>";
 
@@ -253,7 +253,7 @@ namespace AppAwm.Worker
                 {
                     Email = "agles.net@msn.com",
                     Nome = "Herbert Agles"
-                }, "DOCUMENTAÇÃO EXPIRADA");
+                }, "DOCUMENTAÇÃO EXPIRADA - ERRO");
 
                 servicoLogException.Save(new LogException
                 {
