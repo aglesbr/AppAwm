@@ -114,6 +114,7 @@ namespace AppAwm.Controllers
                     resposta = servicoAnexo.List(
                          x => x.TipoAnexo > 0 && x.Status > 0
                         && x.Cd_Anexo == (idAnexo == 0 ? x.Cd_Anexo : idAnexo)
+                        && x.Status != EnumStatusDocs.Expirado
                         && x.Status == (status == EnumStatusDocs.None ? x.Status : status)
                         && x.TipoAnexo == (tipoAnexo == 0 ? x.TipoAnexo : tipoAnexo)
                         && x.Cd_Empresa_Id == (idEmpresa == 0 ? x.Cd_Empresa_Id : idEmpresa)

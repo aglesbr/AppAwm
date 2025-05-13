@@ -9,6 +9,7 @@ $('#btnCloseModaAnexoComum').on('click', () => {
 
 $('#btnCloseModaDocumentoObrigatorio').on('click', () => {
     $('#listaTipoDocumento').val(null);
+    $('#btnSearch').trigger('click');
 });
 
 $('#btnCloseModaEmpresa').on('click', () => {
@@ -212,7 +213,7 @@ $('#enviarAnexoColaborador').on('click', () => {
 
                 bindAnexos(obj);
                 $('#frmDocumentoColaborador').trigger("reset");
-                $('#btnSearch').trigger('click');
+                //$('#btnSearch').trigger('click');
             }
         })
         .fail(function (data) {

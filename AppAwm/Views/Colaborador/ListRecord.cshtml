@@ -71,7 +71,7 @@
                        DisplayPageCountAndCurrentLocation = false,
                        MaximumPageNumbersToDisplay = 25,
                        LiElementClasses = new string[] { "waves-effect" },
-                       PageClasses = new string[] { "btnSearchColaborador" },
+                       PageClasses = new string[] { "btnSearch" },
                        DisplayLinkToNextPage = PagedListDisplayMode.Never,
                        DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
                        DisplayEllipsesWhenNotShowingAllPageNumbers = false,
@@ -105,10 +105,10 @@ else
 
         paren.each(function (index, li) {
             li.id = li.innerText
-            li.innerHTML = "<a class='btnSearchColaborador'>" + li.innerText + "</a>";
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
         });
 
-        $('#tableList .btnSearchColaborador').click((event) => { 
+        $('#tableList .btnSearch').click((event) => { 
              $("#btnSearch").trigger("click", event.target.innerHTML);
         });
 

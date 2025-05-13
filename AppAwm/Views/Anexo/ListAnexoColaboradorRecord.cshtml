@@ -143,6 +143,7 @@ else
         });
 
         $('#tableAnexoColaboradorRecord .btnSearch').click((event) => {
+            debugger
             var obj = { pagina: event.target.innerHTML,codigoCargo: $('#codigoCargo').val(), codigoColaborador: $('#codigoColaborador').val(), scope: $('#scope').val() };
             bindAnexos(obj);
         });
