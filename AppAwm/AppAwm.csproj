@@ -9,6 +9,7 @@
     <Configurations>Debug;Release;Staging;StagingOn;ReleaseOn</Configurations>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <PublishAot>False</PublishAot>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

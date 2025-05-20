@@ -182,6 +182,20 @@ namespace AppAwm.Controllers
         }
 
         [HttpGet]
+        [Route("/Colaborador/capture/{Id:int}")]
+        public ActionResult CaptureFoto(int Id)
+        {
+            try
+            {
+                return View("CaptureFoto");
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
         [Route("/Colaborador/qrcode/{Id:int}")]
         public ActionResult ViewQrCode(int Id)
         {
