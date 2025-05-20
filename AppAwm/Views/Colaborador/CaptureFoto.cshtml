@@ -43,7 +43,7 @@
         $("#btnCapture").click(function () {
             Webcam.snap(function (data_uri) {
                 $("#imgCapture").css('width', '100%');
-                $("#imgCapture").css('height', '240px');
+                $("#imgCapture").css('height', '270px');
                 $("#imgCapture")[0].src = data_uri;
                  $("#imgCapture").css('border-radius', '25px');
                 $("#btnUpload").removeAttr("disabled");
