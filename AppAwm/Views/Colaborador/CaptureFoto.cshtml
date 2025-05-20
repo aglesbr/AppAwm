@@ -1,0 +1,58 @@
+﻿
+<div class="row center-align">
+    <div class="col s12" id="webcam" style="display:none;"></div>
+    <a class="waves-effect waves-light btn-small" id="btnConfirmar" />confirmar check-list<a />
+</div>
+<div class="row center-align">
+    <div class="col s12"><a class="waves-effect waves-light btn-small center-align" id="btnCapture" style="width:100%; display:none;"/><i class="material-icons left">photo_camera</i>Foto<a/></div>
+    
+</div>
+
+<div class="row">
+    <img class="col s12" id="imgCapture"/>
+</div>
+<div class="row">
+    <div class="col s12">
+        <a class="waves-effect waves-light btn-small center-align blue" id="btnUpload" disabled="disabled" style="width:100%; display:none;" /><i class="material-icons right ">save</i>Enviar<a />
+    </div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.js"></script>
+<script type="text/javascript">
+    $(function () 
+    {
+        $('#btnConfirmar').click((event) => {
+
+            event.currentTarget.style.display = 'none';
+            Webcam.set({
+                width: 330,
+                height: 240,
+                image_format: 'jpeg',
+                jpeg_quality: 90
+            });
+
+            Webcam.attach('#webcam');
+            $("#webcam").css('display', 'block');
+            $("#webcam").css('border-radius', '25%');
+            $("#btnCapture").css('display', 'block');
+        })
+
+        $("#btnCapture").click(function () {
+            Webcam.snap(function (data_uri) {
+                $("#imgCapture").css('width', '100%');
+                $("#imgCapture").css('height', '240px');
+                $("#imgCapture")[0].src = data_uri;
+                 $("#imgCapture").css('border-radius', '25px');
+                $("#btnUpload").removeAttr("disabled");
+            });
+        });
+        $("#btnUpload").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveCapturedImage",
+                data: { data: $("#imgCapture")[0].src },
+                success: function (r) { }
+            });
+        });
+    });
+</script>
