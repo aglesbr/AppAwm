@@ -28,7 +28,12 @@
                 width: 330,
                 height: 240,
                 image_format: 'jpeg',
-                jpeg_quality: 90
+                jpeg_quality: 90,
+                constraints: {
+                  video: {
+                      facingMode: { exact: "environment" } // Use the back camera
+                    }
+                }
             });
 
             Webcam.attach('#webcam');
