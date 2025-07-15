@@ -264,7 +264,7 @@ namespace AppAwm.Services
             }
         }
 
-        public int UpdateCliente(bool isAdd)
+        public int UpdateCliente(bool isAdd, int? count = null)
         {
             using DbCon db = new();
             using var contexto = new RepositoryGeneric<Cliente>(db, out status);
@@ -272,8 +272,10 @@ namespace AppAwm.Services
             {
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    if (isAdd)
+                    if (isAdd && count is null)
                         Utility.Cliente.PlanoVidasAtivadas++;
+                    else if (isAdd && count is not null)
+                        Utility.Cliente.PlanoVidasAtivadas += count.Value;
                     else
                         Utility.Cliente.PlanoVidasAtivadas--;
 
@@ -351,6 +353,8 @@ namespace AppAwm.Services
                 }
 
                 int retorno = contexto.BulkInsert(list);
+
+                UpdateCliente(true, retorno);
 
                 return retorno > 0 ? ColaboradorAnswer.DeSucesso(EnumAcao.Criar) : ColaboradorAnswer.DeErro("Todos os colaboradores da planilha<br/>já foram cadastrados anteriormente.");
             }

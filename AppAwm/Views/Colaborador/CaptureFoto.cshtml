@@ -1,21 +1,34 @@
-﻿
-<div class="row center-align">
-    <div class="col s12" id="webcam" style="display:none;"></div>
-    <a class="waves-effect waves-light btn-small" id="btnConfirmar" />confirmar check-list<a />
-</div>
-<div class="row center-align">
-    <div class="col s12"><a class="waves-effect waves-light btn-small center-align" id="btnCapture" style="width:100%; display:none;"/><i class="material-icons left">photo_camera</i>Foto<a/></div>
-    
-</div>
+﻿@model List<KeyValuePair<int, string>>
+@{
+    ViewData["Title"] = "CaptureFoto";
 
-<div class="row">
-    <img class="col s12" id="imgCapture"/>
-</div>
-<div class="row">
+}
+
+<div class="row" id="divCollection">
     <div class="col s12">
-        <a class="waves-effect waves-light btn-small center-align blue" id="btnUpload" disabled="disabled" style="width:100%; display:none;" /><i class="material-icons right ">save</i>Enviar<a />
+        <ul class="collection">
+            @foreach (var item in Model)
+            {
+                <li class="collection-item @(item.Key == 2 ? "active" : null)"><div>@item.Value<a href="#!" class="secondary-content active"><i class="material-icons">check</i></a></div></li>
+            }
+        </ul>
     </div>
 </div>
+<div class="row center-align">
+    <div class="col s12" id="webcam" style="display:none;width:340px; height:500px;"></div>
+    <a class="waves-effect waves-light btn-small" id="btnConfirmar" />confirmar item do chec-list<a />
+</div>
+
+<div class="row center-align">
+    <div class="col s3 offset-s2"><i id="btnCapture" style="display:none;" class="material-icons medium">photo_camera</i></div>
+    <div class="col s3"><i id="btnCheckOk" style="display:none; color: limegreen" class="material-icons medium">check_circle</i></div>
+    <div class="col s3"><i id="btnCheckNOk" style="display:none; color:red;" class="material-icons medium">clear</i></div>
+</div>
+
+<div class="row center-align">
+    <img  id="imgCapture"/>
+</div>
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.js"></script>
 <script type="text/javascript">
@@ -25,37 +38,62 @@
 
             event.currentTarget.style.display = 'none';
             Webcam.set({
-                width: 330,
-                height: 240,
+                width: 340,
+                height: 500,
                 image_format: 'jpeg',
                 jpeg_quality: 90,
-                constraints: {
-                      facingMode: 'environment'
+                   constraints: {
+                  facingMode: 'environment'
                 }
             });
 
             Webcam.attach('#webcam');
             $("#webcam").css('display', 'block');
-            $("#webcam").css('border-radius', '25%');
             $("#btnCapture").css('display', 'block');
+            $("#divCollection").css('display', 'none');
         })
 
         $("#btnCapture").click(function () {
+            
+            $("#btnCheckOk").css('display', 'block')
+            $("#btnCheckNOk").css('display', 'block')
+            
             Webcam.snap(function (data_uri) {
-                $("#imgCapture").css('width', '100%');
-                $("#imgCapture").css('height', '270px');
+                $("#imgCapture").css('width', '0%');
+                $("#imgCapture").css('height', '0px');
                 $("#imgCapture")[0].src = data_uri;
-                 $("#imgCapture").css('border-radius', '25px');
-                $("#btnUpload").removeAttr("disabled");
             });
+
+            Webcam.freeze();
         });
-        $("#btnUpload").click(function () {
+
+        $("#btnCheckNOk").click(function () {
+            Webcam.unfreeze();
+            $("#imgCapture")[0].src = "";
+            $("#btnCheckOk").css('display', 'none');
+            $("#btnCheckNOk").css('display', 'none');
+            $("#btnCapture").css('display', 'block');
+        });
+
+        $("#btnCheckOk").click(function () {
+           
             $.ajax({
                 type: "POST",
                 url: "/Home/SaveCapturedImage",
                 data: { data: $("#imgCapture")[0].src },
-                success: function (r) { }
+                success: (r) => 
+                { 
+                    Webcam.reset();
+                    $("#webcam").css('display', 'none');
+                    $("#btnCapture").css('display', 'none');
+                    $("#imgCapture").css('width', '100%');
+                    $("#imgCapture").css('height', 'auto');
+                    $("#divCollection").css('display', 'block');
+                    $("#btnConfirmar").css('display', 'block');
+                    alert("Imagem capturada e salva com sucesso!");
+                }
             });
         });
+
     });
 </script>

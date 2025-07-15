@@ -187,7 +187,9 @@ namespace AppAwm.Controllers
         {
             try
             {
-                return View("CaptureFoto");
+                List<KeyValuePair<int, string>> listaEPI = [new(1,"Capacete"), new(2, "Colete de uso em campo"), new (3, "Botos de individual"), new(4,"Protetor Oricular" )];
+
+                return View("CaptureFoto", listaEPI);
             }
             catch
             {

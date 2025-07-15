@@ -37,6 +37,10 @@ namespace AppAwm.Controllers
                 {
                     var formFile = files[0];
 
+                    if(formFile.ContentType != "application/pdf" && Path.GetExtension(formFile.FileName).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase))
+                        return BadRequest(AnexoAnswer.DeErro("O arquivo deve ser do tipo PDF."));
+
+
                     using (var stream = new MemoryStream())
                     {
                         await formFile.CopyToAsync(stream);

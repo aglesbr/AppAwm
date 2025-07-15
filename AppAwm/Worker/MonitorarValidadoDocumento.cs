@@ -321,6 +321,12 @@ namespace AppAwm.Worker
                 });
             }
         }
+
+        /// <summary>
+        /// Principal Método que executa o serviço em segundo plano para monitorar a validade dos documentos complementares.
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             CarregarDocumentosComplementares();
