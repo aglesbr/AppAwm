@@ -1,4 +1,5 @@
 ﻿using AppAwm.Models;
+using AppAwm.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAwm.DAL
@@ -45,10 +46,12 @@ namespace AppAwm.DAL
 #endif
 
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile($"appsettings.{appSeting}.json", true);
+                    .AddJsonFile($"appsettings.{appSeting}.json", false, true);
 
                 var config = builder.Build();
 
+                if (Utility.RabbitClient is null)
+                    Utility.RabbitClient = config.GetSection("RabbitMQ").Get<RabbitMqClient>();
 
                 string _urlBase = string.Format(config.GetSection($"ConnectionStrings:WAConnection").Value!, cnn);
 

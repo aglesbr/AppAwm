@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AppAwm.Util;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppAwm.Models
@@ -23,19 +24,19 @@ namespace AppAwm.Models
         public string? Cnpj { get; set; }
 
         [Column("USUARIOMQ", TypeName = "VARCHAR(20)", Order = 10)]
-        public string? UsuarioMq { get; set; } = "guest";
+        public string? UsuarioMq { get; set; } = Utility.RabbitClient?.UserName ?? "guest";
 
         [Column("PASSWORDMQ", TypeName = "VARCHAR(20)", Order = 15)]
-        public string? PasswordMq { get; set; } = "guest";
+        public string? PasswordMq { get; set; } = Utility.RabbitClient?.Password ?? "guest";
 
         [Column("HOSTMQ", TypeName = "VARCHAR(50)", Order = 20)]
-        public string HostMq { get; set; } = "localhost";
+        public string? HostMq { get; set; } = Utility.RabbitClient?.Host ?? "localhost";
 
         [Column("CANALMQ", TypeName = "VARCHAR(30)", Order = 21)]
-        public string CanalMq { get; set; } = "operacao";
+        public string CanalMq { get; set; } = Utility.RabbitClient?.Canal ?? "***";
 
         [Column("ROUTINGKEYMQ", TypeName = "VARCHAR(30)", Order = 22)]
-        public string? RoutingKeyMq { get; set; }
+        public string? RoutingKeyMq { get; set; } = Utility.RabbitClient?.Rota ?? "***";
 
         [Column("STATUS", TypeName = "BIT", Order = 25)]
         public bool Status { get; set; }

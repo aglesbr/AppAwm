@@ -132,9 +132,9 @@ namespace AppAwm.Services
                 {
                     ConnectionFactory factory = new()
                     {
-                        UserName = "guest",
-                        Password = "guest",
-                        HostName = "localhost",
+                        UserName = Utility.RabbitClient?.UserName,
+                        Password = Utility.RabbitClient?.Password,
+                        HostName = Utility.RabbitClient?.Host,
                         Port = 5672,
                         RequestedChannelMax = 20
                     };

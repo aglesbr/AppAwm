@@ -17,11 +17,11 @@ namespace AppAwm.Util
         // public static readonly string ServerDomain = Environment.MachineName;
 
         public static Cliente? Cliente { get; set; }
+        public static RabbitMqClient? RabbitClient { get; set;}
 
         public static readonly string Secret = "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZX0=";
         public static readonly string KeyApi = "a99341da-d1df-41b2-9d82-3d0825572151-b95e1887-caad-4f3a-bc27-e390c4b7b7a3";
         public static readonly string UrlApi = "https://api.cnpja.com/office/{0}";
-
         public static string GenerateToken(Usuario userCurrency)
         {
             try
