@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace AppAwm.Services
 {
@@ -87,7 +88,7 @@ namespace AppAwm.Services
                              VinculoObras = ss.VinculoObras,
                              Empresa = ss.Empresa,
                              Cd_Funcionario = ss.Cd_Funcionario,
-                             Documento = ss.Documento,
+                             Documento = Regex.Replace(ss.Documento!, @"[^\d]", string.Empty),
                              Integrado = ss.Integrado,
                              Cd_UsuarioCriacao = ss.Cd_UsuarioCriacao,
                              Status = ss.Status,
@@ -328,6 +329,15 @@ namespace AppAwm.Services
                 ds.Rows.RemoveAt(0);
                 foreach (DataRow dr in ds.Rows)
                 {
+                    if (string.IsNullOrWhiteSpace(dr[0].ToString()) 
+                        || string.IsNullOrWhiteSpace(dr[1].ToString()) 
+                        || string.IsNullOrWhiteSpace(dr[2].ToString()) 
+                        || string.IsNullOrWhiteSpace(dr[3].ToString()) 
+                        || string.IsNullOrWhiteSpace(dr[4].ToString())
+                        || string.IsNullOrWhiteSpace(dr[5].ToString())
+                        || string.IsNullOrWhiteSpace(dr[6].ToString()))
+                        continue;
+
                     colaborador = new()
                     {
                         Id_Empresa = cd_empresa,
@@ -341,7 +351,7 @@ namespace AppAwm.Services
                         Nome = dr[0].ToString(),
                         Sexo = dr[1].ToString(),
                         Cd_Cargo = Convert.ToInt32(dr[2]),
-                        Documento = dr[3].ToString(),
+                        Documento = Regex.Replace(dr[3].ToString(), @"[^\d]", string.Empty),
                         Telefone = dr[4].ToString(),
                         Nascimento = DateTime.ParseExact(dr[5].ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture),
                         Dt_Admissao = DateTime.ParseExact(dr[6].ToString().Replace('.', '/'), "dd/MM/yyyy", CultureInfo.InvariantCulture),
