@@ -22,7 +22,10 @@ namespace AppAwm.Services
                 using var contexto = new RepositoryGeneric<Empresa>(db, out status);
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    Empresa? empresa = contexto.GetAll(predicate).Include(f => f.Funcionarios).FirstOrDefault();
+                    Empresa? empresa = contexto.GetAll(predicate)
+                        .Include(f => f.Funcionarios)
+                        .Include(o => o.Obras)
+                        .FirstOrDefault();
 
                     return empresa is not null ? EmpresaAnswer.DeSucesso(empresa) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
                 }
@@ -68,7 +71,9 @@ namespace AppAwm.Services
 
                 if (status == GenericRepositoryValidation.GenericRepositoryExceptionStatus.Success)
                 {
-                    var empresas = contexto.GetAll(predicate).ToList().Select(s => new Empresa { Cd_Empresa = s.Cd_Empresa }).ToList();
+                    var empresas = contexto.GetAll(predicate)
+                        .Include(anx => anx.Anexos)
+                        .Select(s => new Empresa { Cd_Empresa = s.Cd_Empresa, Anexos = (ICollection<Anexo>)s.Anexos.Select(ss => new Anexo {Cd_Empresa_Id = s.Cd_Empresa })}).ToList();
                     return empresas.Count > 0 ? EmpresaAnswer.DeSucesso(empresas) : EmpresaAnswer.DeFalha("Nenhum registro fui localizado");
                 }
 

@@ -24,7 +24,7 @@ namespace AppAwm.DAL.Repository
         {
             try
             {
-                return dbContext.Anexos
+                var anexo = dbContext.Anexos
                     .Where(predicate!)
                     .Select(a => new Anexo
                     {
@@ -44,9 +44,10 @@ namespace AppAwm.DAL.Repository
                         Dt_Validade_Documento = a.Dt_Validade_Documento,
                         Arquivo = hasDocumnt ? a.Arquivo : null,
                     }).AsNoTracking();
+
+                return anexo;
             }
             catch (Exception) { throw; }
-            ;
         }
 
         protected virtual void Dispose(bool disposing)

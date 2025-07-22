@@ -19,6 +19,11 @@
         O HDDOC disponibiliza alguns vídeos para lhe orientar durante o processo de operação, você também poderá acessar o menu posicionado no campo superior esquerdo da tela
         <hr />
     </div>
+       @*  <div class="row">
+            <div class="col s12 blue-grey-text accent-4 center-align" style="font-size:18px; padding:5px;">
+                <img src="~/images/preview.png" />
+            </div>
+        </div> *@
 </div>
 <br>
 
@@ -41,6 +46,7 @@
             </div>
     </div>
 }
+
 
 <!-- Modal Structure -->
 <div id="modalMudarSenha" class="modal">
@@ -82,7 +88,7 @@
     </div>
 </div>
 
-<script src="~/js/chart/chart.umd.js"></script>
+@* <script src="~/js/chart/chart.umd.js"></script> *@
 <script src="~/js/home/home.js"></script>
 
 <script>
@@ -145,12 +151,12 @@
 
     if(!isMudarSenha)
     {
-         loading(true);
-         setTimeout(() => { 
-            grafico(1,'@perfil');
-            grafico(2, '@perfil');
-            loading(false);
-         },1000);
+         //loading(true);
+         // setTimeout(() => { 
+         //    grafico(1,'@perfil');
+         //    grafico(2, '@perfil');
+         //    loading(false);
+         // },1000);
     }
 
 </script>

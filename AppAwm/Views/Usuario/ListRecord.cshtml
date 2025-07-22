@@ -40,7 +40,7 @@
                         @Html.DisplayFor(modelItem => item.Perfil)
                     </td>
                     <td class="right-align">
-                        <a asp-controller="Usuario" asp-action="Create" asp-route-id="@item.Cd_Usuario" class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Editar</a>
+                        <a asp-controller="Usuario" asp-action="Create" asp-route-id="@item.Cd_Usuario" asp-route-type="@item.IsMaster" class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Editar</a>
                     </td>
                 </tr>
             }

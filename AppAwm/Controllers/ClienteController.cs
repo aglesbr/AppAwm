@@ -25,7 +25,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/cliente/Search/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult Search(string cliente, int skip = 1)
         {
             try
@@ -59,7 +59,7 @@ namespace AppAwm.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public ActionResult Create(int id)
         {
             if (!User.Identity.IsAuthenticated)
@@ -76,7 +76,7 @@ namespace AppAwm.Controllers
         // POST: ClienteController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public ActionResult Create(Cliente cliente)
         {
             try

@@ -94,6 +94,9 @@ namespace AppAwm.Models
         [Column("ID_USUARIO_CRIACAO", TypeName = "INT", Order = 100)]
         public int Id_UsuarioCriacao { get; set; }
 
+        [Column("CD_CLIENTE_ID", TypeName = "INT", Order = 110)]
+        public int Cd_Cliente_Id { get; set; }
+
         public virtual Empresa? Empresa { get; set; }
 
         [NotMapped]

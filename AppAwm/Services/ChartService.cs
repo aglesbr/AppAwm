@@ -54,8 +54,8 @@ namespace AppAwm.Services
                     if (origem == 1)
                     {
                         funcionarioAnswer = servicoColaborador.List(f => f.Status
-                            && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? f.Id_Empresa == listAnexos!.FirstOrDefault()!.Cd_Empresa_Id : f.Id_Empresa > 0)
-                            && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? f.Id_UsuarioCriacao == usuario.Cd_Usuario : f.Id_Empresa > 0)
+                            && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? f.Id_Empresa == usuario.Cd_Empresa : f.Id_Empresa > 0)
+                           // && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? f.Id_UsuarioCriacao == usuario.Cd_Usuario : f.Id_Empresa > 0)
                         );
 
                         chartRetorno.TotalSemDoc = funcionarioAnswer.Colaboradores.Count(s => s.Anexos!.Count == 0);
@@ -63,7 +63,7 @@ namespace AppAwm.Services
                     else
                     {
                         empresaAnswer = servicoEmpresa.ListChart(emp => emp.Status
-                        && (usuario.Perfil != Models.Enum.EnumPerfil.Administrador ? emp.Cd_Empresa == listAnexos!.FirstOrDefault()!.Cd_Empresa_Id : emp.Cd_Empresa > 0)
+                        && (usuario.Perfil == Models.Enum.EnumPerfil.Administrador ? emp.Cd_Empresa > 0 : usuario.IsMaster ?  emp.Cd_Cliente_Id == usuario.Cliente.Cd_Cliente: emp.Cd_Empresa == usuario.Empresa.Cd_Empresa)
                         );
 
                         if (empresaAnswer.Empresas.Count == 0)

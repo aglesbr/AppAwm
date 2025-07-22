@@ -74,8 +74,14 @@ namespace AppAwm.Models
         [MaxLength(30)]
         public string? Cd_Usuario_Atualizacao { get; set; }
 
-        [Column("CD_EMPERSA", TypeName = "INT")]
+        [Column("CD_EMPRESA", TypeName = "INT")]
         public int Cd_Empresa { get; set; }
+
+        [Column("CD_CLIENTE_ID", TypeName = "INT")]
+        public int Cd_Cliente_Id { get; set; }
+
+        [Column("IS_USER_MASTER")]
+        public bool IsMaster { get; set; }
 
         [NotMapped]
         public Empresa? Empresa { get; set; }

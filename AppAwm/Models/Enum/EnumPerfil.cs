@@ -5,8 +5,8 @@
     {
         None = 0,
         Terceiro = 1,
-        Funcionario = 2,
+        Master = 2,
         Analista = 4,
-        Administrador = Terceiro | Funcionario | Analista
+        Administrador = Terceiro | Master | Analista
     }
 }

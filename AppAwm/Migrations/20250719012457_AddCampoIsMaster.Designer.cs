@@ -4,6 +4,7 @@ using AppAwm.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    partial class DbConModelSnapshot : ModelSnapshot
+    [Migration("20250719012457_AddCampoIsMaster")]
+    partial class AddCampoIsMaster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,11 +241,6 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CARGO")
                         .HasColumnOrder(40);
-
-                    b.Property<int>("Cd_Cliente_Id")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE_ID")
-                        .HasColumnOrder(110);
 
                     b.Property<string>("Cd_UsuarioAtualizacao")
                         .HasMaxLength(30)
@@ -804,13 +802,9 @@ namespace AppAwm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Usuario"));
 
-                    b.Property<int>("Cd_Cliente_Id")
-                        .HasColumnType("INT")
-                        .HasColumnName("CD_CLIENTE_ID");
-
                     b.Property<int>("Cd_Empresa")
                         .HasColumnType("INT")
-                        .HasColumnName("CD_EMPRESA");
+                        .HasColumnName("CD_EMPERSA");
 
                     b.Property<string>("Cd_Usuario_Atualizacao")
                         .HasMaxLength(30)
@@ -842,7 +836,7 @@ namespace AppAwm.Migrations
 
                     b.Property<bool>("IsMaster")
                         .HasColumnType("bit")
-                        .HasColumnName("IS_USER_MASTER");
+                        .HasColumnName("ISMASTER");
 
                     b.Property<bool>("MudarSenha")
                         .HasColumnType("bit")

@@ -48,7 +48,7 @@ namespace AppAwm.Services
                     // consome lista de empresas
                     using var contextoEmpresa = new RepositoryGeneric<Empresa>(db, out status);
                     List<SelectListItem> empresas = [.. contextoEmpresa.GetAll(p =>
-                     (usuario!.Perfil == EnumPerfil.Administrador ? p.Cd_Empresa > 0 : p.Cd_Empresa == usuario.Cd_Empresa)
+                     (usuario!.IsMaster ? p.Cd_Cliente_Id == usuario.Cd_Cliente_Id: usuario.Perfil == EnumPerfil.Administrador ? p.Cd_Empresa > 0 : p.Cd_Empresa == usuario.Cd_Empresa)
                      && p.Status
                     ).
                     Select(p => new SelectListItem { Value = p.Cd_Empresa.ToString(), Text = p.Nome })];
@@ -79,7 +79,7 @@ namespace AppAwm.Services
                         .Include(a => a.Anexos)
                         .Select(ss => new Colaborador
                         {
-                             Anexos = (ICollection<Anexo>)ss.Anexos.Select(anx =>
+                             Anexos = (ICollection<Anexo>)ss.Anexos.Where(w => w.TipoAnexo > 0).Select(anx =>
                              new Anexo {
                                  Cd_Anexo = anx.Cd_Anexo, TipoAnexo = anx.TipoAnexo, Status = anx.Status, Cd_Empresa_Id = anx.Cd_Empresa_Id, Cd_Funcionario_Id = anx.Cd_Funcionario_Id,
                                  MotivoRejeicao = anx.MotivoRejeicao, MotivoResalva = anx.MotivoResalva, Nome = anx.Nome, Dt_Validade_Documento = anx.Dt_Validade_Documento,

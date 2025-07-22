@@ -23,7 +23,7 @@ namespace AppAwm.Controllers
         private readonly ICliente<ClienteAnswer> servicoCliente = _servicoCliente;
 
         [HttpGet]
-        [Authorize(Roles = "Terceiro, Administrador")]
+        [Authorize(Roles = "Terceiro,Master, Administrador")]
         public ActionResult Index()
         {
             if (!User.Identity.IsAuthenticated)
@@ -34,22 +34,33 @@ namespace AppAwm.Controllers
                 return RedirectToAction("Index", "Start");
 
             var empresa = servico.Get(g => g.Cd_Empresa == sessao.Cd_Empresa);
-            return sessao.Perfil == EnumPerfil.Terceiro ? View(empresa) : View(empresa);
+            return View(empresa);
         }
 
         [HttpGet]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Administrador")]
         public ActionResult Create(int id)
         {
             if (!User.Identity.IsAuthenticated)
                 return BadRequest("Usuario não autenticado");
+
+            var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
+
+            if(sessao ==  null)
+                return BadRequest("sessão de usuario expirada");
 
             EmpresaAnswer? resposta = null;
 
             if (id > 0)
                 resposta = servico.Get(s => s.Cd_Empresa == id);
 
-            List<SelectListItem> selectListItems = [.. servico.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+            List<SelectListItem> selectListItems = 
+                [.. 
+                   servico.GetClientes(s => s.Status 
+                   && s.Cd_Cliente == (sessao!.IsMaster ? sessao.Cd_Cliente_Id!: s.Cd_Cliente))
+                   .Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome })
+                   .OrderBy(t => t.Text)
+                ];
             ViewData["selectCliente"] = selectListItems;
 
             return id == 0 ? View() : View(resposta?.Empresa);
@@ -57,7 +68,7 @@ namespace AppAwm.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Administrador")]
         public IActionResult Create(Empresa empresa)
         {
             try
@@ -120,7 +131,7 @@ namespace AppAwm.Controllers
 
         [HttpPost]
         [Route("Empresa/search/cnpj")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult? ConsultaEmpresa(string cnpj)
         {
             try
@@ -138,7 +149,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Empresa/Search/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult Search(string empresa, int skip = 1)
         {
             try
@@ -156,7 +167,8 @@ namespace AppAwm.Controllers
 
                 EmpresaAnswer resposta = servico.List(
                      x => (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
-                     && x.Cd_UsuarioCriacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioCriacao : sessao.Nome)
+                     //&& x.Cd_UsuarioCriacao == (sessao!.Perfil == EnumPerfil.Administrador ? x.Cd_UsuarioCriacao : sessao.Nome)
+                     && (sessao.Perfil == EnumPerfil.Master ? x.Cd_Cliente_Id == sessao.Cd_Cliente_Id : sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Cliente_Id > 0 : x.Cd_Empresa == sessao.Cd_Empresa )
                      && (string.IsNullOrWhiteSpace(obj.NomeFantasia) ? x.NomeFantasia == x.NomeFantasia : x.NomeFantasia.ToUpper().StartsWith(obj.NomeFantasia.ToUpper()))
                      && x.Cnpj!.StartsWith(obj.Cnpj ?? x.Cnpj)
                      && (obj.StatusFilter.HasValue ? x.Status == obj.StatusFilter > 0 : x.Status == x.Status)));
@@ -173,7 +185,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Empresa/Obras/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult Obras(int id, int skip = 1)
         {
             try
@@ -198,7 +210,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Empresa/GetObras/")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult GetObrasJson(int id)
         {
             try
@@ -210,9 +222,7 @@ namespace AppAwm.Controllers
 
                 if (sessao != null)
                 {
-                    ObraAnswer resposta = servicoObra.List(
-                        x => x.Cd_Usuario_Criacao == (sessao.Perfil == EnumPerfil.Administrador ? x.Cd_Usuario_Criacao : sessao.Nome)
-                        && x.Cd_Empresa_Id == id && x.Status);
+                    ObraAnswer resposta = servicoObra.List(x => x.Cd_Empresa_Id == id && x.Status);
 
                     List<SelectListItem> listEmp = [.. resposta.Obras.Select(s => new SelectListItem(s.Nome, s.Cd_Empresa_Id.ToString()))];
                     return new JsonResult(resposta);
@@ -228,7 +238,7 @@ namespace AppAwm.Controllers
 
         [HttpPost("/Empresa/AddObra")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult AddObras(string comandoObra)
         {
             try
@@ -272,7 +282,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Empresas/FuncionarioByObra/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult? SearchFuncionario(int id_Empresa, int id_Obra, int skip = 1)
         {
             try
@@ -303,7 +313,7 @@ namespace AppAwm.Controllers
 
         [HttpPost("/Empresa/Vincular")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult VincularObras(string comandoVincularObra)
         {
             try
@@ -335,7 +345,7 @@ namespace AppAwm.Controllers
         }
 
         [HttpDelete("/empresa/remove/{id:int}")]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador, Master")]
         public IActionResult RemoveEmpresa(int id)
         {
             try

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using NuGet.Packaging;
 using QRCoder;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -13,12 +14,12 @@ using X.PagedList.Extensions;
 
 namespace AppAwm.Controllers
 {
-    public class ColaboradorController(IColaborador<ColaboradorAnswer> _servico) : Controller
+    public class ColaboradorController(IColaborador<ColaboradorAnswer> _servico, IEmpresa<EmpresaAnswer> _servicoEmpresa) : Controller
     {
         private readonly IColaborador<ColaboradorAnswer> servico = _servico;
+        private readonly IEmpresa<EmpresaAnswer> servicoEmpresa = _servicoEmpresa;
 
-
-        [Authorize(Roles = "Analista, Terceiro, Administrador")]
+        [Authorize(Roles = "Analista, Terceiro, Master, Administrador")]
         public ActionResult Index()
         {
             if (!User.Identity.IsAuthenticated)
@@ -27,16 +28,21 @@ namespace AppAwm.Controllers
             var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
             List<SelectListItem> selectListItems = [.. servico.GetEmpresas(s =>
-            (userSession!.Perfil == EnumPerfil.Administrador ? s.Cd_Empresa > 0 : s.Cd_Empresa == userSession.Cd_Empresa) && s.Status)
+            (userSession.Perfil == EnumPerfil.Master 
+            ? s.Cd_Cliente_Id == userSession.Cd_Cliente_Id 
+            : userSession.Perfil == EnumPerfil.Administrador 
+            ? s.Cd_Cliente_Id > 0 
+            : s.Cd_Empresa == userSession.Cd_Empresa )
+            && s.Status)
                 .Select(s => new SelectListItem { Text = s.Nome, Value = s.Cd_Empresa.ToString() }).OrderBy(o => o.Text)];
             ViewData["selectsEmpresa"] = selectListItems;
             return View();
         }
 
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public ActionResult Create(int id)
         {
-
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Index", "Start");
 
@@ -49,7 +55,7 @@ namespace AppAwm.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public ActionResult Create(Colaborador colaborador)
         {
             try
@@ -65,11 +71,16 @@ namespace AppAwm.Controllers
                 {
                     var userSession = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
 
+                    var empresaAnswer = servicoEmpresa.Get(s => s.Cd_Empresa == colaborador.Id_Empresa);
+
                     bool isNovosuario = colaborador.Cd_Funcionario == 0;
+
 
                     if (!servico.CheckClienteVidasDisponivel())
                         return BadRequest(ColaboradorAnswer.DeErro("Não é possivel cadastrar esse colaborador, pois excede o total de vidas dispnivel no pacote do cliente."));
 
+                    colaborador.Cd_Cliente_Id = empresaAnswer.Empresa.Cd_Cliente_Id;
+                    
                     if (colaborador.Cd_Funcionario > 0)
                     {
                         checkColaborador = servico.Get(g => g.Cd_Funcionario == colaborador.Cd_Funcionario, userSession).Colaborador;
@@ -125,7 +136,7 @@ namespace AppAwm.Controllers
 
 
         //[HttpGet("search")]
-        //[Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        //[Authorize(Roles = "Master, Terceiro, Administrador")]
         //public ActionResult GetCep(string cep)
         //{
         //    var endereco =  Utility.GetCepAsync(cep).Result;
@@ -149,7 +160,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Colaborador/Search/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult? Search(string funcionario, int skip = 1)
         {
             try
@@ -166,7 +177,7 @@ namespace AppAwm.Controllers
 
                 ColaboradorAnswer resposta = servico.List(
                      x => (x.Nome!.ToUpper().StartsWith(obj.Nome!.ToUpper())
-                     && x.Id_UsuarioCriacao == (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao : userSession.Cd_Usuario)
+                     && ((userSession.IsMaster && obj.Id_Empresa > 0) ? x.Id_Empresa == obj.Id_Empresa : (userSession.IsMaster && obj.Id_Empresa == 0) ? x.Cd_Cliente_Id == userSession.Cd_Cliente_Id :  x.Id_Empresa == (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_Empresa : userSession.Cd_Empresa))
                      && x.Documento!.StartsWith(obj.Documento ?? x.Documento)
                      && (x.Id_Empresa == (obj.Id_Empresa == 0 ? x.Id_Empresa : obj.Id_Empresa))
                      && (x.TipoContrato == (obj.TipoContrato == 0 ? x.TipoContrato : obj.TipoContrato))
@@ -215,7 +226,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Colaborador/Cracha/{Id:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult GetCracha(int Id)
         {
             try

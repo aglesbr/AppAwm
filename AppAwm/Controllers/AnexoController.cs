@@ -19,7 +19,7 @@ namespace AppAwm.Controllers
         private readonly IDocumentoEmpresa<DocumentoEmpresaAnswer> servicoDocumentoEmpresa = documentoEmpresa;
 
         [HttpPost("/Anexo/AddFiles")]
-        [Authorize(Roles = "Colaborador, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public async Task<IActionResult> AddFile(List<IFormFile> files, string comandoAnexoInformacao)
         {
             try
@@ -139,7 +139,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Anexo/Search/{skip:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult GetAllByEmpresa(string comandoAnexoInformacao, int skip = 1)
         {
             ComandoAnexoInformacao obj = JsonConvert.DeserializeObject<ComandoAnexoInformacao>(comandoAnexoInformacao) ?? new();
@@ -168,7 +168,11 @@ namespace AppAwm.Controllers
                         anexoAnswer = servico.List(x =>
                         (obj.Scope == "empresa" ? x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa) : x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador))
                         && (obj.Scope == "empresa" ? x.TipoAnexo >= 28 : x.TipoAnexo < 28)
-                        && (userSession!.Perfil == EnumPerfil.Administrador ? x.Id_UsuarioCriacao > 0 : x.Id_UsuarioCriacao == userSession.Cd_Usuario)
+                        && (userSession!.Perfil == EnumPerfil.Administrador 
+                        ? x.Id_UsuarioCriacao > 0 
+                        : (userSession!.Perfil == EnumPerfil.Master 
+                        ? x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa)  
+                        : x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador)))
                         && x.Status != EnumStatusDocs.None);
                     }
 
@@ -215,7 +219,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Anexo/historico/")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public PartialViewResult GetHistoricoAnexo(string comandoAnexoInformacao)
         {
             ComandoAnexoInformacao obj = JsonConvert.DeserializeObject<ComandoAnexoInformacao>(comandoAnexoInformacao) ?? new();
@@ -259,7 +263,7 @@ namespace AppAwm.Controllers
         }
 
         [HttpDelete("/Anexo/remove/{id:int}")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult RemoveFile(int id)
         {
             try
@@ -370,7 +374,7 @@ namespace AppAwm.Controllers
 
         [HttpPut]
         [Route("/Anexo/updateFoto")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public IActionResult ChangeFotoAsync(IFormFile file, int cd_funcionario)
         {
             try
@@ -404,7 +408,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/Anexo/listDocuments")]
-        [Authorize(Roles = "Funcionario, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Terceiro, Administrador")]
         public JsonResult GetDocumentoComplementar(string comandoAnexoInformacao, int skip = 1)
         {
             try

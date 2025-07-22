@@ -1,4 +1,7 @@
-﻿$('#postButton').on('click', (event) => {
+﻿M.AutoInit();
+const selectTipoEmpresa = document.querySelector('#empresa');
+
+$('#postButton').on('click', (event) => {
 
     var frm = $('form').serialize();
 
@@ -42,7 +45,6 @@
         });
 });
 
-
 $('#cpf').on('focusout',(event) => {
     var numberPattern = /\d+/g;
     var _cpf = event.target.value;
@@ -66,7 +68,6 @@ $('#cpf').on('focusout',(event) => {
 
     document.getElementById('postButton').disabled = !validarNumeroCpf;
 });
-
 
 $('input[id="cpf"]').mask('000.000.000-00');
 
@@ -92,4 +93,37 @@ $('#Email').on('focusout',() => {
         }
     }
 
+});
+
+$('#selectPerfil').on('change', (event) =>
+{
+
+    if ($('#Cd_Usuario').val() != '') {
+        $('#selectPerfil option:not(:selected)').attr('disabled', true);
+        return;
+    }
+
+    let action = '/Usuario/empresas/' + (event.target.value == 2 ? 1 : 0);
+
+    M.FormSelect.getInstance(selectTipoEmpresa);
+    while (selectTipoEmpresa.options.length > 1)
+        selectTipoEmpresa.remove(1);
+    
+    $.ajax({
+        type: 'Get',
+        url: action,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: true,
+    })
+        .done((data) => {
+            data.forEach(s => {
+                selectTipoEmpresa.append(new Option(s.text, s.value))
+            });
+
+            M.FormSelect.init(selectTipoEmpresa);
+        })
+        .fail((data) => {
+            M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao tentar lisrtar as empresas do usuário', classes: 'red rounded' });
+        });
 });

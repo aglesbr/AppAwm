@@ -13,9 +13,10 @@ using X.PagedList.Extensions;
 namespace AppAwm.Controllers
 {
     [Authorize]
-    public class UsuarioController(IUsuario<UsuarioAnswer> _servico) : Controller
+    public class UsuarioController(IUsuario<UsuarioAnswer> _servico, IEmpresa<EmpresaAnswer> _servicoEmpresa) : Controller
     {
         private readonly IUsuario<UsuarioAnswer> servico = _servico;
+        private readonly IEmpresa<EmpresaAnswer> servicoEmpresa = _servicoEmpresa;
 
         [Authorize(Roles = "Administrador")]
         public IActionResult Index()
@@ -31,8 +32,6 @@ namespace AppAwm.Controllers
         {
             try
             {
-                // Utility.EnviarEmail(true, new Usuario { Email = "agles.net@msn.com", Nome="agles silva" }, "http://hdsfasd.local.teste");
-
                 ModelState.Remove("usuario.Cd_Usuario");
 
                 if (string.IsNullOrEmpty(usuario.Senha))
@@ -57,7 +56,8 @@ namespace AppAwm.Controllers
                             return BadRequest(exists);
                         }
 
-
+                        usuario.IsMaster = usuario.Perfil == EnumPerfil.Master;
+                        usuario.Cd_Cliente_Id = usuario.Perfil == EnumPerfil.Master ? usuario.Cd_Empresa : 0;
                         usuario.Senha = Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
                         usuario.MudarSenha = true;
@@ -109,11 +109,17 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador")]
-        public ActionResult Create(int id)
+        public ActionResult Create(int id, bool type)
         {
             try
             {
-                List<SelectListItem> selectListItems = [.. servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+                List<SelectListItem> selectListItems = 
+                    [.. 
+                        (type 
+                        ? servicoEmpresa.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)
+                        : servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text))
+                    ];
+
                 ViewData["selectCliente"] = selectListItems;
 
                 if (id > 0)
@@ -133,6 +139,26 @@ namespace AppAwm.Controllers
                 return View(UsuarioAnswer.Falha(ex.Message, EnumAcao.Nenhum));
             }
         }
+
+        [HttpGet("/Usuario/empresas/{type:int}")]
+        public IActionResult GetEmpresas(int type)
+        {
+            try
+            {
+                List<SelectListItem> selectListItems = 
+                    [..
+                        (type == 0 
+                            ? servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text) 
+                            : servicoEmpresa.GetClientes(c => c.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text) )
+                     ];
+                return Json(selectListItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [HttpGet]
         [Route("/Usuario/Search/{skip:int}")]

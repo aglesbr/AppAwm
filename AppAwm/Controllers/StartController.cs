@@ -48,7 +48,8 @@ namespace AppAwm.Controllers
                         {
                             var contextoCliente = new RepositoryGeneric<Empresa>(db, out status);
 
-                            var empresaCliente = contextoCliente.GetAll(cli => cli.Cd_Empresa == _Usuario.Cd_Empresa).Include(cl => cl.Cliente).FirstOrDefault();
+                            var empresaCliente = contextoCliente.GetAll(cli => (_Usuario.IsMaster ? cli.Cd_Cliente_Id == _Usuario.Cd_Cliente_Id : cli.Cd_Empresa == _Usuario.Cd_Empresa)).Include(cl => cl.Cliente).FirstOrDefault();
+
                             Usuario user = _Usuario;
                             user.Empresa = empresaCliente;
 
@@ -69,7 +70,7 @@ namespace AppAwm.Controllers
                                 return View(login);
                             }
 
-                            if (_Usuario.Cliente!.Periodo_Teste && _Usuario.Cliente!.Vencimento_Periodo_Teste < DateTime.Now.Date)
+                            if (_Usuario.Cliente!.Periodo_Teste && DateTime.Now.Date > _Usuario.Cliente!.Vencimento_Periodo_Teste)
                             {
                                 login.Message = new() { Message = "O Periodo de teste da ferramenta terminou, Solicite ao administrador a renovação da licença!", Success = false };
                                 return View(login);
@@ -177,7 +178,7 @@ namespace AppAwm.Controllers
 
 
         [HttpPost("/Start/changePassword")]
-        [Authorize(Roles = "Funcionario, Analista, Terceiro, Administrador")]
+        [Authorize(Roles = "Master, Analista, Terceiro, Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult ChangePwd(Usuario usuario)
         {

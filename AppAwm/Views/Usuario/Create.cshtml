@@ -1,6 +1,8 @@
 ﻿@model AppAwm.Respostas.UsuarioAnswer
 @{
     var isChecked = (Model ==  null || Model?.Usuario?.Cd_Usuario == 0) ? "true" : Model?.Usuario?.Status.ToString().ToLower();
+    var isEdit = (Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null);
+    var isMaster = Model?.Usuario?.Perfil == AppAwm.Models.Enum.EnumPerfil.Master;
 
     List<SelectListItem> selectLists = (List<SelectListItem>)ViewData["selectCliente"]!;
 
@@ -10,30 +12,37 @@
     }
 }
 
-<h4> @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "Cadastrar" : "Atualizar") Usuário</h4>
+<h4> @(isEdit ? "Cadastrar" : "Atualizar") Usuário</h4>
 
 <form asp-action="Create" id="frmForm">
     <input asp-for="Usuario.Cd_Usuario" id="Cd_Usuario" type="hidden" />
     <input asp-for="Usuario.Cd_Usuario_Criacao" id="Cd_Usuario_Criacao" type="hidden" />
     <div class="row">
+        <div class="input-field col s2">
+            <select id="selectPerfil" asp-for="Usuario.Perfil">
+                <option value="0" disabled selected>Selecione um perfil</option>
+                <option value="1">Terceiro</option>
+                <option value="2">Master</option>
+                <option value="4">Analista</option>
+                <option value="7">Administrador</option>
+            </select>
+            <label asp-for="Usuario.Perfil"></label>
+        </div>
+        @* <div class="input-field col s2">
+            <label>
+                <input type="checkbox" class="filled-in" id="chkUserMaster" asp-for="Usuario.IsMaster" />
+                <span>Usuário master de empresas</span>
+            </label>
+         </div> *@
         <div class="input-field col s4">
             <select id="empresa" asp-for="Usuario.Cd_Empresa" asp-items="selectLists">
                 <option value="0" disabled selected>Selecione empresa do usuário</option>
             </select>
             <label>Empresa do Usuário</label>
         </div>
-        <div class="input-field col s4">
+        <div class="input-field col s3">
             <label asp-for="Usuario.Nome"></label>
             <input asp-for="Usuario.Nome" id="Nome" autocomplete="off" />
-        </div>
-        <div class="input-field col s4">
-            <select id="Perfil" asp-for="Usuario.Perfil">
-                <option value="0" disabled selected>Selecione um perfil para o usuário</option>
-                <option value="1">Terceiro</option>
-                <option value="4">Analista</option>
-                <option value="7">Administrador</option>
-            </select>
-            <label asp-for="Usuario.Perfil"></label>
         </div>
     </div>
     <div class="row">
@@ -106,8 +115,17 @@
 <script>
     $(document).ready(function () {
         $('#Status').prop('checked', @isChecked);
+        //$('#selectPerfil').prop('disabled', @isMaster.ToString().ToLower());
         $('#Senha').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null ) ? "true" : "false"));
         $('#ConfirmPassword').prop('readonly', @((Model?.Acao == AppAwm.Models.Enum.EnumAcao.Criar || Model is null) ? "true" : "false"));
         $('input[id="telefone"]').mask('(00) 00000-0000');
+
+        if ($('#Cd_Usuario').val() != '0' && $('#selectPerfil').val() == '2') {
+            $('#selectPerfil option:not(:selected)').attr('disabled', true);
+            return;
+        }
+
+        $('#selectPerfil option[value="2"]').attr('disabled', ($('#Cd_Usuario').val() != '0' && $('#selectPerfil').val() == null) ?  false : true);
+
     })
 </script>

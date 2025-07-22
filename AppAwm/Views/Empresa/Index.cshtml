@@ -7,7 +7,7 @@
     var userSession = System.Text.Json.JsonSerializer.Deserialize<Usuario>(Context.Session.GetString("UserAuth")!);
 }
 
-@if (userSession.Perfil == AppAwm.Models.Enum.EnumPerfil.Administrador)
+@if (userSession!.Perfil is (AppAwm.Models.Enum.EnumPerfil.Administrador or AppAwm.Models.Enum.EnumPerfil.Master))
 {
     <form>
         <div class="row">
@@ -45,7 +45,7 @@
 else
 {
     <div class="row">
-        <div class="col s6">
+        <div class="col s8">
             <div class="card blue-grey z-depth-3">
                 <div class="card-content white-text">
                     <span class="card-title">@Model.Empresa.Nome</span>
@@ -59,8 +59,13 @@ else
                     <a class="waves-effect waves-light btn-large modal-trigger" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:'@Regex.Replace(Model.Empresa.Cnpj!, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", @"$1.$2.$3/$4-$5")', titulo:'@Model.Empresa.Nome', scope:'empresa', documentacaoPendente: '@Model.Empresa.DocumentacaoValidada'})">
                         <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos obrigatórios
                     </a>
-                    <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">
+                    <a class="waves-effect waves-light btn-large modal-trigger purple darken-3" 
+                        onclick="javascript:modalParams({codigoEmpresa:@Model.Empresa.Cd_Empresa, documento:@Model.Empresa.Cnpj, titulo:'@Model.Empresa.Nome', scope:'anexoComumEmpresa'})">
                         <i class="material-icons left" style="font-size:30px;">attach_file</i>Documentos Opcionais
+                    </a>
+                    <a class="waves-effect waves-light btn-large modal-trigger"
+                       onclick="javascript:openModal({cd_empresa_id:@Model.Empresa.Cd_Empresa,nome:'@Model.Empresa.Nome', cnpj:'@Regex.Replace(Model.Empresa.Cnpj!, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", @"$1.$2.$3/$4-$5")', cd_cliente:@Model.Empresa.Cd_Cliente_Id ,scope:'vincularColaborador'})"
+                    @(Model.Empresa.Obras.Count == 0 ? "disabled" : "")> <i class="material-icons left" style="font-size:30px;">swap_horiz</i>Vincular Obras 
                     </a>
                 </div>
             </div>

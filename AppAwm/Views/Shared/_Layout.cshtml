@@ -93,7 +93,7 @@
                     <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Cliente" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">contacts</i>Clientes</a></li>
                 }
 
-                if (userSession?.Perfil is (AppAwm.Models.Enum.EnumPerfil.Administrador or AppAwm.Models.Enum.EnumPerfil.Terceiro))
+                if (userSession?.Perfil is (AppAwm.Models.Enum.EnumPerfil.Administrador or AppAwm.Models.Enum.EnumPerfil.Terceiro or AppAwm.Models.Enum.EnumPerfil.Master))
                 {
                     <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Empresa" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">account_balance</i>Empresas</a></li>
                     <li style="height:6%;"><a class="waves-effect waves-red sidenav-close" asp-controller="Colaborador" asp-action="Index"><i class="material-icons blue-grey-text text-darken-2">people</i>Colaboradores</a></li>

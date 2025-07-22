@@ -18,7 +18,7 @@
 <div class="row" style="margin-top:10%;">
     <form asp-action="Index" method="post">
         <div class="col l4 offset-l4">
-            <div class="z-depth-3" style="border-radius: 15px 15px 15px 15px; border:1px solid #808080;  background-color:white;" id="frmlogin">
+            <div class="z-depth-5" style="border-radius: 15px 15px 15px 15px; border:1px solid #00607d;  background-color:white;" id="frmlogin">
                 <div asp-validation-summary="ModelOnly" class="red-text"></div>
                 <div style="padding:15px;">
                     <div class="flow-text center-align">Autenticação de Usuário</div>
@@ -28,8 +28,8 @@
                         <select id="StatusFilter" asp-for="Perfil" >
                             <option value="0" disabled selected>Selecione...</option>
                             <option value="1">Terceiro</option>
-                            @* <option value="2">Funcionário</option> *@
                             <option value="4">Analista</option>
+                            <option value="2">Master</option>
                             <option value="7">Administrador</option>
                         </select>
                         <label asp-for="Perfil"></label>

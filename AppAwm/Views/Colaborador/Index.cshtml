@@ -55,7 +55,7 @@
 
             <ul id='dropdown1' class='dropdown-content'>
                 <li><a id="baixarModeloexcel"><i class="material-icons">vertical_align_bottom</i>Baixar modelo de planilha</a></li>
-                <li><a href="#!" id="btnImportaColaboradores" data-cd_empresa="@userSession.Cd_Empresa"><i class="material-icons">settings</i>Importar colaboradores</a></li>
+                <li><a href="#!" id="btnImportaColaboradores" data-cd_empresa="@userSession.Empresa.Cd_Empresa"><i class="material-icons">settings</i>Importar colaboradores</a></li>
                 <li><a><i class="material-icons">keyboard_return</i>Voltar</a></li>
             </ul>
         </div>
@@ -180,8 +180,7 @@
 </footer>
 
 <script src="~/js/anexo/anexo.js"></script>
-<script src="~/js/funcionario/funcionario.js"></script>
-
+<script src="~/js/colaborador/colaborador.js"></script>
 <script>
   $('input[id="cpf"]').mask('000.000.000-00');
 </script>
