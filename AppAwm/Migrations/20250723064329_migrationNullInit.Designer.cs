@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAwm.Migrations
 {
     [DbContext(typeof(DbCon))]
-    [Migration("20250719012457_AddCampoIsMaster")]
-    partial class AddCampoIsMaster
+    [Migration("20250723064329_migrationNullInit")]
+    partial class migrationNullInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -241,6 +241,11 @@ namespace AppAwm.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("CARGO")
                         .HasColumnOrder(40);
+
+                    b.Property<int>("Cd_Cliente_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_CLIENTE_ID")
+                        .HasColumnOrder(110);
 
                     b.Property<string>("Cd_UsuarioAtualizacao")
                         .HasMaxLength(30)
@@ -802,9 +807,13 @@ namespace AppAwm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Cd_Usuario"));
 
+                    b.Property<int>("Cd_Cliente_Id")
+                        .HasColumnType("INT")
+                        .HasColumnName("CD_CLIENTE_ID");
+
                     b.Property<int>("Cd_Empresa")
                         .HasColumnType("INT")
-                        .HasColumnName("CD_EMPERSA");
+                        .HasColumnName("CD_EMPRESA");
 
                     b.Property<string>("Cd_Usuario_Atualizacao")
                         .HasMaxLength(30)
@@ -836,7 +845,7 @@ namespace AppAwm.Migrations
 
                     b.Property<bool>("IsMaster")
                         .HasColumnType("bit")
-                        .HasColumnName("ISMASTER");
+                        .HasColumnName("IS_USER_MASTER");
 
                     b.Property<bool>("MudarSenha")
                         .HasColumnType("bit")
