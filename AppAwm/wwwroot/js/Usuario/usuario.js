@@ -95,15 +95,18 @@ $('#Email').on('focusout',() => {
 
 });
 
-$('#selectPerfil').on('change', (event) =>
+$('#selectCliente').on('change', (event) => {
+    this.getEmpresas(event.target.value);
+});
+
+var getEmpresas = (id_cliente) =>
 {
+    //if ($('#Cd_Usuario').val() != '') {
+    //    $('#selectPerfil option:not(:selected)').attr('disabled', true);
+    //    return;
+    //}
 
-    if ($('#Cd_Usuario').val() != '') {
-        $('#selectPerfil option:not(:selected)').attr('disabled', true);
-        return;
-    }
-
-    let action = '/Usuario/empresas/' + (event.target.value == 2 ? 1 : 0);
+    let action = '/Usuario/empresas/' + id_cliente;
 
     M.FormSelect.getInstance(selectTipoEmpresa);
     while (selectTipoEmpresa.options.length > 1)
@@ -121,9 +124,11 @@ $('#selectPerfil').on('change', (event) =>
                 selectTipoEmpresa.append(new Option(s.text, s.value))
             });
 
+            selectTipoEmpresa.options[0].value = '0';
+
             M.FormSelect.init(selectTipoEmpresa);
         })
         .fail((data) => {
             M.toast({ html: '<i class="material-icons white-text">highlight_off</i>&nbsp;Ocorreu um erro ao tentar lisrtar as empresas do usuário', classes: 'red rounded' });
         });
-});
+};

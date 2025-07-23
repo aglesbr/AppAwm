@@ -48,7 +48,7 @@ namespace AppAwm.Controllers
                         {
                             var contextoCliente = new RepositoryGeneric<Empresa>(db, out status);
 
-                            var empresaCliente = contextoCliente.GetAll(cli => (_Usuario.IsMaster ? cli.Cd_Cliente_Id == _Usuario.Cd_Cliente_Id : cli.Cd_Empresa == _Usuario.Cd_Empresa)).Include(cl => cl.Cliente).FirstOrDefault();
+                            var empresaCliente = contextoCliente.GetAll(cli => cli.Cd_Empresa == _Usuario.Cd_Empresa).Include(cl => cl.Cliente).FirstOrDefault();
 
                             Usuario user = _Usuario;
                             user.Empresa = empresaCliente;

@@ -356,9 +356,12 @@ namespace AppAwm.Controllers
                 var sessao = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("UserAuth")!);
                 if (sessao != null)
                 {
+                    if(sessao.Empresa!.Cd_Empresa == id)
+                        return BadRequest(EmpresaAnswer.DeErro("Não é possível remover a empresa que está vinculada a sua sessão."));
 
-                    servicoAnexo.List(x => x.Cd_Empresa_Id == id, false).Anexos.ForEach(x => servicoAnexo.Remove(x));
+                        servicoAnexo.List(x => x.Cd_Empresa_Id == id, false).Anexos.ForEach(x => servicoAnexo.Remove(x));
                     int total = servicoFuncionario.List(x => x.Id_Empresa == id).Colaboradores.Count;
+
 
                     EmpresaAnswer resposta = servico.Remove(id);
 

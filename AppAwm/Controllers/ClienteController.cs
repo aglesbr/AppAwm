@@ -11,10 +11,11 @@ using X.PagedList.Extensions;
 namespace AppAwm.Controllers
 {
     [Authorize]
-    public class ClienteController(ICliente<ClienteAnswer> _servico) : Controller
+    public class ClienteController(ICliente<ClienteAnswer> _servico, IEmpresa<EmpresaAnswer> _servicoEmpresa) : Controller
     {
 
         private readonly ICliente<ClienteAnswer> servico = _servico;
+        private readonly IEmpresa<EmpresaAnswer> servicoEmpresa = _servicoEmpresa;
 
         // GET: ClienteController
         public ActionResult Index()
@@ -25,7 +26,7 @@ namespace AppAwm.Controllers
 
         [HttpGet]
         [Route("/cliente/Search/{skip:int}")]
-        [Authorize(Roles = "Master, Terceiro, Administrador")]
+        [Authorize(Roles = "Administrador")]
         public PartialViewResult Search(string cliente, int skip = 1)
         {
             try
@@ -59,7 +60,7 @@ namespace AppAwm.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "Master, Terceiro, Administrador")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Create(int id)
         {
             if (!User.Identity.IsAuthenticated)
@@ -76,7 +77,7 @@ namespace AppAwm.Controllers
         // POST: ClienteController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Master, Terceiro, Administrador")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Create(Cliente cliente)
         {
             try
@@ -111,7 +112,26 @@ namespace AppAwm.Controllers
 
                     ClienteAnswer clienteAnswer = servico.Save(cliente, (cliente.Cd_Cliente == 0 ? EnumAcao.Criar : EnumAcao.Editar));
 
-                    return clienteAnswer.Success ? Ok(clienteAnswer) : BadRequest(clienteAnswer);
+                    var empresaAnswer =  servicoEmpresa.GetCnpj(cliente.Cnpj).Result;
+
+                    Empresa empresa = new()
+                    {
+                        Nome = cliente.Nome,
+                        NomeFantasia = empresaAnswer.ReceitaConsumerCnpj?.Alias?.ToString(),
+                        Cnpj = cliente.Cnpj,
+                        Email = empresaAnswer.ReceitaConsumerCnpj.Emails[0].Address,
+                        Telefone =  $"({empresaAnswer.ReceitaConsumerCnpj?.Phones[0].Area})-{empresaAnswer.ReceitaConsumerCnpj.Phones[0].Number}",
+                        Status = true,
+                        Dt_Atualizacao = DateTime.Now,
+                        Cd_Cliente_Id = cliente.Cd_Cliente,
+                        Cd_UsuarioCriacao = cliente.Cd_UsuarioCriacao,
+                        Id_UsuarioCriacao = sessao.Cd_Usuario,
+                        Dt_Criacao = DateTime.Now,
+                    };
+
+                    empresaAnswer = servicoEmpresa.Save(empresa, EnumAcao.Criar);
+
+                    return clienteAnswer.Success && empresaAnswer.Success ? Ok(clienteAnswer) : BadRequest(clienteAnswer);
 
                 }
                 string[] messages = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToArray();

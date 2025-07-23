@@ -107,6 +107,13 @@ $('#enviarObra').on('click', (event) => {
 $('#Cnpj').on('keyup', function (event) {
     if (event.currentTarget.value.trim().length == 18) {
 
+        $('#Cnpj').prop('disabled', true);
+
+        if ($('#empresa').val().trim().length > 0) {
+            $('#Cnpj').prop('disabled', false);
+            return;
+        }
+        
         loading(true);
         let action = `${window.location.origin}/Empresa/search/cnpj`
         $.ajax({
@@ -128,18 +135,22 @@ $('#Cnpj').on('keyup', function (event) {
                     M.toast({
                         html: '<i class="material-icons white-text">check_circle</i>&nbsp - ' + data.message, classes: 'blue darken-2 rounded'
                     });
+                    $('#Cnpj').prop('disabled', false);
                 }
             })
             .fail(function (data) {
 
                 loading(false);
-
+                $('#Cnpj').prop('disabled', false);
                 if (data.responseJSON.success == false) {
                     M.toast({
                         html: '<i class="material-icons white-text">cancel</i>&nbsp - ' + data.responseJSON.message, classes: 'red darken-2 rounded'
                     });
                 }
             })
+    }
+    else {
+        $('#empresa').val(null);
     }
 });
 
@@ -156,25 +167,27 @@ var setFileds = (objeto) => {
     $('#telefone').val(result).trigger('focus');
 
     // Formatar Cep
-    value = objeto.address.zip;
-    const regexCep = /^([0-9]{5})\-?([0-9]{3})$/mg;
-    const substCep = `$1-$2`;
-    result = value.replace(regexCep, substCep);
-    $('#cep').val(result).trigger('focus');
+   // value = objeto.address.zip;
+   // const regexCep = /^([0-9]{5})\-?([0-9]{3})$/mg;
+   // const substCep = `$1-$2`;
+   // result = value.replace(regexCep, substCep);
+   // $('#cep').val(result).trigger('focus');
 
 
     $('#empresa').val(objeto.company.name).trigger('focus');
-    $('#equity').val(objeto.company.equity).trigger('focus');
+    //$('#equity').val(objeto.company.equity).trigger('focus');
     $('#nomeFantasia').val(objeto.alias).trigger('focus');
-    $('#logradouro').val(objeto.address.street).trigger('focus');
-    $('#numero').val(objeto.address.number).trigger('focus');
-    $('#detalhes').val(objeto.address.details).trigger('focus');
-    $('#bairro').val(objeto.address.district).trigger('focus');
-    $('#cidade').val(objeto.address.city).trigger('focus');
-    $('#estado').val(objeto.address.state).trigger('focus');
+   // $('#logradouro').val(objeto.address.street).trigger('focus');
+   // $('#numero').val(objeto.address.number).trigger('focus');
+   // $('#detalhes').val(objeto.address.details).trigger('focus');
+   // $('#bairro').val(objeto.address.district).trigger('focus');
+   // $('#cidade').val(objeto.address.city).trigger('focus');
+   // $('#estado').val(objeto.address.state).trigger('focus');
     $('#email').val(objeto.emails[0].address).trigger('focus');
    // $('#complemento').val(JSON.stringify(objeto));
     $("#status").prop("checked", objeto.status.text == 'Ativa');
+
+    $('#Cnpj').prop('disabled', false);
 }
 
 var editarObra = (obj) => {
@@ -382,7 +395,7 @@ var removeEmpresa = (objeto) => {
         loading(false);
 
         M.toast({
-            html: '<i class="material-icons white-text">cancel</i>&nbsp - ' + data.message, classes: 'red darken-2 rounded'
+            html: '<i class="material-icons white-text">cancel</i>&nbsp - ' + data.responseJSON.message, classes: 'red darken-2 rounded'
         });
         bindAnexos(objeto);
     });

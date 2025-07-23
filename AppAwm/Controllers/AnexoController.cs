@@ -170,7 +170,7 @@ namespace AppAwm.Controllers
                         && (obj.Scope == "empresa" ? x.TipoAnexo >= 28 : x.TipoAnexo < 28)
                         && (userSession!.Perfil == EnumPerfil.Administrador 
                         ? x.Id_UsuarioCriacao > 0 
-                        : (userSession!.Perfil == EnumPerfil.Master 
+                        : (userSession!.Perfil == EnumPerfil.Master || userSession.Perfil == EnumPerfil.Terceiro  
                         ? x.Cd_Empresa_Id == Convert.ToInt32(obj.CodigoEmpresa)  
                         : x.Cd_Funcionario_Id == Convert.ToInt32(obj.CodigoColaborador)))
                         && x.Status != EnumStatusDocs.None);

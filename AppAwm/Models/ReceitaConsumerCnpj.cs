@@ -24,7 +24,7 @@
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public int Equity { get; set; }
+        public decimal? Equity { get; set; }
         public Nature? Nature { get; set; }
         public Size? Size { get; set; }
         public List<Member>? Members { get; set; }

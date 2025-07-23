@@ -57,7 +57,6 @@ namespace AppAwm.Controllers
                         }
 
                         usuario.IsMaster = usuario.Perfil == EnumPerfil.Master;
-                        usuario.Cd_Cliente_Id = usuario.Perfil == EnumPerfil.Master ? usuario.Cd_Empresa : 0;
                         usuario.Senha = Utility.Criptografar(usuario.Senha!);
                         usuario.Cd_Usuario_Criacao = User.Identity!.Name;
                         usuario.MudarSenha = true;
@@ -107,24 +106,26 @@ namespace AppAwm.Controllers
             }
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Administrador")]
-        public ActionResult Create(int id, bool type)
+        public ActionResult Create(int id)
         {
             try
             {
                 List<SelectListItem> selectListItems = 
-                    [.. 
-                        (type 
-                        ? servicoEmpresa.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)
-                        : servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text))
-                    ];
+                    [.. servicoEmpresa.GetClientes(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
 
                 ViewData["selectCliente"] = selectListItems;
 
                 if (id > 0)
                 {
                     var _usuario = servico.Get(n => n.Cd_Usuario == id, EnumAcao.Nenhum);
+                    List<SelectListItem> selectEmpresas =
+                   [.. servico.GetEmpresas(s => s.Status && s.Cd_Empresa == _usuario.Usuario!.Cd_Empresa).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text)];
+
+                    ViewData["selectEmpresas"] = selectEmpresas;
+
                     if (_usuario.Success)
                     {
                         return View(_usuario);
@@ -140,17 +141,13 @@ namespace AppAwm.Controllers
             }
         }
 
-        [HttpGet("/Usuario/empresas/{type:int}")]
-        public IActionResult GetEmpresas(int type)
+        [HttpGet("/Usuario/empresas/{id:int}")]
+        public IActionResult GetEmpresas(int id)
         {
             try
             {
                 List<SelectListItem> selectListItems = 
-                    [..
-                        (type == 0 
-                            ? servico.GetEmpresas(s => s.Status).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text) 
-                            : servicoEmpresa.GetClientes(c => c.Status).Select(g => new SelectListItem { Value = g.Cd_Cliente.ToString(), Text = g.Nome }).OrderBy(t => t.Text) )
-                     ];
+                    [..servico.GetEmpresas(s => s.Status && s.Cd_Cliente_Id == id).Select(g => new SelectListItem { Value = g.Cd_Empresa.ToString(), Text = g.Nome }).OrderBy(t => t.Text)  ];
                 return Json(selectListItems);
             }
             catch (Exception ex)

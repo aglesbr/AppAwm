@@ -72,7 +72,7 @@ namespace AppAwm.Util
                 SmtpClient client;
                 MailMessage msg;
 
-                string perfil = usuario.Perfil == Models.Enum.EnumPerfil.Terceiro ? "Terceiro" : usuario.Perfil == Models.Enum.EnumPerfil.Analista ? "Analista" : "Funcionário";
+                string perfil = usuario.Perfil == Models.Enum.EnumPerfil.Terceiro ? "Terceiro" : usuario.Perfil == Models.Enum.EnumPerfil.Analista ? "Analista" : "Master";
 
                 string mensagem = string.Empty;
                 mensagem += $"<html><body><h3><center>HDDOC - {(isNovoUsuario ? "NOVO USUÁRIO" : " SOLICITAÇÃO DE SENHA")}</center><hr/></h3><br/><p>Olá {usuario.Nome}<br/></p>" +
