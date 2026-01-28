@@ -361,6 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/AppAwm/dev.json/AppAwm/dev.json
-/AppAwm/dev.json
 /AppAwm/dev.json
